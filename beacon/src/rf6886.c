@@ -67,6 +67,10 @@ uint8_t rf6886_Init()
     }
     else
     {
+        // ENE_3V3_PA_BEACON initialization
+        GPIO_setAsOutputPin(ENE_3V3_PA_PORT, ENE_3V3_PA_PIN);
+        GPIO_setOutputLowOnPin(ENE_3V3_PA_PORT, ENE_3V3_PA_PIN);
+        
         // Calibrate output buffer for DAC12_A_0
         DAC12_A_calibrateOutput(DAC12_A_BASE, DAC12_A_SUBMODULE_0);
         
@@ -84,6 +88,8 @@ void rf6886_Enable()
     debug_PrintMsg("rf6886_Enable()");
 #endif // DEBUG_MODE
 
+    GPIO_setOutputHighOnPin(ENE_3V3_PA_PORT, ENE_3V3_PA_PIN);
+
     DAC12_A_enableConversions(DAC12_A_BASE, DAC12_A_SUBMODULE_0);
 
 #if DEBUG_MODE == true
@@ -98,6 +104,8 @@ void rf6886_Disable()
 #endif // DEBUG_MODE
 
     DAC12_A_disable(DAC12_A_BASE, DAC12_A_SUBMODULE_0);
+    
+    GPIO_setOutputLowOnPin(ENE_3V3_PA_PORT, ENE_3V3_PA_PIN);
     
 #if DEBUG_MODE == true
     debug_PrintMsg("End of rf6886_Disable()\n");

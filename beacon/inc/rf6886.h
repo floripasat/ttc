@@ -45,15 +45,19 @@
 #define DEBUG_MODE true
 #endif // DEBUG_MODE
 
-#define V_REF 3.3       /**< Reference volatge (Vcc) */
+// P1.1 = ENE_3V3_PA_BEACON
+#define ENE_3V3_PA_PORT     GPIO_PORT_P1    /**< Port 1 = ENE_3V3_PA_BEACON */
+#define ENE_3V3_PA_PIN      GPIO_PIN1       /**< Pin 1 = ENE_3V3_PA_BEACON */
+
+#define V_REF 3.3                           /**< Reference volatge (Vcc) */
 
 /**
  * \fn rf6886_Init()
  * 
  * \brief Initialization of the power amplifier of the beacon (RF6886)
  * 
- * This function settings the MCU DAC12.
- * 
+ * This function settings the MCU DAC12, and initizalizes the ENE_3V3_PA_BEACON pin.
+ * The ENE_3V3_PA_BEACON pin tells to the EPS module to enable the power regulator of the PA.
  * 
  * 
  * After the DAC12 configuration, the operation sequence of the RF6886, is as follow.
@@ -83,7 +87,8 @@ uint8_t rf6886_Init();
  * 
  * \brief Enable PA
  * 
- * This function enables the MCU DAC12 output, with or without (0, in this case)
+ * This function enable the ENE_3V3_PA_BEACON pin (turn on the PA).
+ * Also, it enables the MCU DAC12 output, with or without (0, in this case)
  * a previous output voltage setting.
  * 
  * \return None
@@ -95,7 +100,8 @@ void rf6886_Enable();
  * 
  * \brief Disable PA
  * 
- * This function disables the MCU DAC12 output, bringing it to zero.
+ * This function disables the MCU DAC12 output (bringing it to zero), and the PA
+ * power regulator (ENE_3V3_PA_BEACON).
  * 
  * \return None
  */

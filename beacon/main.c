@@ -110,13 +110,10 @@ void main()
         // Blinking system LED if something is wrong
         led_Blink(3000);
     }
+    rf_switch_Init();
 
     rf6886_Enable();
-
     rf6886_SetVreg(3.1);   // DAC output = 3,1V
-
-    rf_switch_Init();
-    
     rf_switch_Enable();
 
     // Data to send
