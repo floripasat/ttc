@@ -41,7 +41,7 @@ The step-by-step operation of the beacon is described bellow:
 
 ### Debug mode
 
-There is also a debug mode (turned on/off with the DEBUG\_MODE macro in the main file), where all software execution is described through the UART port. Example of output: [Log file](https://github.com/mgm8/floripasat-ttc/blob/master/beacon/log/beacon_tx.log).
+There is also a debug mode (turned on/off with the DEBUG\_MODE macro in the main file), where all software execution is described through the UART port. Example of output: [Log file](https://github.com/floripasat/ttc/blob/master/beacon/log/beacon_tx.log).
 
 The debug mode can be used with a UART-USB converter (FTDI chip for example) with the follow configuration:
 * Baudrate = 115200 bps
