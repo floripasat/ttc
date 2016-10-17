@@ -55,7 +55,8 @@
 #include "inc/cc11xx.h"
 #include "inc/rf-switch.h"
 #include "inc/rf6886.h"
-//#include "inc/uart-eps.h"
+#include "inc/uart-eps.h"
+#include "inc/antenna.h"
 #include "inc/delay.h"
 
 #define TX_MESSAGE "FloripaSat"     /**< Message to transmit. */
@@ -91,18 +92,20 @@ void main()
     led_Enable();
 #endif // DEBUG_MODE
     
-/*    
     // UART for EPS data
     while(UART_EPS_Init() != STATUS_SUCCESS)
     {
         // Blinking system LED if something is wrong
         led_Blink(4000);
     }
-*/    
+    
     cc11xx_Init();
 
     // Calibrate radio (See "CC112X, CC1175 Silicon Errata")
     cc11xx_ManualCalibration();
+    
+    // Antenna deployment
+    antenna_Init();
  
     // Beacon PA initialization
     while(rf6886_Init() != STATUS_SUCCESS)
