@@ -76,12 +76,46 @@ uint8_t UART_EPS_Init()
     {
         // Enable UART module
         USCI_A_UART_enable(USCI_A0_BASE);
+        
+        // Enable Receive Interrupt
+        USCI_A_UART_clearInterrupt(USCI_A0_BASE, USCI_A_UART_RECEIVE_INTERRUPT);
+        USCI_A_UART_enableInterrupt(USCI_A0_BASE, USCI_A_UART_RECEIVE_INTERRUPT);
 
 #if DEBUG_MODE == true
         debug_PrintMsg("\tSUCCESS!");
 #endif // DEBUG_MODE
 
         return STATUS_SUCCESS;
+    }
+}
+
+/**
+ * \fn USCI_A0_ISR
+ * \brief This is the USCI_A0 interrupt vector service routine.
+ * 
+ * UART RX interruption routine.
+ * 
+ * \return none
+ */
+#if defined(__TI_COMPILER_VERSION__) || defined(__IAR_SYSTEMS_ICC__)
+#pragma vector=USCI_A0_VECTOR
+__interrupt
+#elif defined(__GNUC__)
+__attribute__((interrupt(USCI_A0_VECTOR)))
+#endif
+void USCI_A0_ISR()
+{
+    switch(__even_in_range(UCA0IV, 4))
+    {
+        // Vector 2 - RXIFG
+        case 2:
+            //uint8_t receivedData = USCI_A_UART_receiveData(USCI_A0_BASE);
+            
+            // Do something...
+            
+            break;
+        default:
+            break;
     }
 }
 
