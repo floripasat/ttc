@@ -61,7 +61,7 @@ As a serial port monitor, the following softwares can be used:
 
 The general documentation of the project can be found in [GitBook](https://www.gitbook.com/book/tuliogomesp/floripasat-technical-manual).
 
-All source code of the project can be found in [GitHub](https://github.com/mariobaldini/floripasat).
+All source code of the project can be found in [GitHub](https://github.com/floripasat).
 
 Doxygen documentation [here](http://fsat-server.duckdns.org:8000/ttc/).
 
