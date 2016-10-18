@@ -23,7 +23,7 @@
 /**
  * \file watchdog.h
  * 
- * \brief Watchdog initialization
+ * \brief Watchdog initialization.
  * 
  * \author Gabriel Mariano Marcelino <gabriel.mm8@gmail.com>
  * 
@@ -43,6 +43,8 @@
  * \fn watchdog_Init
  * 
  * \brief Initialization of the Watchdog.
+ * 
+ * This function starts the watchdog with a 2 seconds counter in watchdog mode.
  * 
  * \return None
  */

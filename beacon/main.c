@@ -73,11 +73,11 @@
  */
 void main()
 {
-#if DEBUG_MODE == true
-    WDT_A_hold(WDT_A_BASE);     // Disable watchdog for debug
-    
     led_Init();
     led_Enable();
+    
+#if DEBUG_MODE == true
+    WDT_A_hold(WDT_A_BASE);         // Disable watchdog for debug
     
     // UART for debug
     while(debug_Init() != STATUS_SUCCESS)
@@ -86,10 +86,7 @@ void main()
         led_Blink(1000);
     }
 #else
-    //watchdog_Init();      // Todo: Fix watchdog
-    
-    led_Init();
-    led_Enable();
+    watchdog_Init();
 #endif // DEBUG_MODE
     
     // UART for EPS data
@@ -99,13 +96,14 @@ void main()
         led_Blink(4000);
     }
     
+    // Antenna deployment
+    antenna_Init();
+    
+    // Radio initialization
     cc11xx_Init();
 
     // Calibrate radio (See "CC112X, CC1175 Silicon Errata")
     cc11xx_ManualCalibration();
-    
-    // Antenna deployment
-    antenna_Init();
  
     // Beacon PA initialization
     while(rf6886_Init() != STATUS_SUCCESS)
@@ -116,7 +114,7 @@ void main()
     rf_switch_Init();
 
     rf6886_Enable();
-    rf6886_SetVreg(3.1);   // DAC output = 3,1V
+    rf6886_SetVreg(3.1);            // DAC output = 3,1V
     rf_switch_Enable();
 
     // Data to send
