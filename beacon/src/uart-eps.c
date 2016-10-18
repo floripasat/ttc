@@ -42,7 +42,7 @@
 #include "../inc/debug.h"
 #endif // DEBUG_MODE
 
-uint8_t UART_EPS_Init()
+uint8_t eps_UART_Init()
 {
 #if DEBUG_MODE == true
     debug_PrintMsg("UART_EPS_Init()");
@@ -91,6 +91,7 @@ uint8_t UART_EPS_Init()
 
 /**
  * \fn USCI_A0_ISR
+ * 
  * \brief This is the USCI_A0 interrupt vector service routine.
  * 
  * UART RX interruption routine.

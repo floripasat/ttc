@@ -90,7 +90,7 @@ void main()
 #endif // DEBUG_MODE
     
     // UART for EPS data
-    while(UART_EPS_Init() != STATUS_SUCCESS)
+    while(eps_UART_Init() != STATUS_SUCCESS)
     {
         // Blinking system LED if something is wrong
         led_Blink(4000);
