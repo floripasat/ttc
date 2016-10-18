@@ -451,7 +451,7 @@
 #define CC11XX_ADDR_FAILED              0x2B    /**< Pin 1 = Packet address error. */
 #define CC11XX_UART_FRAMING_ERROR       0x2B    /**< Pin 0 = Packet UART framing error. */
 #define CC11XX_AGC_STABLE_GAIN          0x2C    /**< AGC has settled to a gain. The AGC gain is reported stable whenever the current gain setting is equal to the previous gain setting. This condition is evaluated each time a new internal RSSI estimate is computed (see Figure 16). */
-#define CC11XX_AGC_UPDATE               0x2D    /**< A pulse occurring each time the front end gain has been adjusted (see Figure 16). */
+#define CC11XX_AGC_UPDATE_SIGNAL        0x2D    /**< A pulse occurring each time the front end gain has been adjusted (see Figure 16). */
 #define CC11XX_ADC_CLOCK                0x2E    /**< Pins 3 and 1 = ADC clock. */
 #define CC11XX_ADC_Q_DATA_SAMPLE        0x2E    /**< Pin 2 = ADC sample (Q data). */
 #define CC11XX_ADC_I_DATA_SAMPLE        0x2E    /**< Pin 0 = ADC sample (I data). */
