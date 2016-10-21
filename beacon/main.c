@@ -131,6 +131,7 @@ void main()
         cc11xx_CmdStrobe(CC11XX_SFTX);
 
         // Write packet to TX FIFO
+        cc11xx_WriteTXFIFO(0xAB, 1);        // The first byte written to the TXFIFO should be the address
         cc11xx_WriteTXFIFO(tx_buffer, sizeof(tx_buffer));
 
         // Enable TX (Command strobe)

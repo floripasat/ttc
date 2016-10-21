@@ -76,20 +76,29 @@ static const RegistersSettings reg_values[] =
     {CC11XX_IOCFG2,             0x06},
     {CC11XX_IOCFG1,             0xB0},
     {CC11XX_IOCFG0,             0x40},
+    {CC11XX_SYNC_CFG0,          0x17},      // Bit error qualifier disabled. No check on bit errors; 32 bits sync word 
     {CC11XX_SYNC_CFG1,          0x0B},
-    {CC11XX_MODCFG_DEV_E,       0x0B},
+    {CC11XX_SYNC3,              0x75},      // Sync word [31:24]
+    {CC11XX_SYNC2,              0x06},      // Sync word [23:16]
+    {CC11XX_SYNC1,              0x25},      // Sync word [15:8]
+    {CC11XX_SYNC0,              0x45},      // Sync word [7:0]
+    {CC11XX_MODCFG_DEV_E,       0x0B},      // MOD_FORMAT = 001 (2-GFSK)
     {CC11XX_DCFILT_CFG,         0x1C},
     {CC11XX_IQIC,               0xC6},
     {CC11XX_CHAN_BW,            0x10},
-    {CC11XX_MDMCFG0,            0x05},
+    {CC11XX_MDMCFG0,            0x05},      // TRANSPARENT_MODE_EN = 0
+    {CC11XX_MDMCFG1,            0x40},      // FIFO_EN = 1, MANCHESTER_EN = 0
     {CC11XX_AGC_REF,            0x20},
     {CC11XX_AGC_CS_THR,         0x19},
     {CC11XX_AGC_CFG1,           0xA9},
     {CC11XX_AGC_CFG0,           0xCF},
     {CC11XX_FIFO_CFG,           0x00},
     {CC11XX_FS_CFG,             0x14},
-    {CC11XX_PKT_CFG0,           0x20},
+    {CC11XX_PKT_CFG0,           0x00},
+    {CC11XX_PKT_CFG2,           0x00},      // PKT_FORMAT = 00 (FIFO mode)
+    {CC11XX_PKT_CFG1,           0x04},      // CRC calculation in TX mode and CRC check in RX mode enabled. CRC16(X 16 +X 15 +X 2 +1). Initialized to 0xFFFF
     {CC11XX_PA_CFG0,            0x7E},
+//    {CC11XX_PA_CFG2,            0x39},      // PA_POWER_RAMP = 0x39 (10 dBm)
     {CC11XX_PKT_LEN,            0xFF},
     {CC11XX_IF_MIX_CFG,         0x00},
     {CC11XX_FREQOFF_CFG,        0x22},
@@ -107,7 +116,9 @@ static const RegistersSettings reg_values[] =
     {CC11XX_FS_SPARE,           0xAC},
     {CC11XX_XOSC5,              0x0E},
     {CC11XX_XOSC3,              0xC7},
-    {CC11XX_XOSC1,              0x07}
+    {CC11XX_XOSC1,              0x07},
+    {CC11XX_PREAMBLE_CFG1,      0x18},      // PREAMBLE_WORD = 00 (Preamble = 10101010 = 0xAA), NUM_PREAMBLE = 0110 (4 bytes)
+    {CC11XX_PKT_LEN,            0x15}       // "FloripaSat" = 10 bytes -> Total = 21 bytes = 0x15
 };
 
 /**
