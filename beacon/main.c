@@ -59,7 +59,8 @@
 #include "inc/antenna.h"
 #include "inc/delay.h"
 
-#define TX_MESSAGE "FloripaSat"     /**< Message to transmit. */
+#define ADDRESS     "9"             /**< Address byte ('9' = 0x39). */
+#define TX_MESSAGE  "FloripaSat"    /**< Message to transmit. */
 
 /**
  * \fn main
@@ -118,6 +119,7 @@ void main()
     rf_switch_Enable();
 
     // Data to send
+    uint8_t address[] = ADDRESS;
     uint8_t tx_buffer[] = TX_MESSAGE;
 
     // Infinite loop
@@ -131,7 +133,7 @@ void main()
         cc11xx_CmdStrobe(CC11XX_SFTX);
 
         // Write packet to TX FIFO
-        cc11xx_WriteTXFIFO(0xAB, 1);        // The first byte written to the TXFIFO should be the address
+        cc11xx_WriteTXFIFO(address, sizeof(address));        // The first byte written to the TXFIFO should be the address
         cc11xx_WriteTXFIFO(tx_buffer, sizeof(tx_buffer));
 
         // Enable TX (Command strobe)
