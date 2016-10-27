@@ -32,6 +32,7 @@ __maintaner__   = "Gabriel Mariano Marcelino"
 __email__       = "gabriel.mm8@gmail.com"
 __status__      = "Development"
 
+import pickle
 
 def crc16(s):
     crcValue = 0x0000
@@ -73,105 +74,186 @@ def crc16(s):
         crcValue = (crcValue >> 8)^crc16tab[(tmp & 0xFF)]
     return crcValue
 
-def main(args):
-    # Binary file
-    path = "/code/gnuradio/binData.bin"
 
-    # Packet configuration
-    preamble_byte   = 0xAA
-    preamble_size   = 4
-    sync_bytes      = [0x75,0x06,0x25,0x45]
-    address         = "9"
-    message         = "FloripaSat"
-    
-    preamble        = preamble_size*str(bin(preamble_byte))[2:]
-    sync_word_size  = len(sync_bytes)
-    address_size    = 1
-    message_size    = len(message)
-    crc             = str(bin(crc16(str(address)+message)))[2:]
-    crc_size        = len(crc)/8
-    others_size     = 2      # Mysterious zero
-
-    packet_size = preamble_size + sync_word_size + address_size + message_size + crc_size
-    packet_size *= 8        # Bytes to bits
-
-    f = open(path, "rb")
-
-    output = str()
+def Bytes2String(f):
+    bin_string = str()
 
     # Converts the binary file to a string of ones and zeros
     byte = f.read(1)
     while byte != "":
         if byte == '\x00':
-            output = output + '0'
+            bin_string += '0'
         elif byte == '\x01':
-            output = output + '1'
+            bin_string += '1'
         byte = f.read(1)
+    return bin_string
+    
 
-    f.close()
-
-    # Prints the binary string
-    print "###################################"
-    print "- Output --------------------------"
-    print "###################################"
-    print output
-    print "###################################"
-
+def FindPackets(bin_stream, preamble, packet_size):
     # Find packets in the binary string (using the preamble as trigger)
     buf = str()
     packets = list()
     i = 0
-    for b in output:
+    for b in bin_stream:
         buf += b
         if len(buf) == len(preamble):
             if buf == preamble:
-                packets.append(output[i+1:(i+packet_size-len(preamble)+2)])
+                if (i+packet_size-len(preamble)) < len(bin_stream):
+                    packets.append(bin_stream[i+1:(i+packet_size-len(preamble)+1)])
             buf = buf[1:]
         i += 1
+    return packets
+    
+
+def CheckPacket(packet, sync_bytes, address, message, crc):
+    if packet[0:8] == str(bin(sync_bytes[0])[2:].zfill(8)):
+        if packet[8:16] == str(bin(sync_bytes[1])[2:].zfill(8)):
+            if packet[16:24] == str(bin(sync_bytes[2])[2:].zfill(8)):
+                if packet[24:32] == str(bin(sync_bytes[3])[2:].zfill(8)):
+                    if packet[32:40] == str(bin(address)[2:].zfill(8)):
+                        if packet[-16:] == crc:
+                            return True
+    return False
+    
+    
+def main(args):
+    path = str()
+    if len(args) == 1:
+        path = "/code/gnuradio/binData.bin"
+    else:
+        path = args[1]
+
+#****************************************************
+#-- INPUTS ------------------------------------------
+#****************************************************
+    preamble_byte       = 0xAA
+    preamble_size       = 4
+    sync_bytes          = [0x75,0x06,0x25,0x45]
+    address             = 0x39
+    message             = "FloripaSat"
+    others_bytes        = [0x00]    # If there is an additional byte, write it here
+    print_expected_pkt  = True
+    print_bin_str       = False
+    print_packets       = False
+    print_pkt_bytes     = True
+    print_statistics    = True
+    save_results        = True
+#****************************************************
+    
+    preamble        = preamble_size*str(bin(preamble_byte))[2:]
+    sync_word_size  = len(sync_bytes)
+    address_size    = 1
+    others_size     = len(others_bytes)
+    message_size    = len(message)
+    crc             = str(bin(crc16(str(address)+message))[2:].zfill(16))
+    crc_size        = len(crc)/8
+
+    packet_size = preamble_size + sync_word_size + address_size + message_size + crc_size + others_size
+    packet_size *= 8        # Bytes to bits
+
+    if print_expected_pkt:
+        print "###################################"
+        print "-- Expected Packet ----------------"
+        print "###################################"
+        print "Preamble:\t" + preamble
+        print "Sync. word:\t" + str(bin(sync_bytes[0])[2:].zfill(8)) + str(bin(sync_bytes[1])[2:].zfill(8)) + str(bin(sync_bytes[2])[2:].zfill(8)) + str(bin(sync_bytes[3])[2:].zfill(8))
+        print "Address:\t" + str(bin(address)[2:].zfill(8))
+        print "Others bytes:\t" + str(bin(others_bytes[0])[2:].zfill(8))
+        print "Message:\t" + message
+        print "CRC16:\t\t" + crc + " (" + str(crc16(str(address)+message)) + ")"
+        print "Total bytes:\t" + str(packet_size/8)
+        print "Total bits:\t" + str(packet_size)
+        print "###################################"
+
+    f = open(path, "rb")
+
+    bin_stream = Bytes2String(f)
+    #bin_stream = "10101010101010101010101010101010011101010000011000100101010001010011100100000000010001100110110001101111011100100110100101110000011000010101001101100001011101000011011000101100"
+    #bin_stream *= 5
+
+    f.close()
+
+    # Prints the binary string
+    if print_bin_str:
+        print "\n###################################"
+        print "-- Output -------------------------"
+        print "###################################"
+        print bin_stream
+        print "###################################"
+        if save_results:
+            bin_file = open("bin_stream.txt", "w")
+            bin_file.write(bin_stream)
+            bin_file.close()
+
+    packets = FindPackets(bin_stream, preamble, packet_size)
+
+    if print_packets:
+        print "\n###################################"
+        print "-- Packets -------------------------"
+        print "###################################"
+        print packets
+        print "###################################"
+        if save_results:
+            bin_pkts_file = open("bin_pkts.txt", "w")
+            pickle.dump(packets, bin_pkts_file)
+            bin_pkts_file.close()
 
     # Split packets into bytes
+    valid_packets = list()
     packet_counter = 0
-    bytes_packets = list()
-    for p in packets:
-        print "\n----------------------------------"
-        print "Packet " + str(packet_counter) + ":"
-        print "----------------------------------"
-        print "Binary\t\tHex.\tASCII"
-        print "----------------------------------"
-        i = 0
-        j = 0
-        byte = str()
-        bytes_buf = list()
-        while j < len(p):
-            byte += p[j]
-            i += 1
-            if i == 8:
-                hex_byte = hex(int(byte, 2))
-                bytes_buf.append(hex_byte)
-                ascii_char = str()
-                try:
-                    ascii_char = str(hex(int(byte,2)))[2:].decode("hex")
-                except:
-                    ascii_char = "Non char"
-                print byte + "\t" + str(hex_byte) + "\t" + ascii_char
-                byte = ""
-                i = 0
-            j += 1
-        bytes_packets.append(bytes_buf)
-        packet_counter += 1
+    if print_pkt_bytes:
+        print "\n###################################"
+        print "-- Packets (Bytes) ----------------"
+        print "###################################"
+        for p in packets:
+            print "\n----------------------------------"
+            print " Packet " + str(packet_counter) + ":"
+            print "----------------------------------"
+            print "Binary\t\tHex.\tASCII"
+            print "----------------------------------"
+            i = 0
+            j = 0
+            byte = str()
+            while j < len(p):
+                byte += p[j]
+                i += 1
+                if i == 8:
+                    hex_byte = hex(int(byte, 2))
+                    ascii_char = str()
+                    try:
+                        ascii_char = str(hex(int(byte,2)))[2:].decode("hex")
+                    except:
+                        ascii_char = "Non char"
+                    print byte + "\t" + str(hex_byte) + "\t" + ascii_char
+                    byte = ""
+                    i = 0
+                j += 1
+            print "----------------------------------"
+            if CheckPacket(p, sync_bytes, address, message, crc):
+                print "Result: Valid"
+                valid_packets.append(packet_counter)
+            else:
+                print "Result: Invalid"
+            
+            packet_counter += 1
+        print "###################################"
     
-    # Final result: Valid messages
-    for p in bytes_packets:
-        message2crc = ""
-        i = 0
-        while i < sync_word_size:
-            if p[i] != sync_bytes[i]:
-                break
-            i += 1
-        if i == sync_word_size:
-            if str(bin(p[:-2]))[2:]+str(bin(p[:-1]))[2:] == crc:
-                # It is a valid message
-                print p[sync_word_size:-3]
+    if print_statistics:
+        if not print_pkt_bytes:
+            for p in packets:
+                if CheckPacket(p, sync_bytes, address, message, crc):
+                    valid_packets.append(packet_counter)
+                packet_counter += 1
+            
+        print "\n###################################"
+        print "-- Statistics ---------------------"
+        print "###################################"
+        print "Number of packets:\t\t" + str(packet_counter)
+        print "Valid packets:\t\t\t" + str(valid_packets)
+        print "Number of valid packets:\t" + str(len(valid_packets))
+        print "Number of lost packets:\t\t" + str(packet_counter-len(valid_packets))
+        print "Lost percentage:\t\t" + str(100.0 - 100.0*len(valid_packets)/packet_counter)
+        print "###################################"
     
     return 0
 
