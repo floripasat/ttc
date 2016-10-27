@@ -69,9 +69,14 @@ def crc16(s):
                 0x8C41, 0x4400, 0x84C1, 0x8581, 0x4540, 0x8701, 0x47C0, 0x4680,
                 0x8641, 0x8201, 0x42C0, 0x4380, 0x8341, 0x4100, 0x81C1, 0x8081,
                 0x4040)
+    
     for ch in s:
-        tmp = crcValue^(ord(ch))
+        if type(s) is str:
+            tmp = crcValue^(ord(ch))
+        elif type(s) is list:
+            tmp = crcValue^(ch)
         crcValue = (crcValue >> 8)^crc16tab[(tmp & 0xFF)]
+        
     return crcValue
 
 
@@ -145,7 +150,10 @@ def main(args):
     address_size    = 1
     others_size     = len(others_bytes)
     message_size    = len(message)
-    crc             = str(bin(crc16(str(address)+message))[2:].zfill(16))
+    crc16_data = [address]
+    for c in message:
+        crc16_data.append(ord(c))
+    crc             = str(bin(crc16(crc16_data))[2:].zfill(16))
     crc_size        = len(crc)/8
 
     packet_size = preamble_size + sync_word_size + address_size + message_size + crc_size + others_size
@@ -160,7 +168,7 @@ def main(args):
         print "Address:\t" + str(bin(address)[2:].zfill(8))
         print "Others bytes:\t" + str(bin(others_bytes[0])[2:].zfill(8))
         print "Message:\t" + message
-        print "CRC16:\t\t" + crc + " (" + str(crc16(str(address)+message)) + ")"
+        print "CRC16:\t\t" + crc + " (" + str(crc16(crc16_data)) + ")"
         print "Total bytes:\t" + str(packet_size/8)
         print "Total bits:\t" + str(packet_size)
         print "###################################"
@@ -168,8 +176,6 @@ def main(args):
     f = open(path, "rb")
 
     bin_stream = Bytes2String(f)
-    #bin_stream = "10101010101010101010101010101010011101010000011000100101010001010011100100000000010001100110110001101111011100100110100101110000011000010101001101100001011101000011011000101100"
-    #bin_stream *= 5
 
     f.close()
 
@@ -252,7 +258,7 @@ def main(args):
         print "Valid packets:\t\t\t" + str(valid_packets)
         print "Number of valid packets:\t" + str(len(valid_packets))
         print "Number of lost packets:\t\t" + str(packet_counter-len(valid_packets))
-        print "Lost percentage:\t\t" + str(100.0 - 100.0*len(valid_packets)/packet_counter)
+        print "Lost percentage:\t\t" + str(100.0 - 100.0*len(valid_packets)/packet_counter) if packet_counter > 0 else "0"
         print "###################################"
     
     return 0
