@@ -1031,6 +1031,49 @@
     </param>
   </block>
   <block>
+    <key>notebook</key>
+    <param>
+      <key>alias</key>
+      <value></value>
+    </param>
+    <param>
+      <key>comment</key>
+      <value></value>
+    </param>
+    <param>
+      <key>_enabled</key>
+      <value>True</value>
+    </param>
+    <param>
+      <key>_coordinate</key>
+      <value>(744, 14)</value>
+    </param>
+    <param>
+      <key>_rotation</key>
+      <value>0</value>
+    </param>
+    <param>
+      <key>grid_pos</key>
+      <value></value>
+    </param>
+    <param>
+      <key>id</key>
+      <value>notebook_0</value>
+    </param>
+    <param>
+      <key>labels</key>
+      <value>['fft1', 'scope1']</value>
+    </param>
+    <param>
+      <key>notebook</key>
+      <value></value>
+    </param>
+    <param>
+      <key>style</key>
+      <value>wx.NB_TOP</value>
+    </param>
+  </block>
+  <block>
     <key>rtlsdr_source</key>
     <param>
       <key>alias</key>
@@ -2493,7 +2536,7 @@
     </param>
     <param>
       <key>notebook</key>
-      <value></value>
+      <value>notebook_0,0</value>
     </param>
     <param>
       <key>peak_hold</key>
@@ -2596,7 +2639,7 @@
     </param>
     <param>
       <key>notebook</key>
-      <value></value>
+      <value>notebook_0,0</value>
     </param>
     <param>
       <key>peak_hold</key>
@@ -2683,7 +2726,7 @@
     </param>
     <param>
       <key>notebook</key>
-      <value></value>
+      <value>notebook_0,1</value>
     </param>
     <param>
       <key>num_inputs</key>
