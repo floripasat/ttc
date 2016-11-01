@@ -34,50 +34,30 @@ __status__      = "Development"
 
 import pickle
 
-def crc16(s):
-    crcValue = 0x0000
-    crc16tab = (0x0000, 0xC0C1, 0xC181, 0x0140, 0xC301, 0x03C0, 0x0280,
-                0xC241, 0xC601, 0x06C0, 0x0780, 0xC741, 0x0500, 0xC5C1, 0xC481,
-                0x0440, 0xCC01, 0x0CC0, 0x0D80, 0xCD41, 0x0F00, 0xCFC1, 0xCE81,
-                0x0E40, 0x0A00, 0xCAC1, 0xCB81, 0x0B40, 0xC901, 0x09C0, 0x0880,
-                0xC841, 0xD801, 0x18C0, 0x1980, 0xD941, 0x1B00, 0xDBC1, 0xDA81,
-                0x1A40, 0x1E00, 0xDEC1, 0xDF81, 0x1F40, 0xDD01, 0x1DC0, 0x1C80,
-                0xDC41, 0x1400, 0xD4C1, 0xD581, 0x1540, 0xD701, 0x17C0, 0x1680,
-                0xD641, 0xD201, 0x12C0, 0x1380, 0xD341, 0x1100, 0xD1C1, 0xD081,
-                0x1040, 0xF001, 0x30C0, 0x3180, 0xF141, 0x3300, 0xF3C1, 0xF281,
-                0x3240, 0x3600, 0xF6C1, 0xF781, 0x3740, 0xF501, 0x35C0, 0x3480,
-                0xF441, 0x3C00, 0xFCC1, 0xFD81, 0x3D40, 0xFF01, 0x3FC0, 0x3E80,
-                0xFE41, 0xFA01, 0x3AC0, 0x3B80, 0xFB41, 0x3900, 0xF9C1, 0xF881,
-                0x3840, 0x2800, 0xE8C1, 0xE981, 0x2940, 0xEB01, 0x2BC0, 0x2A80,
-                0xEA41, 0xEE01, 0x2EC0, 0x2F80, 0xEF41, 0x2D00, 0xEDC1, 0xEC81,
-                0x2C40, 0xE401, 0x24C0, 0x2580, 0xE541, 0x2700, 0xE7C1, 0xE681,
-                0x2640, 0x2200, 0xE2C1, 0xE381, 0x2340, 0xE101, 0x21C0, 0x2080,
-                0xE041, 0xA001, 0x60C0, 0x6180, 0xA141, 0x6300, 0xA3C1, 0xA281,
-                0x6240, 0x6600, 0xA6C1, 0xA781, 0x6740, 0xA501, 0x65C0, 0x6480,
-                0xA441, 0x6C00, 0xACC1, 0xAD81, 0x6D40, 0xAF01, 0x6FC0, 0x6E80,
-                0xAE41, 0xAA01, 0x6AC0, 0x6B80, 0xAB41, 0x6900, 0xA9C1, 0xA881,
-                0x6840, 0x7800, 0xB8C1, 0xB981, 0x7940, 0xBB01, 0x7BC0, 0x7A80,
-                0xBA41, 0xBE01, 0x7EC0, 0x7F80, 0xBF41, 0x7D00, 0xBDC1, 0xBC81,
-                0x7C40, 0xB401, 0x74C0, 0x7580, 0xB541, 0x7700, 0xB7C1, 0xB681,
-                0x7640, 0x7200, 0xB2C1, 0xB381, 0x7340, 0xB101, 0x71C0, 0x7080,
-                0xB041, 0x5000, 0x90C1, 0x9181, 0x5140, 0x9301, 0x53C0, 0x5280,
-                0x9241, 0x9601, 0x56C0, 0x5780, 0x9741, 0x5500, 0x95C1, 0x9481,
-                0x5440, 0x9C01, 0x5CC0, 0x5D80, 0x9D41, 0x5F00, 0x9FC1, 0x9E81,
-                0x5E40, 0x5A00, 0x9AC1, 0x9B81, 0x5B40, 0x9901, 0x59C0, 0x5880,
-                0x9841, 0x8801, 0x48C0, 0x4980, 0x8941, 0x4B00, 0x8BC1, 0x8A81,
-                0x4A40, 0x4E00, 0x8EC1, 0x8F81, 0x4F40, 0x8D01, 0x4DC0, 0x4C80,
-                0x8C41, 0x4400, 0x84C1, 0x8581, 0x4540, 0x8701, 0x47C0, 0x4680,
-                0x8641, 0x8201, 0x42C0, 0x4380, 0x8341, 0x4100, 0x81C1, 0x8081,
-                0x4040)
+
+def crc16(poly, initial_value, data):
+    table = list()
+    for i in range(256):
+        crc_t = 0
+        c = i
+        c = c << 8
+        for j in range(8):
+            if (crc_t ^ c) & 0x8000:
+                crc_t = (crc_t << 1) ^ poly
+            else:
+                crc_t = crc_t << 1
+            c = c << 1
+        table.append(crc_t)
     
-    for ch in s:
-        if type(s) is str:
-            tmp = crcValue^(ord(ch))
-        elif type(s) is list:
-            tmp = crcValue^(ch)
-        crcValue = (crcValue >> 8)^crc16tab[(tmp & 0xFF)]
-        
-    return crcValue
+    crc = initial_value
+    for c in data:
+        if type(data) is str:
+            c = ord(c)
+        cc = 0xFF & c
+        tmp = (crc >> 8) ^ cc
+        crc = (crc << 8) ^ table[tmp & 0xFF]
+        crc = crc & 0xFFFF
+    return crc
 
 
 def Bytes2String(f):
@@ -111,20 +91,22 @@ def FindPackets(bin_stream, preamble, packet_size):
     
 
 def CheckPacket(packet, sync_bytes, address, message, crc):
-    if packet[0:8] == str(bin(sync_bytes[0])[2:].zfill(8)):
-        if packet[8:16] == str(bin(sync_bytes[1])[2:].zfill(8)):
-            if packet[16:24] == str(bin(sync_bytes[2])[2:].zfill(8)):
-                if packet[24:32] == str(bin(sync_bytes[3])[2:].zfill(8)):
-                    if packet[32:40] == str(bin(address)[2:].zfill(8)):
-                        if packet[-16:] == crc:
-                            return True
-    return False
+    i = 0
+    for sb in sync_bytes:
+        if packet[i:i+8] != str(bin(sb)[2:].zfill(8)):
+            break
+        i += 8
+    if i == 8*len(sync_bytes):
+        if packet[-16:] == crc:
+            return True
+    else:
+        return False
     
     
 def main(args):
     path = str()
     if len(args) == 1:
-        path = "/code/gnuradio/binData.bin"
+        path = "/code/gnuradio/bin_data.bin"
     else:
         path = args[1]
 
@@ -135,25 +117,33 @@ def main(args):
     preamble_size       = 4
     sync_bytes          = [0x75,0x06,0x25,0x45]
     address             = 0x39
-    message             = "FloripaSat"
-    others_bytes        = [0x00]    # If there is an additional byte, write it here
+    message             = "FloripaSat"  # String or list of bytes
+    others_bytes        = [0x00]        # If there is an additional byte, write it here (Only bytes after the address or before the message)
+    crc_polynomial      = 0x8005        # x^16 + x^15 + x^2 + 1
+    crc_initial_value   = 0xFFFF
     print_expected_pkt  = True
     print_bin_str       = False
     print_packets       = False
     print_pkt_bytes     = True
     print_statistics    = True
-    save_results        = True
+    save_results        = False
 #****************************************************
-    
+
     preamble        = preamble_size*str(bin(preamble_byte))[2:]
     sync_word_size  = len(sync_bytes)
     address_size    = 1
     others_size     = len(others_bytes)
     message_size    = len(message)
+    
     crc16_data = [address]
+    for b in others_bytes:
+        crc16_data.append(b)
     for c in message:
-        crc16_data.append(ord(c))
-    crc             = str(bin(crc16(crc16_data))[2:].zfill(16))
+        if type(message) is str:
+            crc16_data.append(ord(c))   # Message as a string
+        elif type(message) is list:
+            crc16_data.append(c)        # Message as a list of bytes
+    crc             = str(bin(crc16(crc_polynomial, crc_initial_value, crc16_data))[2:].zfill(16))
     crc_size        = len(crc)/8
 
     packet_size = preamble_size + sync_word_size + address_size + message_size + crc_size + others_size
@@ -166,9 +156,17 @@ def main(args):
         print "Preamble:\t" + preamble
         print "Sync. word:\t" + str(bin(sync_bytes[0])[2:].zfill(8)) + str(bin(sync_bytes[1])[2:].zfill(8)) + str(bin(sync_bytes[2])[2:].zfill(8)) + str(bin(sync_bytes[3])[2:].zfill(8))
         print "Address:\t" + str(bin(address)[2:].zfill(8))
-        print "Others bytes:\t" + str(bin(others_bytes[0])[2:].zfill(8))
-        print "Message:\t" + message
-        print "CRC16:\t\t" + crc + " (" + str(crc16(crc16_data)) + ")"
+        ob_str = ""
+        for ob in others_bytes:
+            ob_str += str(bin(ob)[2:].zfill(8))
+        print "Others bytes:\t" + ob_str
+        msg = ""
+        if type(message) is str:
+            msg = message
+        elif type(message) is list:
+            msg = str(message)
+        print "Message:\t" + msg
+        print "CRC16:\t\t" + crc + " (" + str(crc16(crc_polynomial, crc_initial_value, crc16_data)) + ")"
         print "Total bytes:\t" + str(packet_size/8)
         print "Total bits:\t" + str(packet_size)
         print "###################################"
@@ -193,6 +191,7 @@ def main(args):
 
     packets = FindPackets(bin_stream, preamble, packet_size)
 
+    # Prints the binary packets
     if print_packets:
         print "\n###################################"
         print "-- Packets -------------------------"
