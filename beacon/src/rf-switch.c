@@ -38,10 +38,6 @@
 #include "../inc/rf-switch.h"
 #include "../driverlib/driverlib.h"
 
-#if DEBUG_MODE == true
-#include "../inc/debug.h"
-#endif // DEBUG_MODE
-
 void rf_switch_Init()
 {
 #if DEBUG_MODE == true

@@ -38,10 +38,6 @@
 #include "../inc/uart-eps.h"
 #include "../driverlib/driverlib.h"
 
-#if DEBUG_MODE == true
-#include "../inc/debug.h"
-#endif // DEBUG_MODE
-
 uint8_t eps_UART_Init()
 {
 #if DEBUG_MODE == true

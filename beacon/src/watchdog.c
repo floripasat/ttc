@@ -40,8 +40,8 @@
 
 void watchdog_Init()
 {
-    // Watchdog initialization (2 sec. counter and watchdog mode)
-    WDT_A_initWatchdogTimer(WDT_A_BASE, WDT_A_CLOCKSOURCE_SMCLK, WDT_A_CLOCKDIVIDER_512);
+    // Watchdog initialization (3 sec. counter and watchdog mode)
+    WDT_A_initWatchdogTimer(WDT_A_BASE, WDT_A_CLOCKSOURCE_ACLK, WDT_A_CLOCKDIVIDER_32K);
     
     // Start counter
     WDT_A_start(WDT_A_BASE);

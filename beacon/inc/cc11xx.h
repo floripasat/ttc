@@ -41,10 +41,7 @@
 
 #include "../driverlib/driverlib.h"
 #include <stdint.h>
-
-#ifndef DEBUG_MODE
-#define DEBUG_MODE true
-#endif // DEBUG_MODE
+#include "debug.h"
 
 /**
  * \defgroup pins CC1175 pins

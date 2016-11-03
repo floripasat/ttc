@@ -40,10 +40,7 @@
 #define RF6886_H_
 
 #include <stdint.h>
-
-#ifndef DEBUG_MODE
-#define DEBUG_MODE true
-#endif // DEBUG_MODE
+#include "debug.h"
 
 // P1.1 = ENE_3V3_PA_BEACON
 #define ENE_3V3_PA_PORT     GPIO_PORT_P1    /**< Port 1 = ENE_3V3_PA_BEACON */

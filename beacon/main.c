@@ -41,15 +41,7 @@
 
 #include "driverlib/driverlib.h"
 
-#define F_CPU 4000000               /**< Clock frequency of the MCU. */
-
-// Turn on/off debug mode
-#define DEBUG_MODE true             /**< Debug mode flag. */
-
-#if DEBUG_MODE == true
 #include "inc/debug.h"
-#endif // DEBUG_MODE
-
 #include "inc/watchdog.h"
 #include "inc/led.h"
 #include "inc/cc11xx.h"
@@ -59,7 +51,7 @@
 #include "inc/antenna.h"
 #include "inc/delay.h"
 
-#define ADDRESS     "9"             /**< Address byte ('9' = 0x39). */
+#define ADDRESS     0x17            /**< Address byte. */
 #define TX_MESSAGE  "FloripaSat"    /**< Message to transmit. */
 
 /**
@@ -94,7 +86,7 @@ void main()
     while(eps_UART_Init() != STATUS_SUCCESS)
     {
         // Blinking system LED if something is wrong
-        led_Blink(4000);
+        led_Blink(1000);
     }
     
     // Antenna deployment
@@ -110,7 +102,7 @@ void main()
     while(rf6886_Init() != STATUS_SUCCESS)
     {
         // Blinking system LED if something is wrong
-        led_Blink(3000);
+        led_Blink(1000);
     }
     rf_switch_Init();
 
@@ -119,7 +111,7 @@ void main()
     rf_switch_Enable();
 
     // Data to send
-    uint8_t address[] = ADDRESS;
+    uint8_t address = ADDRESS;
     uint8_t tx_buffer[] = TX_MESSAGE;
 
     // Infinite loop
@@ -133,8 +125,8 @@ void main()
         cc11xx_CmdStrobe(CC11XX_SFTX);
 
         // Write packet to TX FIFO
-        cc11xx_WriteTXFIFO(address, sizeof(address));        // The first byte written to the TXFIFO should be the address
-        cc11xx_WriteTXFIFO(tx_buffer, sizeof(tx_buffer));
+        cc11xx_WriteTXFIFO(&address, 1);                        // The first byte written to the TXFIFO should be the address
+        cc11xx_WriteTXFIFO(tx_buffer, sizeof(tx_buffer)-1);     // -1 = '\0'
 
         // Enable TX (Command strobe)
         cc11xx_CmdStrobe(CC11XX_STX);

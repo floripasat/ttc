@@ -41,9 +41,8 @@
 
 #include <stdint.h>
 
-#ifndef DEBUG_MODE
-#define DEBUG_MODE true
-#endif // DEBUG_MODE
+// Turn on/off debug mode
+#define DEBUG_MODE false                    /**< Debug mode flag. */
 
 #define DEBUG_UART_PORT     GPIO_PORT_P8    /**< Debug UART port = P8 */
 #define DEBUG_UART_TX_PIN   GPIO_PIN2       /**< UART TX pin = P8.2 (USCI_A1_TX_BEACON) */

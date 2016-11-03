@@ -39,7 +39,6 @@
 #define CC11XX_FLORIPASAT_REG_CONFIG_H_
 
 #include <stdint.h>
-
 #include "cc11xx.h"
 
 /**
@@ -76,10 +75,10 @@ static const RegistersSettings reg_values[] =
     {CC11XX_IOCFG2,             0x06},
     {CC11XX_IOCFG1,             0xB0},
     {CC11XX_IOCFG0,             0x40},
-    {CC11XX_SYNC3,              0x75},      // Sync word [31:24]
-    {CC11XX_SYNC2,              0x06},      // Sync word [23:16]
-    {CC11XX_SYNC1,              0x25},      // Sync word [15:8]
-    {CC11XX_SYNC0,              0x45},      // Sync word [7:0]
+    {CC11XX_SYNC3,              0x04},      // Sync word [31:24]
+    {CC11XX_SYNC2,              0x08},      // Sync word [23:16]
+    {CC11XX_SYNC1,              0x0F},      // Sync word [15:8]
+    {CC11XX_SYNC0,              0x10},      // Sync word [7:0]
     {CC11XX_SYNC_CFG1,          0x0B},
     {CC11XX_SYNC_CFG0,          0x17},      // Bit error qualifier disabled. No check on bit errors; 32 bits sync word 
     {CC11XX_MODCFG_DEV_E,       0x0B},      // MOD_FORMAT = 001 (2-GFSK)
@@ -98,7 +97,6 @@ static const RegistersSettings reg_values[] =
     {CC11XX_PKT_CFG2,           0x00},      // PKT_FORMAT = 00 (FIFO mode)
     {CC11XX_PKT_CFG1,           0x04},      // CRC calculation in TX mode and CRC check in RX mode enabled. CRC16(X 16 +X 15 +X 2 +1). Initialized to 0xFFFF
     {CC11XX_PKT_CFG0,           0x00},
-//    {CC11XX_PA_CFG2,            0x39},      // PA_POWER_RAMP = 0x39 (10 dBm)
     {CC11XX_PA_CFG0,            0x7E},
     {CC11XX_PKT_LEN,            0x0B},      // "FloripaSat" = 10 bytes -> Total = 10 + 1 (Adr. byte) = 0x0B
     {CC11XX_IF_MIX_CFG,         0x00},

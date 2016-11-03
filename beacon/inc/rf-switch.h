@@ -61,9 +61,7 @@
 #ifndef RF_SWITCH_H_
 #define RF_SWITCH_H_
 
-#ifndef DEBUG_MODE
-#define DEBUG_MODE true
-#endif // DEBUG_MODE
+#include "debug.h"
 
 // P5.5 = CTRL_RF_SWT_BEACON
 #define RF_SWT_CONTROL_PORT     GPIO_PORT_P5

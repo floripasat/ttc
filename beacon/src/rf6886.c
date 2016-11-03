@@ -38,10 +38,6 @@
 #include "../inc/rf6886.h"
 #include "../driverlib/driverlib.h"
 
-#if DEBUG_MODE == true
-#include "../inc/debug.h"
-#endif // DEBUG_MODE
-
 uint8_t rf6886_Init()
 {
 #if DEBUG_MODE == true
@@ -145,7 +141,7 @@ void rf6886_SetGain(uint8_t gain)
 
     rf6886_SetVreg(3.1);
     
-#ifdef DEBUG_MODE == true
+#if DEBUG_MODE == true
     debug_PrintMsg("End of rf6886_SetGain()\n");
 #endif // DEBUG_MODE
 }
