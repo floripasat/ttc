@@ -115,10 +115,9 @@ def main(args):
 #****************************************************
     preamble_byte       = 0xAA
     preamble_size       = 4
-    sync_bytes          = [0x75,0x06,0x25,0x45]
-    address             = 0x39
+    sync_bytes          = [0x04,0x08,0x0F,0x10]
+    address             = 0x17
     message             = "FloripaSat"  # String or list of bytes
-    others_bytes        = [0x00]        # If there is an additional byte, write it here (Only bytes after the address or before the message)
     crc_polynomial      = 0x8005        # x^16 + x^15 + x^2 + 1
     crc_initial_value   = 0xFFFF
     print_expected_pkt  = True
@@ -132,12 +131,9 @@ def main(args):
     preamble        = preamble_size*str(bin(preamble_byte))[2:]
     sync_word_size  = len(sync_bytes)
     address_size    = 1
-    others_size     = len(others_bytes)
     message_size    = len(message)
     
     crc16_data = [address]
-    for b in others_bytes:
-        crc16_data.append(b)
     for c in message:
         if type(message) is str:
             crc16_data.append(ord(c))   # Message as a string
@@ -146,7 +142,7 @@ def main(args):
     crc             = str(bin(crc16(crc_polynomial, crc_initial_value, crc16_data))[2:].zfill(16))
     crc_size        = len(crc)/8
 
-    packet_size = preamble_size + sync_word_size + address_size + message_size + crc_size + others_size
+    packet_size = preamble_size + sync_word_size + address_size + message_size + crc_size
     packet_size *= 8        # Bytes to bits
 
     if print_expected_pkt:
@@ -156,10 +152,6 @@ def main(args):
         print "Preamble:\t" + preamble
         print "Sync. word:\t" + str(bin(sync_bytes[0])[2:].zfill(8)) + str(bin(sync_bytes[1])[2:].zfill(8)) + str(bin(sync_bytes[2])[2:].zfill(8)) + str(bin(sync_bytes[3])[2:].zfill(8))
         print "Address:\t" + str(bin(address)[2:].zfill(8))
-        ob_str = ""
-        for ob in others_bytes:
-            ob_str += str(bin(ob)[2:].zfill(8))
-        print "Others bytes:\t" + ob_str
         msg = ""
         if type(message) is str:
             msg = message
