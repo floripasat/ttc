@@ -54,6 +54,16 @@
 #define ADDRESS     0x17            /**< Address byte. */
 #define TX_MESSAGE  "FloripaSat"    /**< Message to transmit. */
 
+#define START_OF_DATA       0x7E
+#define END_OF_DATA         0x98
+
+// UART-EPS interruption variables
+uint8_t received_byte = 0;
+uint8_t received_data[10];
+uint8_t data_counter = 0;
+uint8_t data_ready = 0;
+uint8_t receiving = 0;
+
 /**
  * \fn main
  * 
@@ -133,6 +143,62 @@ void main()
 
         // Heartbeat
         led_Blink(100);
+    }
+}
+
+/**
+ * \fn USCI_A0_ISR
+ *
+ * \brief This is the USCI_A0 interrupt vector service routine.
+ *
+ * UART RX interruption routine.
+ *
+ * \return none
+ */
+#if defined(__TI_COMPILER_VERSION__) || defined(__IAR_SYSTEMS_ICC__)
+#pragma vector=USCI_A0_VECTOR
+__interrupt
+#elif defined(__GNUC__)
+__attribute__((interrupt(USCI_A0_VECTOR)))
+#endif
+void USCI_A0_ISR()
+{
+    switch(__even_in_range(UCA0IV, 4))
+    {
+        // Vector 2 - RXIFG
+        case 2:
+            received_byte = USCI_A_UART_receiveData(USCI_A0_BASE);
+
+            switch(received_byte)
+            {
+                case START_OF_DATA:
+                    receiving = 1;
+                    data_counter = 0;
+                    received_data[data_counter] = received_byte;
+                    data_counter++;
+                    data_ready = 0;
+                    break;
+                case END_OF_DATA:
+                    if (receiving)
+                    {
+                        received_data[data_counter] = received_byte;
+                        data_counter++;
+                        receiving  = 0;
+                        data_ready = 1;
+                    }
+                    break;
+                default:
+                    if (receiving)
+                    {
+                        received_data[data_counter] = received_byte;
+                        data_counter++;
+                    }
+                    break;
+            }
+
+            break;
+        default:
+            break;
     }
 }
 
