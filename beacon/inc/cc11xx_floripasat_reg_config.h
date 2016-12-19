@@ -95,10 +95,10 @@ static const RegistersSettings reg_values[] =
     {CC11XX_FIFO_CFG,           0x00},
     {CC11XX_FS_CFG,             0x14},
     {CC11XX_PKT_CFG2,           0x00},      // PKT_FORMAT = 00 (FIFO mode)
-    {CC11XX_PKT_CFG1,           0x04},      // CRC calculation in TX mode and CRC check in RX mode enabled. CRC16(X 16 +X 15 +X 2 +1). Initialized to 0xFFFF
+    {CC11XX_PKT_CFG1,           0x00},      // CRC disabled for TX and RX
     {CC11XX_PKT_CFG0,           0x00},
     {CC11XX_PA_CFG0,            0x7E},
-    {CC11XX_PKT_LEN,            0x0B},      // "FloripaSat" = 10 bytes -> Total = 10 + 1 (Adr. byte) = 0x0B
+    {CC11XX_PKT_LEN,            0x1E},      // AX25 header + "FLORIPASAT" = 0x1E
     {CC11XX_IF_MIX_CFG,         0x00},
     {CC11XX_FREQOFF_CFG,        0x22},
     {CC11XX_FREQ2,              0x6D},

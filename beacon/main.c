@@ -50,9 +50,9 @@
 #include "inc/uart-eps.h"
 #include "inc/antenna.h"
 #include "inc/delay.h"
+#include "inc/ax25.h"
 
-#define ADDRESS     0x17            /**< Address byte. */
-#define TX_MESSAGE  "FloripaSat"    /**< Message to transmit. */
+#define BEACON_MESSAGE      "FLORIPASAT"    /**< Message to transmit. */
 
 #define START_OF_DATA       0x7E
 #define END_OF_DATA         0x98
@@ -121,8 +121,12 @@ void main()
     rf_switch_Enable();
 
     // Data to send
-    uint8_t address = ADDRESS;
-    uint8_t tx_buffer[] = TX_MESSAGE;
+    AX25_Packet ax25_packet;
+    uint8_t data[] = BEACON_MESSAGE;
+    uint8_t str_packet[20 + sizeof(data)-1];       // 20 = size of the AX25 header
+    
+    ax25_BeaconPacketGen(&ax25_packet, data, sizeof(data)-1);       // -1 = '\0'
+    ax25_Packet2String(&ax25_packet, str_packet, sizeof(data)-1);   // -1 = '\0'
 
     // Infinite loop
     while(1)
@@ -135,8 +139,7 @@ void main()
         cc11xx_CmdStrobe(CC11XX_SFTX);
 
         // Write packet to TX FIFO
-        cc11xx_WriteTXFIFO(&address, 1);                        // The first byte written to the TXFIFO should be the address
-        cc11xx_WriteTXFIFO(tx_buffer, sizeof(tx_buffer)-1);     // -1 = '\0'
+        cc11xx_WriteTXFIFO(str_packet, sizeof(str_packet)-1);   // -1 = '\0'
 
         // Enable TX (Command strobe)
         cc11xx_CmdStrobe(CC11XX_STX);

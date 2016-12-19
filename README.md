@@ -39,7 +39,8 @@ The step-by-step operation of the beacon is described bellow:
 4. CC1175 calibration (In agree with ["CC112X, CC1175 Silicon Errata"](http://www.ti.com/lit/er/swrz039d/swrz039d.pdf))
 5. RF switch selection (beacon transmition)
 6. RF power amplifier (PA) activation by setting the gain
-8. Test message transmition ("FloripaSat")
+7. AX25 packet generation (With the message "FLORIPASAT")
+8. Continuous message transmition
 
 ### Debug mode
 
@@ -57,15 +58,20 @@ As a serial port monitor, the following softwares can be used:
 
 ## Dataframe
 
+The protocol used by the beacon is the [AX25](http://www.ax25.net/).
+Every packet transmitted by the beacon is composed by the preamble and the sync. word (Added by the hardware of the radio), plus the generated packet by the AX25 protocol.
+
 * Preamble      = 4*0xAA
 * Sync. word    = 0x04, 0x08, 0x0F, 0x10
-* Address byte  = 0x17
-* Message or data
-* CRC16 (X^16 + X^15 +X^2 +1), initialized to 0xFFFF (calculated from address + message)
-* Packet        = Preamble + Sync. word + Address + Message + CRC16
+* AX25 packet
+* Packet        = Preamble + Sync. word + AX25 packet
 
-Example of packet (Message = "FloripaSat"):
-* Hex.: 0xAA 0xAA 0xAA 0xAA 0x04 0x08 0x0F 0x10 0x17 0x46 0x6C 0x6F 0x72 0x69 0x70 0x61 0x53 0x61 0x74 0x18 0xA0
+AX25 frame:
+* AX25 source callsign      = PY0EFS
+* AX25 destination callsign = PY0EFS
+
+Example of packet (Message = "FLORIPASAT"):
+* Hex.: 0xAA 0xAA 0xAA 0xAA 0x04 0x08 0x0F 0x10 0x7E 0xA0 0xB2 0x60 0x8A 0x8C 0xA6 0xE0 0xA0 0xB2 0x60 0x8A 0x8C 0xA6 0x62 0x03 0xF0 0x46 0x4C 0x4F 0x52 0x49 0x50 0x41 0x54 0x42 0xF0 0x7E
 
 ## References
 
