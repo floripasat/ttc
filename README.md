@@ -16,7 +16,7 @@ Main characteristics of the beacon submodule:
 * The MCU used in this module is the [MSP430F6659](http://www.ti.com/product/MSP430F6659).
 * The transmitter is the [CC1175](http://www.ti.com/product/CC1175).
 * All MCU peripherals are controlled with the ["MSP Driver Library"](http://www.ti.com/tool/mspdriverlib) library, also know as ["DriverLib"](http://www.ti.com/tool/mspdriverlib).
-* All software was developed in the [Code Composer Studio IDE](http://www.ti.com/tool/ccstudio) (version 6.1.3).
+* All software was developed in the [Code Composer Studio IDE](http://www.ti.com/tool/ccstudio) (version 6.2).
 
 ## CC1175 configuration
 
@@ -67,8 +67,8 @@ Every packet transmitted by the beacon is composed by the preamble and the sync.
 * Packet        = Preamble + Sync. word + AX25 packet
 
 AX25 frame:
-* AX25 source callsign      = PY0EFS
-* AX25 destination callsign = PY0EFS
+* AX25 source callsign      = PY0EFS (Just for tests)
+* AX25 destination callsign = PY0EFS (Just for tests)
 
 Example of packet (Message = "FLORIPASAT"):
 * Hex.: 0xAA 0xAA 0xAA 0xAA 0x04 0x08 0x0F 0x10 0x7E 0xA0 0xB2 0x60 0x8A 0x8C 0xA6 0xE0 0xA0 0xB2 0x60 0x8A 0x8C 0xA6 0x62 0x03 0xF0 0x46 0x4C 0x4F 0x52 0x49 0x50 0x41 0x54 0x42 0xF0 0x7E
