@@ -2,9 +2,9 @@
 # -*- coding: utf-8 -*-
 
 #
-# bin2bin.py
+# ax25-decod.py
 #
-# Copyright (C) 2016, Universidade Federal de Santa Catarina
+# Copyright (C) 2017, Universidade Federal de Santa Catarina
 # 
 # This file is part of FloripaSat-TTC.
 # 
@@ -25,7 +25,7 @@
 
 __author__      = "Gabriel Mariano Marcelino"
 __copyright__   = "gabriel.mm8@gmail.com"
-__credits__     = ["Gabriel Mariano Marcelino","Ruan Molgero"]
+__credits__     = ["Gabriel Mariano Marcelino"]
 __license__     = "GPL3"
 __version__     = "1.0-dev"
 __maintaner__   = "Gabriel Mariano Marcelino"
@@ -74,53 +74,61 @@ def Bytes2String(f):
     return bin_string
     
 
-def FindPackets(bin_stream, preamble, packet_size):
-    # Find packets in the binary string (using the preamble as trigger)
-    buf = str()
-    packets = list()
-    i = 0
+def FindPackets(bin_stream, bin_sync_word):
+    # Find packets in the binary string (using the sync. word as trigger)
+    sync_word_buf   = str()
+    get_pkt         = False
+    byte_buf        = str()
+    pkt_buf         = str()
+    packets         = list()
     for b in bin_stream:
-        buf += b
-        if len(buf) == len(preamble):
-            if buf == preamble:
-                if (i+packet_size-len(preamble)) < len(bin_stream):
-                    packets.append(bin_stream[i+1:(i+packet_size-len(preamble)+1)])
-            buf = buf[1:]
-        i += 1
+        if get_pkt:
+            byte_buf += b
+            pkt_buf += b
+            if len(byte_buf) == 8:
+                if byte_buf == "01111110":
+                    if len(pkt_buf) >= 28*8:    # TODO: Implement Bit Stuffing <<<<<<<<<<<<<<<
+                        packets.append(pkt_buf)
+                        pkt_buf = ""
+                        get_pkt = False
+                byte_buf = byte_buf[1:]
+        sync_word_buf += b
+        if len(sync_word_buf) == len(bin_sync_word):
+            if sync_word_buf == bin_sync_word:
+                get_pkt = True
+                pkt_buf = ""
+                byte_buf = ""
+            sync_word_buf = sync_word_buf[1:]
     return packets
     
 
-def CheckPacket(packet, sync_bytes, address, message, crc):
-    i = 0
-    for sb in sync_bytes:
-        if packet[i:i+8] != str(bin(sb)[2:].zfill(8)):
-            break
-        i += 8
-    if i == 8*len(sync_bytes):
-        if packet[-16:] == crc:
+def CheckPacket(packet):
+    if len(packet) >= 29*8:
+        pkt = packet[17*8:-24]
+        pkt_bytes = list()
+        for i in xrange(0, len(pkt), 8):
+            pkt_bytes.append(int(pkt[i:i+8], 2))
+        if packet[-24:-8] == str(bin(crc16(0x1021, 0x0000, pkt_bytes))[2:].zfill(16)):
             return True
+        else:
+            return False
     else:
         return False
     
-    
+
 def main(args):
     path = str()
     if len(args) == 1:
         path = "/code/gnuradio/bin_data.bin"
     else:
         path = args[1]
-
+    
 #****************************************************
 #-- INPUTS ------------------------------------------
 #****************************************************
     preamble_byte       = 0xAA
     preamble_size       = 4
     sync_bytes          = [0x04,0x08,0x0F,0x10]
-    address             = 0x17
-    message             = "FloripaSat"  # String or list of bytes
-    crc_polynomial      = 0x8005        # x^16 + x^15 + x^2 + 1
-    crc_initial_value   = 0xFFFF
-    print_expected_pkt  = True
     print_bin_str       = False
     print_packets       = False
     print_pkt_bytes     = True
@@ -129,46 +137,14 @@ def main(args):
 #****************************************************
 
     preamble        = preamble_size*str(bin(preamble_byte))[2:]
-    sync_word_size  = len(sync_bytes)
-    address_size    = 1
-    message_size    = len(message)
-    
-    crc16_data = [address]
-    for c in message:
-        if type(message) is str:
-            crc16_data.append(ord(c))   # Message as a string
-        elif type(message) is list:
-            crc16_data.append(c)        # Message as a list of bytes
-    crc             = str(bin(crc16(crc_polynomial, crc_initial_value, crc16_data))[2:].zfill(16))
-    crc_size        = len(crc)/8
-
-    packet_size = preamble_size + sync_word_size + address_size + message_size + crc_size
-    packet_size *= 8        # Bytes to bits
-
-    if print_expected_pkt:
-        print "###################################"
-        print "-- Expected Packet ----------------"
-        print "###################################"
-        print "Preamble:\t" + preamble
-        print "Sync. word:\t" + str(bin(sync_bytes[0])[2:].zfill(8)) + str(bin(sync_bytes[1])[2:].zfill(8)) + str(bin(sync_bytes[2])[2:].zfill(8)) + str(bin(sync_bytes[3])[2:].zfill(8))
-        print "Address:\t" + str(bin(address)[2:].zfill(8))
-        msg = ""
-        if type(message) is str:
-            msg = message
-        elif type(message) is list:
-            msg = str(message)
-        print "Message:\t" + msg
-        print "CRC16:\t\t" + crc + " (" + str(crc16(crc_polynomial, crc_initial_value, crc16_data)) + ")"
-        print "Total bytes:\t" + str(packet_size/8)
-        print "Total bits:\t" + str(packet_size)
-        print "###################################"
+    sync_word       = str()
+    for i in sync_bytes:
+        sync_word += str(bin(i)[2:].zfill(8))
 
     f = open(path, "rb")
-
     bin_stream = Bytes2String(f)
-
     f.close()
-
+    
     # Prints the binary string
     if print_bin_str:
         print "\n###################################"
@@ -181,20 +157,20 @@ def main(args):
             bin_file.write(bin_stream)
             bin_file.close()
 
-    packets = FindPackets(bin_stream, preamble, packet_size)
+    packets = FindPackets(bin_stream, sync_word)
 
     # Prints the binary packets
     if print_packets:
-        print "\n###################################"
+        print "\n####################################"
         print "-- Packets -------------------------"
-        print "###################################"
+        print "####################################"
         print packets
         print "###################################"
         if save_results:
             bin_pkts_file = open("bin_pkts.txt", "w")
             pickle.dump(packets, bin_pkts_file)
             bin_pkts_file.close()
-
+    
     # Split packets into bytes
     valid_packets = list()
     packet_counter = 0
@@ -226,7 +202,7 @@ def main(args):
                     i = 0
                 j += 1
             print "----------------------------------"
-            if CheckPacket(p, sync_bytes, address, message, crc):
+            if CheckPacket(p):
                 print "Result: Valid"
                 valid_packets.append(packet_counter)
             else:
@@ -238,7 +214,7 @@ def main(args):
     if print_statistics:
         if not print_pkt_bytes:
             for p in packets:
-                if CheckPacket(p, sync_bytes, address, message, crc):
+                if CheckPacket(p):
                     valid_packets.append(packet_counter)
                 packet_counter += 1
             
