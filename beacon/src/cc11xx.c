@@ -39,17 +39,16 @@
 #include "../inc/cc11xx_floripasat_reg_config.h"
 #include "../inc/led.h"
 
-void cc11xx_Init()
+uint8_t cc11xx_Init()
 {
 #if DEBUG_MODE == true
     debug_PrintMsg("cc11xx_Init()");
 #endif // DEBUG_MODE
 
     // SPI initialization
-    while(cc11xx_SPI_Init() != STATUS_SUCCESS)
+    if (cc11xx_SPI_Init() != STATUS_SUCCESS)
     {
-        // Blinking system LED if something is wrong
-        led_Blink(1000);
+        return STATUS_FAIL;
     }
 
     // Reset pin init.
@@ -72,6 +71,8 @@ void cc11xx_Init()
     cc11xx_ManualReset();
 
     cc11xx_RegConfig();
+    
+    return STATUS_SUCCESS;
     
 #if DEBUG_MODE == true
     debug_PrintMsg("End of cc11xx_Init()\n");

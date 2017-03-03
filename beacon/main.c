@@ -51,18 +51,13 @@
 #include "inc/antenna.h"
 #include "inc/delay.h"
 #include "inc/ax25.h"
-
-#define BEACON_MESSAGE      "FLORIPASAT"    /**< Message to transmit. */
-
-#define START_OF_DATA       0x7E
-#define END_OF_DATA         0x98
+#include "inc/pkt_payload.h"
 
 // UART-EPS interruption variables
-uint8_t received_byte = 0;
-uint8_t received_data[10];
-uint8_t data_counter = 0;
-uint8_t data_ready = 0;
-uint8_t receiving = 0;
+uint8_t eps_uart_received_byte  = 0x00;
+uint8_t eps_uart_byte_counter   = 0x00;
+uint8_t eps_data_buffer[5]      = {0xFF, 0xFF, 0xFF, 0xFF};
+uint8_t eps_data[5]             = {0xFF, 0xFF, 0xFF, 0xFF};
 
 /**
  * \fn main
@@ -85,67 +80,89 @@ void main()
     // UART for debug
     while(debug_Init() != STATUS_SUCCESS)
     {
-        // Blinking system LED if something is wrong
-        led_Blink(1000);
+        
     }
 #else
     watchdog_Init();
 #endif // DEBUG_MODE
     
+    // Antenna initialization
+    while(antenna_Init() != STATUS_SUCCESS)
+    {
+        
+    }
+    
+    // Verify if the antenna is released
+    if (!antenna_IsReleased())
+    {
+        // Wait 45 minutes
+        antenna_Release();
+    }
+    
     // UART for EPS data
     while(eps_UART_Init() != STATUS_SUCCESS)
     {
-        // Blinking system LED if something is wrong
-        led_Blink(1000);
+        
     }
     
-    // Antenna deployment
-    antenna_Init();
-    
     // Radio initialization
-    cc11xx_Init();
-
+    while(cc11xx_Init() != STATUS_SUCCESS)
+    {
+        
+    }
+ 
     // Calibrate radio (See "CC112X, CC1175 Silicon Errata")
     cc11xx_ManualCalibration();
- 
+    
     // Beacon PA initialization
     while(rf6886_Init() != STATUS_SUCCESS)
     {
-        // Blinking system LED if something is wrong
-        led_Blink(1000);
+        
     }
+    
+    // RF switch initialization
     rf_switch_Init();
 
-    rf6886_Enable();
     rf6886_SetVreg(3.1);            // DAC output = 3,1V
-    rf_switch_Enable();
 
     // Data to send
     AX25_Packet ax25_packet;
-    uint8_t data[] = BEACON_MESSAGE;
-    uint8_t str_packet[20 + sizeof(data)-1];       // 20 = size of the AX25 header
-    
-    ax25_BeaconPacketGen(&ax25_packet, data, sizeof(data)-1);       // -1 = '\0'
-    ax25_Packet2String(&ax25_packet, str_packet, sizeof(data)-1);   // -1 = '\0'
+    uint8_t pkt_payload[pkt_payload_GetSize(eps_data) + 1];
+    uint8_t str_packet[AX25_FLORIPASAT_HEADER_SIZE + sizeof(pkt_payload)];
 
     // Infinite loop
     while(1)
     {
+        led_Enable();       // Heartbeat
 #if DEBUG_MODE == false
         WDT_A_resetTimer(WDT_A_BASE);
 #endif // DEBUG_MODE
-
+        
+        pkt_payload_gen(pkt_payload, eps_data);
+        ax25_BeaconPacketGen(&ax25_packet, pkt_payload, sizeof(pkt_payload)-1);
+        ax25_Packet2String(&ax25_packet, pkt_payload, sizeof(pkt_payload)-1);
+        
         // Flush the TX FIFO
         cc11xx_CmdStrobe(CC11XX_SFTX);
+        
+        // Enable the switch and the PA
+        rf6886_Enable();
+        rf_switch_Enable();
 
         // Write packet to TX FIFO
-        cc11xx_WriteTXFIFO(str_packet, sizeof(str_packet)-1);   // -1 = '\0'
+        cc11xx_WriteTXFIFO(str_packet, sizeof(str_packet)-1);
 
         // Enable TX (Command strobe)
         cc11xx_CmdStrobe(CC11XX_STX);
-
-        // Heartbeat
-        led_Blink(100);
+        
+        // Disable the switch and the PA
+        rf6886_Disable();
+        rf_switch_Disable();
+        
+        // Wait 30 seconds
+        delay_ms(400);  // 400 ms for tests
+        
+        led_Disable();      // Heartbeat
     }
 }
 
@@ -170,35 +187,37 @@ void USCI_A0_ISR()
     {
         // Vector 2 - RXIFG
         case 2:
-            received_byte = USCI_A_UART_receiveData(USCI_A0_BASE);
+            eps_uart_received_byte = USCI_A_UART_receiveData(USCI_A0_BASE);
 
-            switch(received_byte)
+            switch(eps_uart_byte_counter)
             {
-                case START_OF_DATA:
-                    receiving = 1;
-                    data_counter = 0;
-                    received_data[data_counter] = received_byte;
-                    data_counter++;
-                    data_ready = 0;
+                case EPS_UART_BYTE_COUNTER_POS_SOD:
+                    if (eps_uart_received_byte == EPS_UART_SOD)
+                        eps_uart_byte_counter++;
                     break;
-                case END_OF_DATA:
-                    if (receiving)
+                case EPS_UART_BYTE_COUNTER_POS_CRC:
+                    if (eps_uart_received_byte == eps_UART_crc8(0x00, 0x07, eps_data_buffer, sizeof(eps_data_buffer)-1))
                     {
-                        received_data[data_counter] = received_byte;
-                        data_counter++;
-                        receiving  = 0;
-                        data_ready = 1;
+                        uint8_t i = 0;
+                        for(i=0;i<sizeof(eps_data_buffer);i++)
+                            eps_data[i] = eps_data_buffer[i];
                     }
-                    break;
+                    else
+                    {
+                        uint8_t i = 0;
+                        for(i=0;i<sizeof(eps_data);i++)
+                            eps_data[i] = 0xFF;
+                    }
                 default:
-                    if (receiving)
+                    if ((eps_uart_byte_counter > EPS_UART_BYTE_COUNTER_POS_SOD) &&
+                        (eps_uart_byte_counter < EPS_UART_BYTE_COUNTER_POS_CRC))
                     {
-                        received_data[data_counter] = received_byte;
-                        data_counter++;
+                        eps_data_buffer[eps_uart_byte_counter-1] = eps_uart_received_byte;
+                        eps_uart_byte_counter++;
                     }
-                    break;
-            }
-
+                    else
+                        eps_uart_byte_counter = EPS_UART_BYTE_COUNTER_POS_SOD;
+            };
             break;
         default:
             break;

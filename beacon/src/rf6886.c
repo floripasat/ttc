@@ -126,24 +126,4 @@ void rf6886_SetVreg(float v_reg)
 #endif // DEBUG_MODE
 }
 
-void rf6886_SetGain(uint8_t gain)
-{
-#if DEBUG_MODE == true
-    debug_PrintMsg("rf6886_SetGain()");
-    debug_PrintByte("\tgain = ", gain);
-#endif // DEBUG_MODE
-
-    uint8_t output_power = 0x30;
-
-#if DEBUG_MODE == true
-    debug_PrintByte("\t Output power [dBm]: ", output_power);
-#endif // DEBUG_MODE
-
-    rf6886_SetVreg(3.1);
-    
-#if DEBUG_MODE == true
-    debug_PrintMsg("End of rf6886_SetGain()\n");
-#endif // DEBUG_MODE
-}
-
 //! \} End of rf6886 implementation group

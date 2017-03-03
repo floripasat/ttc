@@ -46,6 +46,10 @@
 #define EPS_UART_PORT       GPIO_PORT_P2
 #define EPS_UART_RX_PIN     GPIO_PIN5
 
+#define EPS_UART_SOD                    0x7E
+#define EPS_UART_BYTE_COUNTER_POS_SOD   0x00
+#define EPS_UART_BYTE_COUNTER_POS_CRC   0x05
+
 /**
  * \fn eps_UART_Init
  * 
@@ -57,6 +61,20 @@
  *      .
  */
 uint8_t eps_UART_Init();
+
+/**
+ * \fn eps_UART_crc8
+ * 
+ * \brief crc8 checksum.
+ * 
+ * \param initial_value is the initial value of the crc8.
+ * \param polynomial is the crc8 polynomial.
+ * \param data is data to calculate the crc8.
+ * \param len is lenght of the data.
+ * 
+ * \return The crc8 value of the given data.
+ */
+uint8_t eps_UART_crc8(uint8_t initial_value, uint8_t polynomial, uint8_t *data, uint8_t len);
 
 #endif // UART_EPS_H_
 

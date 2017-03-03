@@ -479,9 +479,12 @@
  *      -# Register configuration using cc11xx_RegConfig()
  *      .
  * 
- * \return None
+ * \return Initialization status. It can be:
+ *      -\b STATUS_SUCCESS
+ *      -\b STATUS_FAIL
+ *      .
  */
-void cc11xx_Init();
+uint8_t cc11xx_Init();
 
 /**
  * \fn cc11xx_RegConfig

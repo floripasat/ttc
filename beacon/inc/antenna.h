@@ -39,25 +39,36 @@
 #ifndef ANTENNA_H_
 #define ANTENNA_H_
 
+#include <stdint.h>
 #include "../driverlib/driverlib.h"
-
-#define ANTENNA_DEPLOYMENT_PORT     GPIO_PORT_P1    /**< Antenna deployment port = 1 */
-#define ANTENNA_DEPLOYMENT_PIN      GPIO_PIN4       /**< Antenna deployment pin = 4 */
 
 /**
  * \fn antenna_Init()
+ * 
  * \brief Initialization of the antenna deployment pin.
+ * 
  * \return none
  */
-void antenna_Init();
+uint8_t antenna_Init();
 
 /**
- * \fn antenna_EnableDeployment
+ * \fn antenna_IsReleased
+ * 
+ * \brief
+ * 
+ * \return 
+ */
+uint8_t antenna_IsReleased();
+
+/**
+ * \fn antenna_Release
+ * 
  * \brief Enables the antenna deployment.
+ * 
  * \return none
  */
-void antenna_EnableDeployment();
+void antenna_Release();
 
 #endif // ANTENNA_H_
 
-//! \} Enf of antenna group
+//! \} End of antenna group

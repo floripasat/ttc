@@ -128,20 +128,6 @@ void rf6886_Disable();
  */
 void rf6886_SetVreg(float v_reg);
 
-/**
- * \fn rf6886_SetGain
- * 
- * \brief Sets PA gain.
- * 
- * Output power control of the PA (Closed loop).
- * 
- * \note
- * Under development!
- * 
- * \param gain is the gain of the RF6886 (PA output power in dBm)
- */
-void rf6886_SetGain(uint8_t gain);
-
 #endif // RF6886_H_
 
 //! \} End of RF6886 group

@@ -48,6 +48,7 @@
 #define AX25_FLORIPASAT_CALLSIGN                    "PY0EFS"    // The FloripaSat project callsign.
 #define AX25_FLORIPASAT_GRS_SSID                    0x00        // The SSID of the groundstation. User defined field.
 #define AX25_FLORIPASAT_SAT_SSID                    0x01        // The SSID of the satellite. User defined field.
+#define AX25_FLORIPASAT_HEADER_SIZE                 20          // The size of the header
 
 /**
  * \brief Flag Field.

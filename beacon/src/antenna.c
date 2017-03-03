@@ -37,15 +37,19 @@
 
 #include "../inc/antenna.h"
 
-void antenna_Init()
+uint8_t antenna_Init()
 {
-    GPIO_setAsOutputPin(ANTENNA_DEPLOYMENT_PORT, ANTENNA_DEPLOYMENT_PIN);
-    GPIO_setOutputLowOnPin(ANTENNA_DEPLOYMENT_PORT, ANTENNA_DEPLOYMENT_PIN);
+    return STATUS_SUCCESS;
 }
 
-void antenna_EnableDeployment()
+uint8_t antenna_IsReleased()
 {
-    GPIO_setOutputHighOnPin(ANTENNA_DEPLOYMENT_PORT, ANTENNA_DEPLOYMENT_PIN);
+    return 0x01;
+}
+
+void antenna_Release()
+{
+    
 }
 
 //! \} End of antenna group
