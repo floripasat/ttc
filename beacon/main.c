@@ -52,6 +52,14 @@
 #include "inc/delay.h"
 #include "inc/ax25.h"
 #include "inc/pkt_payload.h"
+#include "inc/timer.h"
+
+#define BEACON_ANTENNA_DEPLOY_SLEEP_MIN     45
+#define BEACON_PKT_PERIOD_SEC               30
+
+// Timer counters
+uint8_t timer_sec_counter = 0;
+uint8_t timer_min_counter = 0;
 
 // UART-EPS interruption variables
 uint8_t eps_uart_received_byte  = 0x00;
@@ -71,9 +79,6 @@ uint8_t eps_data[5]             = {0xFF, 0xFF, 0xFF, 0xFF};
  */
 void main()
 {
-    led_Init();
-    led_Enable();
-    
 #if DEBUG_MODE == true
     WDT_A_hold(WDT_A_BASE);         // Disable watchdog for debug
     
@@ -86,6 +91,10 @@ void main()
     watchdog_Init();
 #endif // DEBUG_MODE
     
+    // 1 second timer initialization
+    timer_Init();
+    Timer_A_startCounter(TIMER_A1_BASE, TIMER_A_CONTINUOUS_MODE);
+    
     // Antenna initialization
     while(antenna_Init() != STATUS_SUCCESS)
     {
@@ -95,7 +104,14 @@ void main()
     // Verify if the antenna is released
     if (!antenna_IsReleased())
     {
-        // Wait 45 minutes
+        uint8_t antenna_deployment_min_counter = timer_min_counter;
+        
+        while(((timer_min_counter - antenna_deployment_min_counter) % 60) < BEACON_ANTENNA_DEPLOY_SLEEP_MIN)
+        {
+            // Enter LPM1 with interrupts enabled
+            _BIS_SR(LPM1_bits + GIE);
+        }
+        
         antenna_Release();
     }
     
@@ -130,6 +146,9 @@ void main()
     uint8_t pkt_payload[pkt_payload_GetSize(eps_data) + 1];
     uint8_t str_packet[AX25_FLORIPASAT_HEADER_SIZE + sizeof(pkt_payload)];
 
+    // Status LED initialization
+    led_Init();
+
     // Infinite loop
     while(1)
     {
@@ -159,11 +178,51 @@ void main()
         rf6886_Disable();
         rf_switch_Disable();
         
-        // Wait 30 seconds
-        delay_ms(400);  // 400 ms for tests
-        
         led_Disable();      // Heartbeat
+        
+        uint8_t beacon_pkt_interval_sec_counter = timer_sec_counter;
+        while(((timer_sec_counter - beacon_pkt_interval_sec_counter) % 60) < BEACON_PKT_PERIOD_SEC)
+        {
+            // Enter LPM3 with interrupts enabled
+            _BIS_SR(LPM1_bits + GIE);
+        }
     }
+}
+
+/**
+ * \fn TIMER1_A0_ISR
+ *
+ * \brief Timer A0 interrupt service routine.
+ * 
+ * The one second timer increments the time counters (second and minute) and
+ * wake up the CPU to verify the elapsed time.
+ * 
+ * \return none
+ */
+#if defined(__TI_COMPILER_VERSION__) || defined(__IAR_SYSTEMS_ICC__)
+#pragma vector=TIMER1_A0_VECTOR
+__interrupt
+#elif defined(__GNUC__)
+__attribute__((interrupt(TIMER1_A0_VECTOR)))
+#endif
+void TIMER1_A0_ISR()
+{
+    uint16_t comp_val = Timer_A_getCaptureCompareCount(TIMER_A1_BASE, TIMER_A_CAPTURECOMPARE_REGISTER_0)
+                        + (uint16_t)(UCS_getSMCLK()/TIMER_A_CLOCKSOURCE_DIVIDER_20);
+    
+    timer_sec_counter++;
+    if (timer_sec_counter == 60)
+    {
+        timer_min_counter++;
+        timer_sec_counter = 0;
+    }
+    if (timer_min_counter == 60)
+        timer_min_counter = 0;
+    
+    // Add Offset to CCR0
+    Timer_A_setCompareValue(TIMER_A1_BASE, TIMER_A_CAPTURECOMPARE_REGISTER_0, comp_val);
+    
+    _BIC_SR(LPM1_EXIT); // Wake up from low power mode
 }
 
 /**
