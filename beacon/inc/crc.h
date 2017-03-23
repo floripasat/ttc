@@ -1,5 +1,5 @@
 /*
- * timer.h
+ * crc.h
  * 
  * Copyright (C) 2017, Universidade Federal de Santa Catarina
  * 
@@ -21,51 +21,53 @@
  */
 
 /**
- * \file timer.h
+ * \file crc.h
  * 
- * \brief Initialization and control of timer A.
+ * \brief CRC functions.
  * 
  * \author Gabriel Mariano Marcelino <gabriel.mm8@gmail.com>
  * 
  * \version 1.0-dev
  * 
- * \date 10/03/2017
+ * \date 23/03/2017
  * 
- * \defgroup timer Timer
+ * \defgroup crc CRC
  * \ingroup beacon
  * \{
  */
 
-#ifndef TIMER_H_
-#define TIMER_H_
+#ifndef CRC_H_
+#define CRC_H_
 
 #include <stdint.h>
-#include "../driverlib/driverlib.h"
 
 /**
- * \brief Time counters.
+ * \fn crc8
  * 
- * These counters storage the elapsed time since the last power up.
+ * \brief crc8 checksum.
  * 
- * \{
+ * \param initial_value is the initial value of the crc8.
+ * \param polynomial is the crc8 polynomial.
+ * \param data is data to calculate the crc8.
+ * \param len is lenght of the data.
+ * 
+ * \return The crc8 value of the given data.
  */
-extern uint8_t timer_sec_counter;       /**< Seconds counter. */
-extern uint8_t timer_min_counter;       /**< Minutes counter. */
-extern uint8_t timer_hour_counter;      /**< Hours counter. */
-//! \}
+uint8_t crc8(uint8_t initial_value, uint8_t polynomial, uint8_t *data, uint8_t len);
 
 /**
- * \fn timer_Init()
+ * \fn crc16_CCITT
  * 
- * \brief This function initializes the TIMER A in continuous mode.
+ * \brief Computes the crc16 value of an array of data.
  * 
- * Start timer A in continuous mode sourced by SMCLK with a period of one second
- * and using compare mode.
+ * \param initial_value is the initial value to compute the crc16 value.
+ * \param data is the data to compute the crc16 value.
+ * \param size is the length of the data array.
  * 
- * \return None
+ * \return Returns the crc16 value of the data.
  */
-void timer_Init();
+uint16_t crc16_CCITT(uint16_t initial_value, uint8_t* data, uint8_t size);
 
-#endif // TIMER_H_
+#endif // CRC_H_
 
-//! \} End of timer group
+//! \} End of crc group

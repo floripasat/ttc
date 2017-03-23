@@ -39,21 +39,7 @@
  */
 
 #include "../inc/ax25.h"
-
-uint16_t crc16_CCITT(uint16_t initial_value, uint8_t* data, uint8_t size)
-{
-    uint8_t x;
-    uint16_t crc = initial_value;
-
-    while(size--)
-    {
-        x = crc >> 8 ^ *data++;
-        x ^= x >> 4;
-        crc = (crc << 8) ^ ((uint16_t)(x << 12)) ^ ((uint16_t)(x << 5)) ^ ((uint16_t)x);
-    }
-    
-    return crc;
-}
+#include "../inc/crc.h"
 
 void ax25_BeaconPacketGen(AX25_Packet *ax25_packet, uint8_t *data, uint16_t data_size)
 {

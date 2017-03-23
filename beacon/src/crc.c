@@ -1,5 +1,5 @@
 /*
- * timer.h
+ * crc.c
  * 
  * Copyright (C) 2017, Universidade Federal de Santa Catarina
  * 
@@ -21,51 +21,52 @@
  */
 
 /**
- * \file timer.h
+ * \file crc.c
  * 
- * \brief Initialization and control of timer A.
+ * \brief Implementation of the CRC functions.
  * 
  * \author Gabriel Mariano Marcelino <gabriel.mm8@gmail.com>
  * 
  * \version 1.0-dev
  * 
- * \date 10/03/2017
+ * \date 23/03/2017
  * 
- * \defgroup timer Timer
- * \ingroup beacon
+ * \addtogroup crc
  * \{
  */
 
-#ifndef TIMER_H_
-#define TIMER_H_
+#include "../inc/crc.h"
 
-#include <stdint.h>
-#include "../driverlib/driverlib.h"
+uint8_t crc8(uint8_t initial_value, uint8_t polynomial, uint8_t *data, uint8_t len)
+{
+    uint8_t crc = initial_value;
+    while(len--)
+    {
+        crc ^= *data++;
+        uint8_t j = 0;
+        for (j=0; j<8; j++)
+        {
+            crc = (crc << 1) ^ ((crc & 0x80)? polynomial: 0);
+        }
+        crc &= 0xFF;
+    }
+    
+    return crc;
+}
 
-/**
- * \brief Time counters.
- * 
- * These counters storage the elapsed time since the last power up.
- * 
- * \{
- */
-extern uint8_t timer_sec_counter;       /**< Seconds counter. */
-extern uint8_t timer_min_counter;       /**< Minutes counter. */
-extern uint8_t timer_hour_counter;      /**< Hours counter. */
-//! \}
+uint16_t crc16_CCITT(uint16_t initial_value, uint8_t* data, uint8_t size)
+{
+    uint8_t x;
+    uint16_t crc = initial_value;
 
-/**
- * \fn timer_Init()
- * 
- * \brief This function initializes the TIMER A in continuous mode.
- * 
- * Start timer A in continuous mode sourced by SMCLK with a period of one second
- * and using compare mode.
- * 
- * \return None
- */
-void timer_Init();
+    while(size--)
+    {
+        x = crc >> 8 ^ *data++;
+        x ^= x >> 4;
+        crc = (crc << 8) ^ ((uint16_t)(x << 12)) ^ ((uint16_t)(x << 5)) ^ ((uint16_t)x);
+    }
+    
+    return crc;
+}
 
-#endif // TIMER_H_
-
-//! \} End of timer group
+//! \} End of crc implementation group

@@ -74,20 +74,6 @@ extern uint8_t eps_data[EPS_UART_PKT_LEN + 1];          /**< EPS data storage. *
  */
 uint8_t eps_UART_Init();
 
-/**
- * \fn eps_UART_crc8
- * 
- * \brief crc8 checksum.
- * 
- * \param initial_value is the initial value of the crc8.
- * \param polynomial is the crc8 polynomial.
- * \param data is data to calculate the crc8.
- * \param len is lenght of the data.
- * 
- * \return The crc8 value of the given data.
- */
-uint8_t eps_UART_crc8(uint8_t initial_value, uint8_t polynomial, uint8_t *data, uint8_t len);
-
 #endif // UART_EPS_H_
 
 //! \} End of UART-EPS group

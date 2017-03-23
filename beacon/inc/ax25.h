@@ -211,19 +211,6 @@ typedef struct
 } AX25_Packet;
 
 /**
- * \fn crc16_CCITT
- * 
- * \brief Computes the crc16 value of an array of data.
- * 
- * \param initial_value is the initial value to compute the crc16 value.
- * \param data is the data to compute the crc16 value.
- * \param size is the length of the data array.
- * 
- * \return Returns the crc16 value of the data.
- */
-uint16_t crc16_CCITT(uint16_t initial_value, uint8_t* data, uint8_t size);
-
-/**
  * \fn ax25_BeaconPacketGen
  * 
  * \brief Generates the packet with a initial data.

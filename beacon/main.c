@@ -53,6 +53,7 @@
 #include "inc/ax25.h"
 #include "inc/pkt_payload.h"
 #include "inc/timer.h"
+#include "inc/crc.h"
 
 #define BEACON_ANTENNA_DEPLOY_SLEEP_MIN     45
 #define BEACON_PKT_PERIOD_SEC               30
@@ -253,7 +254,7 @@ void USCI_A0_ISR()
                         eps_uart_byte_counter++;
                     break;
                 case EPS_UART_BYTE_COUNTER_POS_CRC:
-                    if (eps_uart_received_byte == eps_UART_crc8(0x00, 0x07, eps_data_buffer, sizeof(eps_data_buffer)-1))
+                    if (eps_uart_received_byte == crc8(0x00, 0x07, eps_data_buffer, sizeof(eps_data_buffer)-1))
                     {
                         uint8_t i = 0;
                         for(i=0;i<sizeof(eps_data_buffer);i++)
