@@ -106,7 +106,7 @@ void main()
     {
         uint8_t antenna_deployment_min_counter = timer_min_counter;
         
-        while(((timer_min_counter - antenna_deployment_min_counter) % 60) < BEACON_ANTENNA_DEPLOY_SLEEP_MIN)
+        while((uint8_t)((timer_min_counter - antenna_deployment_min_counter) % 60) < BEACON_ANTENNA_DEPLOY_SLEEP_MIN)
         {
             // Enter LPM1 with interrupts enabled
             _BIS_SR(LPM1_bits + GIE);
@@ -152,7 +152,6 @@ void main()
     // Infinite loop
     while(1)
     {
-        led_Enable();       // Heartbeat
 #if DEBUG_MODE == false
         WDT_A_resetTimer(WDT_A_BASE);
 #endif // DEBUG_MODE
@@ -178,12 +177,10 @@ void main()
         rf6886_Disable();
         rf_switch_Disable();
         
-        led_Disable();      // Heartbeat
-        
         uint8_t beacon_pkt_interval_sec_counter = timer_sec_counter;
-        while(((timer_sec_counter - beacon_pkt_interval_sec_counter) % 60) < BEACON_PKT_PERIOD_SEC)
+        while((uint8_t)((timer_sec_counter - beacon_pkt_interval_sec_counter) % 60) < BEACON_PKT_PERIOD_SEC)
         {
-            // Enter LPM3 with interrupts enabled
+            // Enter LPM1 with interrupts enabled
             _BIS_SR(LPM1_bits + GIE);
         }
     }
@@ -218,6 +215,8 @@ void TIMER1_A0_ISR()
     }
     if (timer_min_counter == 60)
         timer_min_counter = 0;
+    
+    led_Blink();
     
     // Add Offset to CCR0
     Timer_A_setCompareValue(TIMER_A1_BASE, TIMER_A_CAPTURECOMPARE_REGISTER_0, comp_val);

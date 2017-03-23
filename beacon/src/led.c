@@ -53,10 +53,9 @@ void led_Disable()
     GPIO_setOutputLowOnPin(BEACON_STATUS_LED_PORT, BEACON_STATUS_LED_PIN);
 }
 
-void led_Blink(uint16_t period)
+void led_Blink()
 {
     GPIO_toggleOutputOnPin(BEACON_STATUS_LED_PORT, BEACON_STATUS_LED_PIN);
-    delay_ms(period/2);
 }
 
 //! \} End of led group

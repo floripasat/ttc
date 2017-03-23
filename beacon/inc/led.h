@@ -75,13 +75,11 @@ void led_Disable();
 /**
  * \fn led_Blink
  * 
- * \brief Blinks the status led with a desired frequency.
- * 
- * \param period is the blink period.
+ * \brief Toggles the status led.
  * 
  * \return None
  */
-void led_Blink(uint16_t period);
+void led_Blink();
 
 #endif // LED_H_
 
