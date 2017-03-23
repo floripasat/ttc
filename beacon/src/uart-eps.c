@@ -38,6 +38,12 @@
 #include "../inc/uart-eps.h"
 #include "../driverlib/driverlib.h"
 
+// UART-EPS interruption variables initialization
+uint8_t eps_uart_received_byte                  = 0x00;
+uint8_t eps_uart_byte_counter                   = 0x00;
+uint8_t eps_data_buffer[EPS_UART_PKT_LEN + 1]   = {0xFF, 0xFF, 0xFF, 0xFF};
+uint8_t eps_data[EPS_UART_PKT_LEN + 1]          = {0xFF, 0xFF, 0xFF, 0xFF};
+
 uint8_t eps_UART_Init()
 {
 #if DEBUG_MODE == true

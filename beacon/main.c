@@ -57,12 +57,6 @@
 #define BEACON_ANTENNA_DEPLOY_SLEEP_MIN     45
 #define BEACON_PKT_PERIOD_SEC               30
 
-// UART-EPS interruption variables
-uint8_t eps_uart_received_byte  = 0x00;
-uint8_t eps_uart_byte_counter   = 0x00;
-uint8_t eps_data_buffer[5]      = {0xFF, 0xFF, 0xFF, 0xFF};
-uint8_t eps_data[5]             = {0xFF, 0xFF, 0xFF, 0xFF};
-
 /**
  * \fn main
  * 

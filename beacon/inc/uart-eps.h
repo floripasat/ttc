@@ -46,9 +46,21 @@
 #define EPS_UART_PORT       GPIO_PORT_P2
 #define EPS_UART_RX_PIN     GPIO_PIN5
 
+#define EPS_UART_PKT_LEN                0x04
 #define EPS_UART_SOD                    0x7E
 #define EPS_UART_BYTE_COUNTER_POS_SOD   0x00
-#define EPS_UART_BYTE_COUNTER_POS_CRC   0x05
+#define EPS_UART_BYTE_COUNTER_POS_CRC   EPS_UART_PKT_LEN-1
+
+/**
+ * \brief UART-EPS interruption variables.
+ * 
+ * \{
+ */
+extern uint8_t eps_uart_received_byte;                  /**< Byte buffer. */
+extern uint8_t eps_uart_byte_counter;                   /**< Received packet byte counter. */
+extern uint8_t eps_data_buffer[EPS_UART_PKT_LEN + 1];   /**< Packet buffer. */
+extern uint8_t eps_data[EPS_UART_PKT_LEN + 1];          /**< EPS data storage. */
+//! \}
 
 /**
  * \fn eps_UART_Init
