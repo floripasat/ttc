@@ -57,10 +57,6 @@
 #define BEACON_ANTENNA_DEPLOY_SLEEP_MIN     45
 #define BEACON_PKT_PERIOD_SEC               30
 
-// Timer counters
-uint8_t timer_sec_counter = 0;
-uint8_t timer_min_counter = 0;
-
 // UART-EPS interruption variables
 uint8_t eps_uart_received_byte  = 0x00;
 uint8_t eps_uart_byte_counter   = 0x00;
@@ -208,20 +204,29 @@ void TIMER1_A0_ISR()
                         + (uint16_t)(UCS_getSMCLK()/TIMER_A_CLOCKSOURCE_DIVIDER_20);
     
     timer_sec_counter++;
-    if (timer_sec_counter == 60)
+    if (timer_sec_counter == 60)        // 1 minute = 60 seconds
     {
         timer_min_counter++;
         timer_sec_counter = 0;
     }
-    if (timer_min_counter == 60)
+    if (timer_min_counter == 60)        // 1 hour = 60 minutes
+    {
+        timer_hour_counter++;
         timer_min_counter = 0;
+    }
+    if (timer_hour_counter == 24)       // 1 day = 24 hours
+    {
+        timer_hour_counter = 0;
+    }
     
+    // Heartbeat
     led_Blink();
     
     // Add Offset to CCR0
     Timer_A_setCompareValue(TIMER_A1_BASE, TIMER_A_CAPTURECOMPARE_REGISTER_0, comp_val);
     
-    _BIC_SR(LPM1_EXIT); // Wake up from low power mode
+    // Wake up from low power mode
+    _BIC_SR(LPM1_EXIT);
 }
 
 /**

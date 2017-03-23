@@ -37,6 +37,11 @@
 
 #include "../inc/timer.h"
 
+// Initialization of the time counters
+uint8_t timer_sec_counter = 0;
+uint8_t timer_min_counter = 0;
+uint8_t timer_hour_counter = 0;
+
 void timer_Init()
 {
     // Start timer in continuous mode sourced by SMCLK

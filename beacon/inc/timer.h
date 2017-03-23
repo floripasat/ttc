@@ -36,7 +36,20 @@
  * \{
  */
 
+#include <stdint.h>
 #include "../driverlib/driverlib.h"
+
+/**
+ * \brief Time counters.
+ * 
+ * These counters storage the elapsed time since the last power up.
+ * 
+ * \{
+ */
+extern uint8_t timer_sec_counter;       /**< Seconds counter. */
+extern uint8_t timer_min_counter;       /**< Minutes counter. */
+extern uint8_t timer_hour_counter;      /**< Hours counter. */
+//! \}
 
 /**
  * \fn timer_Init()
