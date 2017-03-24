@@ -48,6 +48,7 @@
 #include "inc/rf-switch.h"
 #include "inc/rf6886.h"
 #include "inc/uart-eps.h"
+#include "inc/gpio-obdh.h"
 #include "inc/antenna.h"
 #include "inc/delay.h"
 #include "inc/ax25.h"
@@ -111,6 +112,9 @@ void main()
     {
         
     }
+    
+    // OBDH GPIO communication initialization
+    obdh_GPIO_Init();
     
     // Radio initialization
     while(cc11xx_Init() != STATUS_SUCCESS)
@@ -225,6 +229,29 @@ void TIMER1_A0_ISR()
 }
 
 /**
+ * \fn TIMER1_B0_ISR
+ *
+ * \brief Timer B0 interrupt service routine.
+ * 
+ * This timer is triggered when the data transmission between OBDH and BEACON starts.
+ * It establish a time limit of transmission between OBDH and BEACON.
+ * 
+ * \return none
+ */
+#if defined(__TI_COMPILER_VERSION__) || defined(__IAR_SYSTEMS_ICC__)
+#pragma vector=TIMER1_B0_VECTOR
+__interrupt
+#elif defined(__GNUC__)
+__attribute__((interrupt(TIMER1_B0_VECTOR)))
+#endif
+void TIMER1_B0_ISR()
+{
+    obdh_gpio_state = OBDH_GPIO_STATE_WAITING_BIT0;
+    
+    Timer_B_stop(TIMER_B0_BASE);
+}
+
+/**
  * \fn USCI_A0_ISR
  *
  * \brief This is the USCI_A0 interrupt vector service routine.
@@ -280,6 +307,116 @@ void USCI_A0_ISR()
         default:
             break;
     }
+}
+
+/**
+ * \fn Port_4
+ *
+ * \brief This is the PORT4_VECTOR interrupt vector service routine.
+ *
+ * OBDH GPIO communication interruption routine.
+ *
+ * \return none
+ */
+#if defined(__TI_COMPILER_VERSION__) || defined(__IAR_SYSTEMS_ICC__)
+#pragma vector=PORT4_VECTOR
+__interrupt
+#elif defined(__GNUC__)
+__attribute__((interrupt(PORT4_VECTOR)))
+#endif
+void Port_4()
+{
+    switch(obdh_gpio_state)
+    {
+        case OBDH_GPIO_STATE_WAITING_BIT0:
+            if (!GPIO_getInputPinValue(OBDH_GPIO_PORT, OBDH_GPIO_PIN0) &&
+                GPIO_getInputPinValue(OBDH_GPIO_PORT, OBDH_GPIO_PIN1) &&
+                GPIO_getInputPinValue(OBDH_GPIO_PORT, OBDH_GPIO_PIN2) &&
+                GPIO_getInputPinValue(OBDH_GPIO_PORT, OBDH_GPIO_PIN3))
+            {
+                obdh_gpio_state = OBDH_GPIO_STATE_WAITING_BIT1;
+                
+                GPIO_disableInterrupt(OBDH_GPIO_PORT, OBDH_GPIO_PIN0);
+                GPIO_enableInterrupt(OBDH_GPIO_PORT, OBDH_GPIO_PIN1);
+                GPIO_selectInterruptEdge(OBDH_GPIO_PORT, OBDH_GPIO_PIN1, GPIO_HIGH_TO_LOW_TRANSITION);
+                
+                Timer_B_startCounter(TIMER_B0_BASE, TIMER_B_CONTINUOUS_MODE);
+                
+                break;
+            }
+            else
+            {
+                obdh_gpio_state = OBDH_GPIO_STATE_ERROR;
+            }
+        case OBDH_GPIO_STATE_WAITING_BIT1:
+            if (GPIO_getInputPinValue(OBDH_GPIO_PORT, OBDH_GPIO_PIN0) &&
+                !GPIO_getInputPinValue(OBDH_GPIO_PORT, OBDH_GPIO_PIN1) &&
+                GPIO_getInputPinValue(OBDH_GPIO_PORT, OBDH_GPIO_PIN2) &&
+                GPIO_getInputPinValue(OBDH_GPIO_PORT, OBDH_GPIO_PIN3))
+            {
+                obdh_gpio_state = OBDH_GPIO_STATE_WAITING_BIT2;
+                
+                GPIO_disableInterrupt(OBDH_GPIO_PORT, OBDH_GPIO_PIN1);
+                GPIO_enableInterrupt(OBDH_GPIO_PORT, OBDH_GPIO_PIN2);
+                GPIO_selectInterruptEdge(OBDH_GPIO_PORT, OBDH_GPIO_PIN2, GPIO_HIGH_TO_LOW_TRANSITION);
+                
+                break;
+            }
+            else
+            {
+                obdh_gpio_state = OBDH_GPIO_STATE_ERROR;
+            }
+        case OBDH_GPIO_STATE_WAITING_BIT2:
+            if (GPIO_getInputPinValue(OBDH_GPIO_PORT, OBDH_GPIO_PIN0) &&
+                GPIO_getInputPinValue(OBDH_GPIO_PORT, OBDH_GPIO_PIN1) &&
+                !GPIO_getInputPinValue(OBDH_GPIO_PORT, OBDH_GPIO_PIN2) &&
+                GPIO_getInputPinValue(OBDH_GPIO_PORT, OBDH_GPIO_PIN3))
+            {
+                obdh_gpio_state = OBDH_GPIO_STATE_WAITING_BIT3;
+                
+                GPIO_disableInterrupt(OBDH_GPIO_PORT, OBDH_GPIO_PIN2);
+                GPIO_enableInterrupt(OBDH_GPIO_PORT, OBDH_GPIO_PIN3);
+                GPIO_selectInterruptEdge(OBDH_GPIO_PORT, OBDH_GPIO_PIN3, GPIO_HIGH_TO_LOW_TRANSITION);
+                
+                break;
+            }
+            else
+            {
+                obdh_gpio_state = OBDH_GPIO_STATE_ERROR;
+            }
+        case OBDH_GPIO_STATE_WAITING_BIT3:
+            if (GPIO_getInputPinValue(OBDH_GPIO_PORT, OBDH_GPIO_PIN0) &&
+                GPIO_getInputPinValue(OBDH_GPIO_PORT, OBDH_GPIO_PIN1) &&
+                GPIO_getInputPinValue(OBDH_GPIO_PORT, OBDH_GPIO_PIN2) &&
+                !GPIO_getInputPinValue(OBDH_GPIO_PORT, OBDH_GPIO_PIN3))
+            {
+                obdh_gpio_state = OBDH_GPIO_STATE_WAITING_BIT0;
+                
+                GPIO_disableInterrupt(OBDH_GPIO_PORT, OBDH_GPIO_PIN3);
+                GPIO_enableInterrupt(OBDH_GPIO_PORT, OBDH_GPIO_PIN0);
+                GPIO_selectInterruptEdge(OBDH_GPIO_PORT, OBDH_GPIO_PIN0, GPIO_HIGH_TO_LOW_TRANSITION);
+                
+                beacon_24_hours_sleep_mode = 1;
+                
+                break;
+            }
+            else
+            {
+                obdh_gpio_state = OBDH_GPIO_STATE_ERROR;
+            }
+        default:
+            obdh_gpio_state = OBDH_GPIO_STATE_WAITING_BIT0;
+                
+            GPIO_disableInterrupt(OBDH_GPIO_PORT, OBDH_GPIO_PIN1 + OBDH_GPIO_PIN2 + OBDH_GPIO_PIN3);
+            GPIO_enableInterrupt(OBDH_GPIO_PORT, OBDH_GPIO_PIN0);
+            GPIO_selectInterruptEdge(OBDH_GPIO_PORT, OBDH_GPIO_PIN0, GPIO_HIGH_TO_LOW_TRANSITION);
+            
+            Timer_B_stop(TIMER_B0_BASE);
+            
+            break;
+    };
+    
+    GPIO_clearInterrupt(OBDH_GPIO_PORT, OBDH_GPIO_PIN0 + OBDH_GPIO_PIN1 + OBDH_GPIO_PIN2 + OBDH_GPIO_PIN3);
 }
 
 //! \} End of beacon group
