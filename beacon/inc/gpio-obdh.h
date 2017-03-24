@@ -56,7 +56,6 @@
 #define OBDH_GPIO_MAX_TRANSMISSION_TIME_SEC 2
 
 extern uint8_t obdh_gpio_state;
-extern uint8_t beacon_24_hours_sleep_mode;
 
 /**
  * \fn obdh_GPIO_Init

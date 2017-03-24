@@ -635,4 +635,19 @@ uint8_t cc11xx_SPI_Init()
     }
 }
 
+void cc11xx_WakeUp()
+{
+#if DEBUG_MODE == true
+        debug_PrintMsg("Waking up the radio... ");
+#endif // DEBUG_MODE
+
+    GPIO_setOutputLowOnPin(GPIO_PORT_P2, GPIO_PIN0);    // P2.0 = CSn = 0
+    __delay_cycles(100);
+    GPIO_setOutputHighOnPin(GPIO_PORT_P2, GPIO_PIN0);   // P2.0 = CSn = 1
+
+#if DEBUG_MODE == true
+        debug_PrintMsg("SUCCESS!\n");
+#endif // DEBUG_MODE
+}
+
 //! \} End of CC1175 implementation group

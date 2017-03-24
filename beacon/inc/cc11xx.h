@@ -640,6 +640,17 @@ uint8_t cc11xx_WriteTXFIFO(uint8_t *pData, uint8_t len);
  */
 uint8_t cc11xx_SPI_Init();
 
+/**
+ * \fn cc11xx_WakeUp
+ * 
+ * \brief Wakes up the radio if it is in sleep mode.
+ * 
+ * To wake up the radio in sleep mode, the CSn pin just need to be kept low.
+ * 
+ * \return none
+ */
+void cc11xx_WakeUp();
+
 #endif // CC11XX_H_
 
 //! \} End of CC1175 group

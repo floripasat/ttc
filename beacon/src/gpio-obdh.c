@@ -39,7 +39,6 @@
 #include "../inc/debug.h"
 
 uint8_t obdh_gpio_state = OBDH_GPIO_STATE_WAITING_BIT0;
-uint8_t beacon_24_hours_sleep_mode = 0;
 
 void obdh_GPIO_Init()
 {
@@ -87,7 +86,7 @@ void obdh_GPIO_Timer_Init()
     initCompParam.compareOutputMode         = TIMER_B_OUTPUTMODE_OUTBITVALUE;
     initCompParam.compareValue              = OBDH_GPIO_MAX_TRANSMISSION_TIME_SEC*(uint16_t)(UCS_getSMCLK()/TIMER_B_CLOCKSOURCE_DIVIDER_40);
     
-    Timer_B_initCompareMode(TIMER_A1_BASE, &initCompParam);
+    Timer_B_initCompareMode(TIMER_B0_BASE, &initCompParam);
 }
 
 //! \} End of gpio-obdh implementation group

@@ -55,6 +55,7 @@
 #include "inc/pkt_payload.h"
 #include "inc/timer.h"
 #include "inc/crc.h"
+#include "inc/sleep_mode.h"
 
 #define BEACON_ANTENNA_DEPLOY_SLEEP_MIN     45
 #define BEACON_PKT_PERIOD_SEC               30
@@ -96,10 +97,13 @@ void main()
     // Verify if the antenna is released
     if (!antenna_IsReleased())
     {
-        uint8_t antenna_deployment_min_counter = timer_min_counter;
-        
+        uint8_t antenna_deployment_min_counter = timer_min_counter;        
         while((uint8_t)((timer_min_counter - antenna_deployment_min_counter) % 60) < BEACON_ANTENNA_DEPLOY_SLEEP_MIN)
         {
+#if DEBUG_MODE == false
+            WDT_A_resetTimer(WDT_A_BASE);
+#endif // DEBUG_MODE
+
             // Enter LPM1 with interrupts enabled
             _BIS_SR(LPM1_bits + GIE);
         }
@@ -146,35 +150,45 @@ void main()
 
     // Infinite loop
     while(1)
-    {
-#if DEBUG_MODE == false
-        WDT_A_resetTimer(WDT_A_BASE);
-#endif // DEBUG_MODE
-        
-        pkt_payload_gen(pkt_payload, eps_data);
-        ax25_BeaconPacketGen(&ax25_packet, pkt_payload, sizeof(pkt_payload)-1);
-        ax25_Packet2String(&ax25_packet, pkt_payload, sizeof(pkt_payload)-1);
-        
-        // Flush the TX FIFO
-        cc11xx_CmdStrobe(CC11XX_SFTX);
-        
-        // Enable the switch and the PA
-        rf6886_Enable();
-        rf_switch_Enable();
+    {        
+        if (sleep_mode_getStatus() == BEACON_SLEEP_MODE_ON)
+        {
+            if ((uint8_t)((timer_hour_counter - beacon_sleep_mode_initial_hour) % 24) >= BEACON_SLEEP_MODE_PERIOD_HOUR)
+            {
+                sleep_mode_TurnOff();
+            }
+        }
+        else
+        {
+            pkt_payload_gen(pkt_payload, eps_data);
+            ax25_BeaconPacketGen(&ax25_packet, pkt_payload, sizeof(pkt_payload)-1);
+            ax25_Packet2String(&ax25_packet, pkt_payload, sizeof(pkt_payload)-1);
+            
+            // Flush the TX FIFO
+            cc11xx_CmdStrobe(CC11XX_SFTX);
+            
+            // Enable the switch and the PA
+            rf6886_Enable();
+            rf_switch_Enable();
 
-        // Write packet to TX FIFO
-        cc11xx_WriteTXFIFO(str_packet, sizeof(str_packet)-1);
+            // Write packet to TX FIFO
+            cc11xx_WriteTXFIFO(str_packet, sizeof(str_packet)-1);
 
-        // Enable TX (Command strobe)
-        cc11xx_CmdStrobe(CC11XX_STX);
-        
-        // Disable the switch and the PA
-        rf6886_Disable();
-        rf_switch_Disable();
+            // Enable TX (Command strobe)
+            cc11xx_CmdStrobe(CC11XX_STX);
+            
+            // Disable the switch and the PA
+            rf6886_Disable();
+            rf_switch_Disable();
+        }
         
         uint8_t beacon_pkt_interval_sec_counter = timer_sec_counter;
         while((uint8_t)((timer_sec_counter - beacon_pkt_interval_sec_counter) % 60) < BEACON_PKT_PERIOD_SEC)
         {
+#if DEBUG_MODE == false
+            WDT_A_resetTimer(WDT_A_BASE);
+#endif // DEBUG_MODE
+
             // Enter LPM1 with interrupts enabled
             _BIS_SR(LPM1_bits + GIE);
         }
@@ -239,12 +253,12 @@ void TIMER1_A0_ISR()
  * \return none
  */
 #if defined(__TI_COMPILER_VERSION__) || defined(__IAR_SYSTEMS_ICC__)
-#pragma vector=TIMER1_B0_VECTOR
+#pragma vector=TIMERB0_VECTOR
 __interrupt
 #elif defined(__GNUC__)
-__attribute__((interrupt(TIMER1_B0_VECTOR)))
+__attribute__((interrupt(TIMERB0_VECTOR)))
 #endif
-void TIMER1_B0_ISR()
+void TIMERB0_ISR()
 {
     obdh_gpio_state = OBDH_GPIO_STATE_WAITING_BIT0;
     
@@ -396,7 +410,7 @@ void Port_4()
                 GPIO_enableInterrupt(OBDH_GPIO_PORT, OBDH_GPIO_PIN0);
                 GPIO_selectInterruptEdge(OBDH_GPIO_PORT, OBDH_GPIO_PIN0, GPIO_HIGH_TO_LOW_TRANSITION);
                 
-                beacon_24_hours_sleep_mode = 1;
+                sleep_mode_TurnOn();
                 
                 break;
             }
