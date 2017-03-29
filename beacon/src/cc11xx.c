@@ -37,54 +37,40 @@
 
 #include "../inc/cc11xx.h"
 #include "../inc/cc11xx_floripasat_reg_config.h"
-#include "../inc/led.h"
 
 uint8_t cc11xx_Init()
 {
 #if DEBUG_MODE == true
-    debug_PrintMsg("cc11xx_Init()");
+    debug_PrintMsg(CC11XX_MODEL_LABEL + " initialization... ");
 #endif // DEBUG_MODE
 
     // SPI initialization
-    if (cc11xx_SPI_Init() != STATUS_SUCCESS)
+    if (cc11xx_SPI_Init() == STATUS_SUCCESS)
     {
+        cc11xx_GPIO_Init();
+
+        cc11xx_ManualReset();
+
+        cc11xx_RegConfig();
+
+#if DEBUG_MODE == true
+        debug_PrintMsg("SUCCESS!\n");
+#endif // DEBUG_MODE
+
+        return STATUS_SUCCESS;
+    }
+    else
+    {
+#if DEBUG_MODE == true
+        debug_PrintMsg("FAIL!\n");
+#endif // DEBUG_MODE
+
         return STATUS_FAIL;
     }
-
-    // Reset pin init.
-    GPIO_setAsOutputPin(CC11XX_RESET_PORT, CC11XX_RESET_PIN);
-
-    /*
-    // P1.6 = CC1175 GPIO0
-    GPIO_setAsOutputPin(GPIO_PORT_P1, GPIO_PIN6);
-    GPIO_setOutputHighOnPin(GPIO_PORT_P1, GPIO_PIN6);
-
-    // P1.5 = CC1175 GPIO2
-    GPIO_setAsOutputPin(GPIO_PORT_P1, GPIO_PIN5);
-    GPIO_setOutputHighOnPin(GPIO_PORT_P1, GPIO_PIN5);
-
-    // P1.7 = CC1175 GPIO3
-    GPIO_setAsOutputPin(GPIO_PORT_P1, GPIO_PIN7);
-    GPIO_setOutputHighOnPin(GPIO_PORT_P1, GPIO_PIN7);
-    */
-
-    cc11xx_ManualReset();
-
-    cc11xx_RegConfig();
-    
-    return STATUS_SUCCESS;
-    
-#if DEBUG_MODE == true
-    debug_PrintMsg("End of cc11xx_Init()\n");
-#endif // DEBUG_MODE
 }
 
 void cc11xx_RegConfig()
 {
-#if DEBUG_MODE == true
-    debug_PrintMsg("cc11xx_RegConfig()");
-#endif // DEBUG_MODE
-
     uint16_t i;
     uint8_t write_byte;
 
@@ -94,21 +80,10 @@ void cc11xx_RegConfig()
         write_byte = reg_values[i].data;
         cc11xx_WriteReg(reg_values[i].addr, &write_byte, sizeof(reg_values[i].data));
     }
-
-#if DEBUG_MODE == true
-    debug_PrintMsg("End of cc11xx_RegConfig()\n");
-#endif // DEBUG_MODE
 }
 
 uint8_t cc11xx_WriteReg(uint16_t addr, uint8_t *pData, uint8_t len)
 {
-#if DEBUG_MODE == true
-    debug_PrintMsg("cc11xx_WriteReg()");
-    debug_PrintByte("\taddr = ", addr);
-    debug_PrintByte("\tpData = ", *pData);
-    debug_PrintByte("\tlen = ", len);
-#endif // DEBUG_MODE
-
     uint8_t temp_ext  = (uint8_t)(addr >> 8);
     uint8_t temp_addr = (uint8_t)(addr & 0x00FF);
     uint8_t chip_status = 0;
@@ -116,10 +91,6 @@ uint8_t cc11xx_WriteReg(uint16_t addr, uint8_t *pData, uint8_t len)
     // Checking if this is a FIFO access (if true, returns chip not ready)
     if ((CC11XX_SINGLE_TXFIFO <= temp_addr) && (temp_ext == 0))
     {
-#if DEBUG_MODE == true
-    debug_PrintMsg("> CC11XX_STATUS_CHIP_RDYn_H!");
-#endif // DEBUG_MODE
-
         return CC11XX_STATUS_CHIP_RDYn_H;
     }
 
@@ -133,34 +104,18 @@ uint8_t cc11xx_WriteReg(uint16_t addr, uint8_t *pData, uint8_t len)
         chip_status = cc11xx_16BitRegAccess((CC11XX_BURST_ACCESS | CC11XX_WRITE_ACCESS), temp_ext, temp_addr, pData, len);
     }
 
-#if DEBUG_MODE == true
-    debug_PrintByte("Chip status: ", chip_status);
-    debug_PrintMsg("End of cc11xx_WriteReg()\n");
-#endif // DEBUG_MODE
-
     return chip_status;
 }
 
 uint8_t cc11xx_ReadReg(uint16_t addr, uint8_t *pData, uint8_t len)
 {
-#if DEBUG_MODE == true
-    debug_PrintMsg("cc11xx_ReadReg()");
-    debug_PrintByte("\taddr = ", addr);
-    debug_PrintByte("\tpData = ", *pData);
-    debug_PrintByte("\tlen = ", len);
-#endif // DEBUG_MODE
-
     uint8_t temp_ext  = (uint8_t)(addr >> 8);
     uint8_t temp_addr = (uint8_t)(addr & 0x00FF);
     uint8_t chip_status = 0;
 
     // Checking if this is a FIFO access (if true, returns chip not ready)
     if ((CC11XX_SINGLE_TXFIFO <= temp_addr) && (temp_ext == 0))
-    {
-#if DEBUG_MODE == true
-    debug_PrintMsg("> CC11XX_STATUS_CHIP_RDYn_H!");
-#endif // DEBUG_MODE
-        
+    {        
         return CC11XX_STATUS_CHIP_RDYn_H;
     }
 
@@ -174,65 +129,51 @@ uint8_t cc11xx_ReadReg(uint16_t addr, uint8_t *pData, uint8_t len)
         chip_status = cc11xx_16BitRegAccess((CC11XX_BURST_ACCESS | CC11XX_READ_ACCESS), temp_ext, temp_addr, pData, len);
     }
 
-#if DEBUG_MODE == true
-    debug_PrintByte("Chip status: ", chip_status);
-    debug_PrintMsg("End of cc11xx_ReadReg()\n");
-#endif // DEBUG_MODE
-
     return chip_status;
 }
 
 uint8_t cc11xx_CmdStrobe(uint8_t cmd)
 {
-#if DEBUG_MODE == true
-    debug_PrintMsg("cc11xx_CmdStrobe()");
-    debug_PrintByte("\tcmd = ", cmd);
-#endif // DEBUG_MODE
-
     uint8_t chip_status;
 
-    GPIO_setOutputLowOnPin(GPIO_PORT_P2, GPIO_PIN0);   // P2.0 = CSn = 0
+    GPIO_setOutputLowOnPin(CC11XX_CSN_PORT, CC11XX_CSN_PIN);    // CSn = 0
 
-    while(GPIO_getInputPinValue(GPIO_PORT_P2, GPIO_PIN2) == GPIO_INPUT_PIN_HIGH)
+    while(GPIO_getInputPinValue(CC11XX_MISO_PORT, CC11XX_MISO_PIN) == GPIO_INPUT_PIN_HIGH)
     {
         
     }
 
-    USCI_B_SPI_clearInterrupt(USCI_B0_BASE, USCI_B_SPI_RECEIVE_INTERRUPT);
-    USCI_B_SPI_transmitData(USCI_B0_BASE, cmd);
-
-#if DEBUG_MODE == true
-    debug_PrintByte("Transmited command: ", cmd);
-#endif // DEBUG_MODE
+#if CC11XX_SPI_USCI == USCI_A
+    USCI_A_SPI_clearInterrupt(CC11XX_SPI_BASE_ADDRESS, USCI_A_SPI_RECEIVE_INTERRUPT);
+    USCI_A_SPI_transmitData(CC11XX_SPI_BASE_ADDRESS, cmd);
 
     // Wait until new data was written into RX buffer
-    while(!USCI_B_SPI_getInterruptStatus(USCI_B0_BASE, USCI_B_SPI_RECEIVE_INTERRUPT))
+    while(!USCI_A_SPI_getInterruptStatus(CC11XX_SPI_BASE_ADDRESS, USCI_A_SPI_RECEIVE_INTERRUPT))
     {
         
     }
 
-    chip_status = USCI_B_SPI_receiveData(USCI_B0_BASE);
+    chip_status = USCI_A_SPI_receiveData(CC11XX_SPI_BASE_ADDRESS);
+#elif CC11XX_SPI_USCI == USCI_B
+    USCI_B_SPI_clearInterrupt(CC11XX_SPI_BASE_ADDRESS, USCI_B_SPI_RECEIVE_INTERRUPT);
+    USCI_B_SPI_transmitData(CC11XX_SPI_BASE_ADDRESS, cmd);
 
-    GPIO_setOutputHighOnPin(GPIO_PORT_P2, GPIO_PIN0);   // P2.0 = CSn = 1
+    // Wait until new data was written into RX buffer
+    while(!USCI_B_SPI_getInterruptStatus(CC11XX_SPI_BASE_ADDRESS, USCI_B_SPI_RECEIVE_INTERRUPT))
+    {
+        
+    }
 
-#if DEBUG_MODE == true
-    debug_PrintByte("Chip status: ", chip_status);
-    debug_PrintMsg("End of cc11xx_CmdStrobe()\n");
-#endif // DEBUG_MODE
+    chip_status = USCI_B_SPI_receiveData(CC11XX_SPI_BASE_ADDRESS);
+#endif // CC11XX_SPI_USCI
+
+    GPIO_setOutputHighOnPin(CC11XX_CSN_PORT, CC11XX_CSN_PIN);   // CSn = 1
 
     return chip_status;
 }
 
 uint8_t cc11xx_8BitRegAccess(uint8_t access_type, uint8_t addr_byte, uint8_t *pData, uint16_t len)
 {
-#if DEBUG_MODE == true
-    debug_PrintMsg("cc11xx_8BitRegAccess()");
-    debug_PrintByte("\taccess_type = ", access_type);
-    debug_PrintByte("\taddr_byte = ", addr_byte);
-    debug_PrintByte("\tpData = ", *pData);
-    debug_PrintByte("\tlen = ", len);
-#endif // DEBUG_MODE
-
 	uint8_t read_value = 0;
     uint8_t header_byte = access_type | addr_byte;
 
@@ -246,35 +187,32 @@ uint8_t cc11xx_8BitRegAccess(uint8_t access_type, uint8_t addr_byte, uint8_t *pD
     }
 
     // Send register address byte
-    USCI_B_SPI_clearInterrupt(USCI_B0_BASE, USCI_B_SPI_RECEIVE_INTERRUPT);
-    USCI_B_SPI_transmitData(USCI_B0_BASE, header_byte);
-
-#if DEBUG_MODE == true
-    debug_PrintByte("Transmited header byte: ", header_byte);
-#endif // DEBUG_MOD
+#if CC11XX_SPI_USCI == USCI_A
+    USCI_A_SPI_clearInterrupt(CC11XX_SPI_BASE_ADDRESS, USCI_B_SPI_RECEIVE_INTERRUPT);
+    USCI_A_SPI_transmitData(CC11XX_SPI_BASE_ADDRESS, header_byte);
+#elif CC11XX_SPI_USCI == USCI_B
+    USCI_B_SPI_clearInterrupt(CC11XX_SPI_BASE_ADDRESS, USCI_B_SPI_RECEIVE_INTERRUPT);
+    USCI_B_SPI_transmitData(CC11XX_SPI_BASE_ADDRESS, header_byte);
+#endif // CC11XX_SPI_USCI
 
     // Wait until new data was written into RX buffer
-    while(!USCI_B_SPI_getInterruptStatus(USCI_B0_BASE, USCI_B_SPI_RECEIVE_INTERRUPT))
-    {
-        
-    }
+#if CC11XX_SPI_USCI == USCI_A
+    while(!USCI_A_SPI_getInterruptStatus(CC11XX_SPI_BASE_ADDRESS, USCI_B_SPI_RECEIVE_INTERRUPT));
+#elif CC11XX_SPI_USCI == USCI_B
+    while(!USCI_B_SPI_getInterruptStatus(CC11XX_SPI_BASE_ADDRESS, USCI_B_SPI_RECEIVE_INTERRUPT));
+#endif // CC11XX_SPI_USCI
 
     // Storing chip status
-	read_value = USCI_B_SPI_receiveData(USCI_B0_BASE);
-
-#if DEBUG_MODE == true
-    debug_PrintByte("Chip status: ", read_value);
-#endif // DEBUG_MODE
+#if CC11XX_SPI_USCI == USCI_A
+    read_value = USCI_A_SPI_receiveData(CC11XX_SPI_BASE_ADDRESS);
+#elif CC11XX_SPI_USCI == USCI_B
+    read_value = USCI_B_SPI_receiveData(CC11XX_SPI_BASE_ADDRESS);
+#endif // CC11XX_SPI_USCI
     
 	cc11xx_ReadWriteBurstSingle(header_byte, pData, len);
 	
     // CSn = high after transfers
     GPIO_setOutputHighOnPin(CC11XX_CSN_PORT, CC11XX_CSN_PIN);
-
-#if DEBUG_MODE == true
-    debug_PrintByte("Chip status: ", read_value);
-    debug_PrintMsg("End of cc11xx_8BitRegAccess()\n");
-#endif // DEBUG_MODE
 
     // Return the status byte value
 	return read_value;
@@ -282,13 +220,6 @@ uint8_t cc11xx_8BitRegAccess(uint8_t access_type, uint8_t addr_byte, uint8_t *pD
 
 void cc11xx_ReadWriteBurstSingle(uint8_t header, uint8_t *pData, uint16_t len)
 {
-#if DEBUG_MODE == true
-    debug_PrintMsg("cc11xx_ReadWriteBurstSingle()");
-    debug_PrintByte("\theader = ", header);
-    debug_PrintByte("\tpData = ", *pData);
-    debug_PrintByte("\tlen = ", len);
-#endif // DEBUG_MODE
-
     uint16_t i;
     
     // Communicate len number of bytes: if RX - the procedure sends 0x00 to push bytes from slave
@@ -298,56 +229,66 @@ void cc11xx_ReadWriteBurstSingle(uint8_t header, uint8_t *pData, uint16_t len)
         {
             for(i=0; i<len; i++)
             {
-                // ????????????????????????????????????????????????????????????????????????????????????
-                // Possible to combining read and write as one access type ????????????????????????????
-                // ????????????????????????????????????????????????????????????????????????????????????
-
+#if CC11XX_SPI_USCI == USCI_A
                 // Wait until new data was written into RX buffer
-                while(!USCI_B_SPI_getInterruptStatus(USCI_B0_BASE, USCI_B_SPI_RECEIVE_INTERRUPT))
+                while(!USCI_A_SPI_getInterruptStatus(CC11XX_SPI_BASE_ADDRESS, USCI_A_SPI_RECEIVE_INTERRUPT))
                 {
                     
                 }
-                USCI_B_SPI_transmitData(USCI_B0_BASE, 0);   // ????????????????????????????????????????
-
-#if DEBUG_MODE == true
-                debug_PrintByte("Transmited data (Read cmd.): ", 0x00);
-#endif // DEBUG_MODE
+                USCI_A_SPI_transmitData(CC11XX_SPI_BASE_ADDRESS, 0);
                 
                 // Wait until new data was written into RX buffer
-                while(!USCI_B_SPI_getInterruptStatus(USCI_B0_BASE, USCI_B_SPI_RECEIVE_INTERRUPT))
+                while(!USCI_A_SPI_getInterruptStatus(CC11XX_SPI_BASE_ADDRESS, USCI_A_SPI_RECEIVE_INTERRUPT))
                 {
                     
                 }
 
-                *pData = USCI_B_SPI_receiveData(USCI_B0_BASE);  // Store pData from last pData RX
+                *pData = USCI_A_SPI_receiveData(CC11XX_SPI_BASE_ADDRESS);  // Store pData from last pData RX
+#elif CC11XX_SPI_USCI == USCI_B
+                // Wait until new data was written into RX buffer
+                while(!USCI_B_SPI_getInterruptStatus(CC11XX_SPI_BASE_ADDRESS, USCI_B_SPI_RECEIVE_INTERRUPT))
+                {
+                    
+                }
+                USCI_B_SPI_transmitData(CC11XX_SPI_BASE_ADDRESS, 0);
+                
+                // Wait until new data was written into RX buffer
+                while(!USCI_B_SPI_getInterruptStatus(CC11XX_SPI_BASE_ADDRESS, USCI_B_SPI_RECEIVE_INTERRUPT))
+                {
+                    
+                }
 
-#if DEBUG_MODE == true
-                debug_PrintByte("Received data (Reg. value): ", *pData);
-#endif // DEBUG_MODE
+                *pData = USCI_B_SPI_receiveData(CC11XX_SPI_BASE_ADDRESS);  // Store pData from last pData RX
+#endif // CC11XX_SPI_USCI
 
                 pData++;
             }
         }
         else    // CC11XX_SINGLE_ACCESS
         {
-            USCI_B_SPI_clearInterrupt(USCI_B0_BASE, USCI_B_SPI_RECEIVE_INTERRUPT);
-            USCI_B_SPI_transmitData(USCI_B0_BASE, 0);
-
-#if DEBUG_MODE == true
-            debug_PrintByte("Transmited data (Read cmd.): ", 0x00);
-#endif // DEBUG_MODE
+#if CC11XX_SPI_USCI == USCI_A
+            USCI_A_SPI_clearInterrupt(CC11XX_SPI_BASE_ADDRESS, USCI_A_SPI_RECEIVE_INTERRUPT);
+            USCI_A_SPI_transmitData(CC11XX_SPI_BASE_ADDRESS, 0);
 
             // Wait until new data was written into RX buffer
-            while(!USCI_B_SPI_getInterruptStatus(USCI_B0_BASE, USCI_B_SPI_RECEIVE_INTERRUPT))
+            while(!USCI_A_SPI_getInterruptStatus(CC11XX_SPI_BASE_ADDRESS, USCI_A_SPI_RECEIVE_INTERRUPT))
             {
                 
             }
             
-            *pData = USCI_B_SPI_receiveData(USCI_B0_BASE);
+            *pData = USCI_A_SPI_receiveData(CC11XX_SPI_BASE_ADDRESS);
+#elif CC11XX_SPI_USCI == USCI_B
+            USCI_B_SPI_clearInterrupt(CC11XX_SPI_BASE_ADDRESS, USCI_B_SPI_RECEIVE_INTERRUPT);
+            USCI_B_SPI_transmitData(CC11XX_SPI_BASE_ADDRESS, 0);
+
+            // Wait until new data was written into RX buffer
+            while(!USCI_B_SPI_getInterruptStatus(CC11XX_SPI_BASE_ADDRESS, USCI_B_SPI_RECEIVE_INTERRUPT))
+            {
+                
+            }
             
-#if DEBUG_MODE == true
-            debug_PrintByte("Received data (Reg. value): ", *pData);
-#endif // DEBUG_MODE
+            *pData = USCI_B_SPI_receiveData(CC11XX_SPI_BASE_ADDRESS);
+#endif // CC11XX_SPI_USCI
         }
     }
     else    // CC11XX_WRITE_ACCESS
@@ -357,54 +298,55 @@ void cc11xx_ReadWriteBurstSingle(uint8_t header, uint8_t *pData, uint16_t len)
             // Communicate len number of bytes: if TX - the procedure doesn't overwrite pData
             for(i=0; i<len; i++)
             {
-                USCI_B_SPI_clearInterrupt(USCI_B0_BASE, USCI_B_SPI_RECEIVE_INTERRUPT);
-                USCI_B_SPI_transmitData(USCI_B0_BASE, *pData);                
-
-#if DEBUG_MODE == true
-                debug_PrintByte("Transmited data (Reg. value): ", *pData);
-#endif // DEBUG_MODE
+#if CC11XX_SPI_USCI == USCI_A
+                USCI_A_SPI_clearInterrupt(CC11XX_SPI_BASE_ADDRESS, USCI_A_SPI_RECEIVE_INTERRUPT);
+                USCI_A_SPI_transmitData(CC11XX_SPI_BASE_ADDRESS, *pData);                
                 
                 // Wait until new data was written into RX buffer
-                while(!USCI_B_SPI_getInterruptStatus(USCI_B0_BASE, USCI_B_SPI_RECEIVE_INTERRUPT))
+                while(!USCI_A_SPI_getInterruptStatus(CC11XX_SPI_BASE_ADDRESS, USCI_A_SPI_RECEIVE_INTERRUPT))
                 {
                     
                 }
+#elif CC11XX_SPI_USCI == USCI_B
+                USCI_B_SPI_clearInterrupt(CC11XX_SPI_BASE_ADDRESS, USCI_B_SPI_RECEIVE_INTERRUPT);
+                USCI_B_SPI_transmitData(CC11XX_SPI_BASE_ADDRESS, *pData);                
+                
+                // Wait until new data was written into RX buffer
+                while(!USCI_B_SPI_getInterruptStatus(CC11XX_SPI_BASE_ADDRESS, USCI_B_SPI_RECEIVE_INTERRUPT))
+                {
+                    
+                }
+#endif // CC11XX_SPI_USCI
                 pData++;
             }
         }
         else    // CC11XX_SINGLE_ACCESS
         {
-            USCI_B_SPI_clearInterrupt(USCI_B0_BASE, USCI_B_SPI_RECEIVE_INTERRUPT);
-            USCI_B_SPI_transmitData(USCI_B0_BASE, *pData);
-
-#if DEBUG_MODE == true
-            debug_PrintByte("Transmited data (Reg. value): ", *pData);
-#endif // DEBUG_MODE
+#if CC11XX_SPI_USCI == USCI_A
+            USCI_A_SPI_clearInterrupt(CC11XX_SPI_BASE_ADDRESS, USCI_A_SPI_RECEIVE_INTERRUPT);
+            USCI_A_SPI_transmitData(CC11XX_SPI_BASE_ADDRESS, *pData);
 
             // Wait until new data was written into RX buffer
-            while(!USCI_B_SPI_getInterruptStatus(USCI_B0_BASE, USCI_B_SPI_RECEIVE_INTERRUPT))
+            while(!USCI_A_SPI_getInterruptStatus(CC11XX_SPI_BASE_ADDRESS, USCI_A_SPI_RECEIVE_INTERRUPT))
             {
                 
             }
+#elif CC11XX_SPI_USCI == USCI_B
+            USCI_B_SPI_clearInterrupt(CC11XX_SPI_BASE_ADDRESS, USCI_B_SPI_RECEIVE_INTERRUPT);
+            USCI_B_SPI_transmitData(CC11XX_SPI_BASE_ADDRESS, *pData);
+
+            // Wait until new data was written into RX buffer
+            while(!USCI_B_SPI_getInterruptStatus(CC11XX_SPI_BASE_ADDRESS, USCI_B_SPI_RECEIVE_INTERRUPT))
+            {
+                
+            }
+#endif // CC11XX_SPI_USCI
         }
     }
-
-#if DEBUG_MODE == true
-    debug_PrintMsg("End of cc11xx_ReadWriteBurstSingle()\n");
-#endif // DEBUG_MODE
 }
 
 uint8_t cc11xx_16BitRegAccess(uint8_t access_type, uint8_t ext_addr, uint8_t reg_addr, uint8_t *pData, uint8_t len)
 {
-#if DEBUG_MODE == true
-    debug_PrintMsg("cc11xx_16BitRegAccess()");
-    debug_PrintByte("\taccess_type = ", access_type);
-    debug_PrintByte("\text_addr = ", ext_addr);
-    debug_PrintByte("\treg_addr = ", reg_addr);
-    debug_PrintByte("\tpData = ", *pData);
-    debug_PrintByte("\tlen = ", len);
-#endif // DEBUG_MODE
-
     uint8_t read_value = 0;
     uint8_t header_byte = access_type | ext_addr;
 
@@ -417,39 +359,51 @@ uint8_t cc11xx_16BitRegAccess(uint8_t access_type, uint8_t ext_addr, uint8_t reg
         
     }
     
+#if CC11XX_SPI_USCI == USCI_A
     // Send extended address byte with access type bits set
-    USCI_B_SPI_clearInterrupt(USCI_B0_BASE, USCI_B_SPI_RECEIVE_INTERRUPT);
-    USCI_B_SPI_transmitData(USCI_B0_BASE, header_byte);
-
-#if DEBUG_MODE == true
-    debug_PrintByte("Transmited data (Header byte): ", header_byte);
-#endif // DEBUG_MODE
-
+    USCI_A_SPI_clearInterrupt(CC11XX_SPI_BASE_ADDRESS, USCI_A_SPI_RECEIVE_INTERRUPT);
+    USCI_A_SPI_transmitData(CC11XX_SPI_BASE_ADDRESS, header_byte);
+    
     // Wait until new data was written into RX buffer
-    while(!USCI_B_SPI_getInterruptStatus(USCI_B0_BASE, USCI_B_SPI_RECEIVE_INTERRUPT))
+    while(!USCI_A_SPI_getInterruptStatus(CC11XX_SPI_BASE_ADDRESS, USCI_A_SPI_RECEIVE_INTERRUPT))
     {
         
     }
     
     // Storing chip status
-    read_value = USCI_B_SPI_receiveData(USCI_B0_BASE);
-
-#if DEBUG_MODE == true
-    debug_PrintByte("Chip status: ", read_value);
-#endif // DEBUG_MODE
+    read_value = USCI_A_SPI_receiveData(CC11XX_SPI_BASE_ADDRESS);
     
-    USCI_B_SPI_clearInterrupt(USCI_B0_BASE, USCI_B_SPI_RECEIVE_INTERRUPT);
-    USCI_B_SPI_transmitData(USCI_B0_BASE, reg_addr);
-
-#if DEBUG_MODE == true
-    debug_PrintByte("Reg. address: ", reg_addr);
-#endif // DEBUG_MODE
-
+    USCI_A_SPI_clearInterrupt(CC11XX_SPI_BASE_ADDRESS, USCI_A_SPI_RECEIVE_INTERRUPT);
+    USCI_A_SPI_transmitData(CC11XX_SPI_BASE_ADDRESS, reg_addr);
+    
     // Wait until new data was written into RX buffer
-    while(!USCI_B_SPI_getInterruptStatus(USCI_B0_BASE, USCI_B_SPI_RECEIVE_INTERRUPT))
+    while(!USCI_A_SPI_getInterruptStatus(CC11XX_SPI_BASE_ADDRESS, USCI_A_SPI_RECEIVE_INTERRUPT))
     {
         
     }
+#elif CC11XX_SPI_USCI == USCI_B
+    // Send extended address byte with access type bits set
+    USCI_B_SPI_clearInterrupt(CC11XX_SPI_BASE_ADDRESS, USCI_B_SPI_RECEIVE_INTERRUPT);
+    USCI_B_SPI_transmitData(CC11XX_SPI_BASE_ADDRESS, header_byte);
+    
+    // Wait until new data was written into RX buffer
+    while(!USCI_B_SPI_getInterruptStatus(CC11XX_SPI_BASE_ADDRESS, USCI_B_SPI_RECEIVE_INTERRUPT))
+    {
+        
+    }
+    
+    // Storing chip status
+    read_value = USCI_B_SPI_receiveData(CC11XX_SPI_BASE_ADDRESS);
+    
+    USCI_B_SPI_clearInterrupt(CC11XX_SPI_BASE_ADDRESS, USCI_B_SPI_RECEIVE_INTERRUPT);
+    USCI_B_SPI_transmitData(CC11XX_SPI_BASE_ADDRESS, reg_addr);
+    
+    // Wait until new data was written into RX buffer
+    while(!USCI_B_SPI_getInterruptStatus(CC11XX_SPI_BASE_ADDRESS, USCI_B_SPI_RECEIVE_INTERRUPT))
+    {
+        
+    }
+#endif // CC11XX_SPI_USCI
     
     // Communicate len number of bytes
     cc11xx_ReadWriteBurstSingle(header_byte, pData, len);
@@ -457,41 +411,15 @@ uint8_t cc11xx_16BitRegAccess(uint8_t access_type, uint8_t ext_addr, uint8_t reg
     // Pull CSn high after transfer
     GPIO_setOutputHighOnPin(CC11XX_CSN_PORT, CC11XX_CSN_PIN);
 
-#if DEBUG_MODE == true
-    debug_PrintByte("Chip status: ", read_value);
-    debug_PrintMsg("End of cc11xx_16BitRegAccess()\n");
-#endif // DEBUG_MODE
-
     // Return the status byte value
     return read_value;
 }
 
 void cc11xx_ManualReset()
 {
-#if DEBUG_MODE == true
-    debug_PrintMsg("cc11xx_ManualReset()");
-#endif // DEBUG_MODE
-
     GPIO_setOutputLowOnPin(CC11XX_RESET_PORT, CC11XX_RESET_PIN);
     __delay_cycles(100);
     GPIO_setOutputHighOnPin(CC11XX_RESET_PORT, CC11XX_RESET_PIN);
-
-#if DEBUG_MODE == true
-    debug_PrintMsg("End of cc11xx_ManualReset()\n");
-#endif // DEBUG_MODE
-}
-
-void cc11xx_SRESReset()
-{
-#if DEBUG_MODE == true
-    debug_PrintMsg("cc11xx_SRESReset()");
-#endif // DEBUG_MODE
-
-    cc11xx_CmdStrobe(CC11XX_SRES);
-
-#if DEBUG_MODE == true
-    debug_PrintMsg("End of cc11xx_SRESReset()\n");
-#endif // DEBUG_MODE
 }
 
 void cc11xx_ManualCalibration()
@@ -511,8 +439,7 @@ void cc11xx_ManualCalibration()
     write_byte = original_fs_cal2 + CC11XX_VCDAC_START_OFFSET;
     cc11xx_WriteReg(CC11XX_FS_CAL2, &write_byte, 1);
 
-    // 3) Calibrate and wait for calibration to be done
-    //   (radio back in IDLE state)
+    // 3) Calibrate and wait for calibration to be done (radio back in IDLE state)
     cc11xx_CmdStrobe(CC11XX_SCAL);
 
     do
@@ -521,8 +448,7 @@ void cc11xx_ManualCalibration()
     }
     while(marcstate != 0x41);
 
-    // 4) Read FS_VCO2, FS_VCO4 and FS_CHP register obtained with
-    //    high VCDAC_START value
+    // 4) Read FS_VCO2, FS_VCO4 and FS_CHP register obtained with high VCDAC_START value
     cc11xx_ReadReg(CC11XX_FS_VCO2, &calResults_for_vcdac_start_high[CC11XX_FS_VCO2_INDEX], 1);
     cc11xx_ReadReg(CC11XX_FS_VCO4, &calResults_for_vcdac_start_high[CC11XX_FS_VCO4_INDEX], 1);
     cc11xx_ReadReg(CC11XX_FS_CHP, &calResults_for_vcdac_start_high[CC11XX_FS_CHP_INDEX], 1);
@@ -535,8 +461,7 @@ void cc11xx_ManualCalibration()
     write_byte = original_fs_cal2;
     cc11xx_WriteReg(CC11XX_FS_CAL2, &write_byte, 1);
 
-    // 7) Calibrate and wait for calibration to be done
-    //   (radio back in IDLE state)
+    // 7) Calibrate and wait for calibration to be done (radio back in IDLE state)
     cc11xx_CmdStrobe(CC11XX_SCAL);
 
     do
@@ -545,14 +470,12 @@ void cc11xx_ManualCalibration()
     }
     while(marcstate != 0x41);
 
-    // 8) Read FS_VCO2, FS_VCO4 and FS_CHP register obtained
-    //    with mid VCDAC_START value
+    // 8) Read FS_VCO2, FS_VCO4 and FS_CHP register obtained with mid VCDAC_START value
     cc11xx_ReadReg(CC11XX_FS_VCO2, &calResults_for_vcdac_start_mid[CC11XX_FS_VCO2_INDEX], 1);
     cc11xx_ReadReg(CC11XX_FS_VCO4, &calResults_for_vcdac_start_mid[CC11XX_FS_VCO4_INDEX], 1);
     cc11xx_ReadReg(CC11XX_FS_CHP, &calResults_for_vcdac_start_mid[CC11XX_FS_CHP_INDEX], 1);
 
-    // 9) Write back highest FS_VCO2 and corresponding FS_VCO
-    //    and FS_CHP result
+    // 9) Write back highest FS_VCO2 and corresponding FS_VCO and FS_CHP result
     if (calResults_for_vcdac_start_high[CC11XX_FS_VCO2_INDEX] > calResults_for_vcdac_start_mid[CC11XX_FS_VCO2_INDEX])
     {
         write_byte = calResults_for_vcdac_start_high[CC11XX_FS_VCO2_INDEX];
@@ -575,30 +498,15 @@ void cc11xx_ManualCalibration()
 
 uint8_t cc11xx_WriteTXFIFO(uint8_t *pData, uint8_t len)
 {
-#if DEBUG_MODE == true
-    debug_PrintMsg("cc11xx_WriteTXFIFO()");
-    debug_PrintByte("\tpData = ", *pData);
-    debug_PrintByte("\tlen = ", len);
-#endif // DEBUG_MODE
-
     uint8_t chip_status = cc11xx_8BitRegAccess(CC11XX_WRITE_ACCESS, CC11XX_BURST_TXFIFO, pData, len);
-
-#if DEBUG_MODE == true
-    debug_PrintMsg("End of cc11xx_WriteTXFIFO()\n");
-#endif // DEBUG_MODE
 
     return chip_status;
 }
 
 uint8_t cc11xx_SPI_Init()
 {
-#if DEBUG_MODE == true
-    debug_PrintMsg("SPI_Init()");
-#endif // DEBUG_MODE
-
     // MISO, MOSI and SCLK init.
-    GPIO_setAsPeripheralModuleFunctionInputPin(CC11XX_SPI_PORT,
-                                               CC11XX_MISO_PIN + CC11XX_MOSI_PIN + CC11XX_SCLK_PIN);
+    GPIO_setAsPeripheralModuleFunctionInputPin(CC11XX_SPI_PORT, CC11XX_MISO_PIN + CC11XX_MOSI_PIN + CC11XX_SCLK_PIN);
     
     // CSn init.
     GPIO_setAsOutputPin(CC11XX_CSN_PORT, CC11XX_CSN_PIN);
@@ -606,44 +514,63 @@ uint8_t cc11xx_SPI_Init()
     
     // Config. SPI as Master
     USCI_B_SPI_initMasterParam spi_params = {0};
+#if CC11XX_SPI_USCI == USCI_A
+    spi_params.selectClockSource     = USCI_A_SPI_CLOCKSOURCE_SMCLK;
+    spi_params.msbFirst              = USCI_A_SPI_MSB_FIRST;
+    spi_params.clockPhase            = USCI_A_SPI_PHASE_DATA_CHANGED_ONFIRST_CAPTURED_ON_NEXT;
+    spi_params.clockPolarity         = USCI_A_SPI_CLOCKPOLARITY_INACTIVITY_HIGH;
+#elif CC11XX_SPI_USCI == USCI_B
     spi_params.selectClockSource     = USCI_B_SPI_CLOCKSOURCE_SMCLK;
-    spi_params.clockSourceFrequency  = UCS_getSMCLK();
-    spi_params.desiredSpiClock       = SPICLK;
     spi_params.msbFirst              = USCI_B_SPI_MSB_FIRST;
     spi_params.clockPhase            = USCI_B_SPI_PHASE_DATA_CHANGED_ONFIRST_CAPTURED_ON_NEXT;
     spi_params.clockPolarity         = USCI_B_SPI_CLOCKPOLARITY_INACTIVITY_HIGH;
+#endif // CC11XX_SPI_USCI
+    spi_params.clockSourceFrequency  = UCS_getSMCLK();
+    spi_params.desiredSpiClock       = CC11XX_SPI_CLK;
 
     // SPI initialization
-    if (USCI_B_SPI_initMaster(USCI_B0_BASE, &spi_params) == STATUS_FAIL)
+#if CC11XX_SPI_USCI == USCI_A
+    if (USCI_A_SPI_initMaster(CC11XX_SPI_BASE_ADDRESS, &spi_params) == STATUS_SUCCESS)
     {
-#if DEBUG_MODE == true
-        debug_PrintMsg("\tFAIL!");
-#endif // DEBUG_MODE
-
-        return STATUS_FAIL;
-    }
-    else
+        USCI_A_SPI_enable(CC11XX_SPI_BASE_ADDRESS);
+#elif CC11XX_SPI_USCI == USCI_B
+    if (USCI_B_SPI_initMaster(CC11XX_SPI_BASE_ADDRESS, &spi_params) == STATUS_SUCCESS)
     {
-        // Enable SPI module
-        USCI_B_SPI_enable(USCI_B0_BASE);
-        
-#if DEBUG_MODE == true
-        debug_PrintMsg("\tSUCCESS!");
-#endif // DEBUG_MODE
+        USCI_B_SPI_enable(CC11XX_SPI_BASE_ADDRESS);
+#endif // CC11XX_SPI_USCI
 
         return STATUS_SUCCESS;
     }
+    else
+    {
+        return STATUS_FAIL;
+    }
+}
+
+void cc11xx_GPIO_Init()
+{
+    // Reset pin
+    GPIO_setAsOutputPin(CC11XX_RESET_PORT, CC11XX_RESET_PIN);
+    
+    // CC11xx GPIO0
+    GPIO_setAsOutputPin(CC11XX_GPIO0_PORT, CC11XX_GPIO0_PIN);
+
+    // CC11xx GPIO2
+    GPIO_setAsOutputPin(CC11XX_GPIO2_PORT, CC11XX_GPIO2_PIN);
+
+    // CC11xx GPIO3
+    GPIO_setAsOutputPin(CC11XX_GPIO3_PORT, CC11XX_GPIO3_PIN);
 }
 
 void cc11xx_WakeUp()
 {
 #if DEBUG_MODE == true
-        debug_PrintMsg("Waking up the radio... ");
+        debug_PrintMsg("Waking up " + CC11XX_MODEL_LABEL + "... ");
 #endif // DEBUG_MODE
 
-    GPIO_setOutputLowOnPin(GPIO_PORT_P2, GPIO_PIN0);    // P2.0 = CSn = 0
+    GPIO_setOutputLowOnPin(CC11XX_CSN_PORT, CC11XX_CSN_PIN);
     __delay_cycles(100);
-    GPIO_setOutputHighOnPin(GPIO_PORT_P2, GPIO_PIN0);   // P2.0 = CSn = 1
+    GPIO_setOutputHighOnPin(CC11XX_CSN_PORT, CC11XX_CSN_PIN);
 
 #if DEBUG_MODE == true
         debug_PrintMsg("SUCCESS!\n");

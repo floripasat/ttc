@@ -43,6 +43,17 @@
 #include <stdint.h>
 #include "debug.h"
 
+#ifndef USCI_A
+#define USCI_A                      0x00
+#endif // USCI_A
+
+#ifndef USCI_B
+#define USCI_B                      0x01
+#endif // USCI_B
+
+#define CC11XX_MODEL_LABEL          "CC1175"        /**< cc11xx model label */
+#define CC11XX_SPI_CLK              400000          /**< SPI clock frequency in Hz. */
+
 /**
  * \defgroup pins CC1175 pins
  * \ingroup cc1175
@@ -51,21 +62,28 @@
  * 
  * \{
  */
-#define CC11XX_RESET_PORT       GPIO_PORT_P1    /**< Reset port = P1 */
-#define CC11XX_RESET_PIN        GPIO_PIN3       /**< Reset pin = P1.3 */
+#define CC11XX_RESET_PORT           GPIO_PORT_P1    /**< Reset port = P1 */
+#define CC11XX_RESET_PIN            GPIO_PIN3       /**< Reset pin = P1.3 */
 
-#define CC11XX_SPI_PORT         GPIO_PORT_P2    /**< SPI port = P2 (all pins in the same port) */
-#define CC11XX_CSN_PORT         GPIO_PORT_P2    /**< CSn port = P2*/
-#define CC11XX_CSN_PIN          GPIO_PIN0       /**< CSn pin = P2.0 */
-#define CC11XX_MOSI_PORT        GPIO_PORT_P2    /**< MOSI port = P2 */
-#define CC11XX_MOSI_PIN         GPIO_PIN1       /**< MOSI pin = P2.1 */
-#define CC11XX_MISO_PORT        GPIO_PORT_P2    /**< MISO port = P2 */
-#define CC11XX_MISO_PIN         GPIO_PIN2       /**< MISO pin = P2.2 */
-#define CC11XX_SCLK_PORT        GPIO_PORT_P2    /**< SCLK port = P2 */
-#define CC11XX_SCLK_PIN         GPIO_PIN3       /**< SCLK pin = P2.3*/
+#define CC11XX_SPI_USCI             USCI_B          /**< USCI interface */
+#define CC11XX_SPI_BASE_ADDRESS     USCI_B0_BASE    /**< Base address = USCI_B0_BASE */
+#define CC11XX_SPI_PORT             GPIO_PORT_P2    /**< SPI port = P2 (all pins at the same port) */
+#define CC11XX_CSN_PORT             GPIO_PORT_P2    /**< CSn port = P2 */
+#define CC11XX_CSN_PIN              GPIO_PIN0       /**< CSn pin = P2.0 */
+#define CC11XX_MOSI_PORT            GPIO_PORT_P2    /**< MOSI port = P2 */
+#define CC11XX_MOSI_PIN             GPIO_PIN1       /**< MOSI pin = P2.1 */
+#define CC11XX_MISO_PORT            GPIO_PORT_P2    /**< MISO port = P2 */
+#define CC11XX_MISO_PIN             GPIO_PIN2       /**< MISO pin = P2.2 */
+#define CC11XX_SCLK_PORT            GPIO_PORT_P2    /**< SCLK port = P2 */
+#define CC11XX_SCLK_PIN             GPIO_PIN3       /**< SCLK pin = P2.3 */
+
+#define CC11XX_GPIO0_PORT           GPIO_PORT_P1    /**< GPIO0 port = P1 */
+#define CC11XX_GPIO0_PIN            GPIO_PIN6       /**< GPIO0 pin = P1.6 */
+#define CC11XX_GPIO2_PORT           GPIO_PORT_P1    /**< GPIO2 port = P1 */
+#define CC11XX_GPIO2_PIN            GPIO_PIN5       /**< GPIO2 pin = P1.5 */
+#define CC11XX_GPIO3_PORT           GPIO_PORT_P1    /**< GPIO3 port = P1 */
+#define CC11XX_GPIO3_PIN            GPIO_PIN7       /**< GPIO3 pin = P1.7 */
 //! \} End of pins
-
-#define SPICLK 400000                           /**< SPI clock frequency. */
 
 /**
  * \defgroup adr_space CC1175 SPI Address Space
@@ -595,15 +613,6 @@ void cc11xx_ReadWriteBurstSingle(uint8_t addr, uint8_t *pData, uint16_t len);
 void cc11xx_ManualReset();
 
 /**
- * \fn cc11xx_SRESReset
- * 
- * \brief Reset the chip by using the SRES command strobe.
- * 
- * \return None
- */
-void cc11xx_SRESReset();
-
-/**
  * \fn cc11xx_ManualCalibration()
  * 
  * \brief Chip calibration.
@@ -639,6 +648,15 @@ uint8_t cc11xx_WriteTXFIFO(uint8_t *pData, uint8_t len);
  *      .
  */
 uint8_t cc11xx_SPI_Init();
+
+/**
+ * \fn cc11xx_GPIO_Init
+ * 
+ * \brief Initialization of the MCU<=>cc11xx GPIOs.
+ * 
+ * \return None
+ */
+void cc11xx_GPIO_Init();
 
 /**
  * \fn cc11xx_WakeUp
