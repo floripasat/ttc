@@ -36,6 +36,8 @@
  */
 
 #include "../inc/timer.h"
+#include "../inc/debug.h"
+#include "../driverlib/driverlib.h"
 
 // Initialization of the time counters
 uint8_t timer_sec_counter = 0;
@@ -44,6 +46,10 @@ uint8_t timer_hour_counter = 0;
 
 void timer_Init()
 {
+#if DEBUG_MODE == true
+    debug_PrintMsg("Main timer initialization... ");
+#endif // DEBUG_MODE
+
     // Start timer in continuous mode sourced by SMCLK
     Timer_A_initContinuousModeParam initContParam = {0};
     initContParam.clockSource               = TIMER_A_CLOCKSOURCE_SMCLK;
@@ -64,6 +70,10 @@ void timer_Init()
     initCompParam.compareValue              = (uint16_t)(UCS_getSMCLK()/TIMER_A_CLOCKSOURCE_DIVIDER_20);
     
     Timer_A_initCompareMode(TIMER_A1_BASE, &initCompParam);
+
+#if DEBUG_MODE == true
+    debug_PrintMsg("SUCCESS!\n");
+#endif // DEBUG_MODE
 }
 
 //! \} End of timer group

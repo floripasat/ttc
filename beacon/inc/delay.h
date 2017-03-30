@@ -42,7 +42,7 @@
 #include <stdint.h>
 
 #ifndef F_CPU
-#define F_CPU 4000000 // 4 MHz external clock
+#define F_CPU 8000000 // 8 MHz internal clock
 #endif // F_CPU
 
 /**

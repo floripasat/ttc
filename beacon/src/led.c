@@ -36,7 +36,6 @@
  */
 
 #include "../inc/led.h"
-#include "../inc/delay.h"
 
 void led_Init()
 {

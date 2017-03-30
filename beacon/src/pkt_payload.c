@@ -36,6 +36,7 @@
  */
 
 #include "../inc/pkt_payload.h"
+#include "../inc/debug.h"
 
 uint8_t pkt_payload_GetSize(uint8_t *eps_data)
 {
@@ -44,6 +45,10 @@ uint8_t pkt_payload_GetSize(uint8_t *eps_data)
 
 void pkt_payload_gen(uint8_t *pkt_payload, uint8_t *eps_data)
 {
+#if DEBUG_MODE == true
+    debug_PrintMsg("Generating packet payload... ");
+#endif // DEBUG_MODE
+
     uint8_t i = 0;
     uint8_t pkt_payload_counter = 0;
     for(i=0;i<sizeof(SAT_ID)-1;i++)
@@ -65,10 +70,18 @@ void pkt_payload_gen(uint8_t *pkt_payload, uint8_t *eps_data)
     pkt_payload[pkt_payload_counter++] = "="[0];
     pkt_payload[pkt_payload_counter++] = eps_data[2];
     pkt_payload[pkt_payload_counter++] = eps_data[3];
+
+#if DEBUG_MODE == true
+    debug_PrintMsg("DONE!\n");
+#endif // DEBUG_MODE
 }
 
 void pkt_payload_update(uint8_t *pkt_payload, uint8_t *eps_data)
 {
+#if DEBUG_MODE == true
+    debug_PrintMsg("Updating data of an already generated packet payload... ");
+#endif // DEBUG_MODE
+
     uint8_t pkt_payload_counter = sizeof(SAT_ID)-1 + sizeof("-")-1 + sizeof(BATT1_ID)-1 + sizeof("=")-1;
     pkt_payload[pkt_payload_counter++] = eps_data[0];
     pkt_payload[pkt_payload_counter++] = eps_data[1];
@@ -79,6 +92,10 @@ void pkt_payload_update(uint8_t *pkt_payload, uint8_t *eps_data)
     
     pkt_payload[pkt_payload_counter++] = eps_data[2];
     pkt_payload[pkt_payload_counter++] = eps_data[3];
+
+#if DEBUG_MODE == true
+    debug_PrintMsg("DONE!\n");
+#endif // DEBUG_MODE
 }
 
 //! \} End of pkt_payload implementation group

@@ -40,13 +40,15 @@
 #define DEBUG_H_
 
 #include <stdint.h>
+#include "../driverlib/driverlib.h"
 
 // Turn on/off debug mode
 #define DEBUG_MODE false                    /**< Debug mode flag. */
 
-#define DEBUG_UART_PORT     GPIO_PORT_P8    /**< Debug UART port = P8 */
-#define DEBUG_UART_TX_PIN   GPIO_PIN2       /**< UART TX pin = P8.2 (USCI_A1_TX_BEACON) */
-#define DEBUG_UART_RX_PIN   GPIO_PIN3       /**< UART RX pin = P8.3 (USCI_A1_RX_BEACON) */
+#define DEBUG_UART_BASE_ADDRESS     USCI_A1_BASE    /**< Debug UART base address */
+#define DEBUG_UART_PORT             GPIO_PORT_P8    /**< Debug UART port = P8 */
+#define DEBUG_UART_TX_PIN           GPIO_PIN2       /**< UART TX pin = P8.2 (USCI_A1_TX_BEACON) */
+#define DEBUG_UART_RX_PIN           GPIO_PIN3       /**< UART RX pin = P8.3 (USCI_A1_RX_BEACON) */
 
 /**
  * \fn debug_Init
@@ -56,12 +58,12 @@
  * After the UART initialization, to show if the debug mode is
  * working, the follow message is transmitted:
  * 
- * FloripaSat-TTC Copyright (C) 2016, Universidade Federal de Santa Catarina;
+ * FloripaSat-TTC Copyright (C) 2017, Universidade Federal de Santa Catarina;
  * This program comes with ABSOLUTELY NO WARRANTY.
  * This is free software, and you are welcome to redistribute it
  * under certain conditions.
  * 
- * Source code: https://github.com/mariobaldini/floripasat/tree/master/ttc
+ * Source code: https://github.com/floripasat/ttc
  * Documentation: http://fsat-server.duckdns.org:8000/ttc
  * 
  * FloripaSat debug mode:
@@ -79,8 +81,6 @@ uint8_t debug_Init();
  * 
  * \brief Prints a message over the UART.
  * 
- * \note The new line character ('\n') is printed after the message.
- * 
  * \param msg is the message to be written.
  * 
  * \return None
@@ -90,25 +90,31 @@ void debug_PrintMsg(const char *msg);
 /**
  * \fn debug_PrintByte
  * 
- * \brief Prints a message and a byte over the UART.
+ * \brief Prints a byte over the UART.
  * 
  * Example:
- *      - Message   = "Example"
  *      - Byte      = 0x65
- *      - Output    = "Example: 0x65"
+ *      - Output    = "0x65"
  * 
  * \note
  * The byte is printed in ASCII code.
  * 
- * \note
- * The new line character ('\n') is printed after the end of the byte.
- * 
- * \param msg is the message to be written.
  * \param byte is the byte to be written.
  * 
  * \return None
  */
-void debug_PrintByte(const char *msg, uint8_t byte);
+void debug_PrintByte(uint8_t byte);
+
+/**
+ * \fn debug_PrintDigit
+ * 
+ * \brief Prints a integer digit over the debug UART.
+ * 
+ * \param d is the digit to be written (0 to 9)
+ * 
+ * \return None
+ */
+void debug_PrintDigit(uint8_t d);
 
 /**
  * \fn debug_UART_Init

@@ -40,7 +40,6 @@
 #define TIMER_H_
 
 #include <stdint.h>
-#include "../driverlib/driverlib.h"
 
 /**
  * \brief Time counters.

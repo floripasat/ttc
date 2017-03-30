@@ -37,6 +37,7 @@
 
 #include "../inc/cc11xx.h"
 #include "../inc/cc11xx_floripasat_reg_config.h"
+#include "../inc/debug.h"
 
 uint8_t cc11xx_Init()
 {

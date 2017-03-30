@@ -41,7 +41,6 @@
 
 #include "../driverlib/driverlib.h"
 #include <stdint.h>
-#include "debug.h"
 
 #ifndef USCI_A
 #define USCI_A                      0x00

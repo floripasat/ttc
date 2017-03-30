@@ -36,20 +36,44 @@
  */
 
 #include "../inc/antenna.h"
+#include "../inc/debug.h"
+#include "../driverlib/driverlib.h"
 
 uint8_t antenna_Init()
 {
+#if DEBUG_MODE == true
+    debug_PrintMsg("Antenna initialization... ");
+#endif // DEBUG_MODE
+
+#if DEBUG_MODE == true
+    debug_PrintMsg("SUCCESS!\n");
+#endif // DEBUG_MODE
+
     return STATUS_SUCCESS;
 }
 
 uint8_t antenna_IsReleased()
 {
-    return 0x01;
+#if DEBUG_MODE == true
+    debug_PrintMsg("Checking if the antenna is released... ");
+#endif // DEBUG_MODE
+
+#if DEBUG_MODE == true
+    debug_PrintMsg("RELEASED, nothing to do!\n");
+#endif // DEBUG_MODE
+
+    return ANTENNA_STATUS_RELEASED;
 }
 
 void antenna_Release()
 {
+#if DEBUG_MODE == true
+    debug_PrintMsg("Deploying the antenna... ");
+#endif // DEBUG_MODE
     
+#if DEBUG_MODE == true
+    debug_PrintMsg("SUCCESS!\n");
+#endif // DEBUG_MODE
 }
 
 //! \} End of antenna group

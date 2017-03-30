@@ -39,13 +39,17 @@
 #ifndef ANTENNA_H_
 #define ANTENNA_H_
 
+#define ANTENNA_STATUS_NOT_RELEASED     0x00
+#define ANTENNA_STATUS_RELEASED         0x01
+
 #include <stdint.h>
-#include "../driverlib/driverlib.h"
 
 /**
  * \fn antenna_Init()
  * 
- * \brief Initialization of the antenna deployment pin.
+ * \brief Initialization of the antenna deployment peripherals.
+ * 
+ * \note TO BE DEVELOPED!
  * 
  * \return none
  */
@@ -54,9 +58,14 @@ uint8_t antenna_Init();
 /**
  * \fn antenna_IsReleased
  * 
- * \brief
+ * \brief Verifies if the antenna is released or not.
  * 
- * \return 
+ * \note TO BE DEVELOPED!
+ * 
+ * \return It can return:
+ *              -\b ANTENNA_STATUS_NOT_RELEASED if the antenna is not released.
+ *              -\b ANTENNA_STATUS_RELEASED if the antenna is released.
+ *              .
  */
 uint8_t antenna_IsReleased();
 
@@ -64,6 +73,8 @@ uint8_t antenna_IsReleased();
  * \fn antenna_Release
  * 
  * \brief Enables the antenna deployment.
+ * 
+ * \note TO BE DEVELOPED!
  * 
  * \return none
  */

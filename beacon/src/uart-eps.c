@@ -36,7 +36,7 @@
  */
 
 #include "../inc/uart-eps.h"
-#include "../driverlib/driverlib.h"
+#include "../inc/debug.h"
 
 // UART-EPS interruption variables initialization
 uint8_t eps_uart_received_byte                  = 0x00;
@@ -47,7 +47,7 @@ uint8_t eps_data[EPS_UART_PKT_LEN + 1]          = {0xFF, 0xFF, 0xFF, 0xFF};
 uint8_t eps_UART_Init()
 {
 #if DEBUG_MODE == true
-    debug_PrintMsg("UART_EPS_Init()");
+    debug_PrintMsg("EPS-UART initialization... ");
 #endif // DEBUG_MODE
 
     // UART pins init.
@@ -66,10 +66,10 @@ uint8_t eps_UART_Init()
     uart_params.overSampling        = USCI_A_UART_OVERSAMPLING_BAUDRATE_GENERATION;     // Clock = 1 MHz, Baudrate = 9600 bps (See [1])
 
     // UART initialization
-    if (USCI_A_UART_init(USCI_A0_BASE, &uart_params) == STATUS_FAIL)
+    if (USCI_A_UART_init(EPS_UART_BASE_ADDRESS, &uart_params) == STATUS_FAIL)
     {
 #if DEBUG_MODE == true
-        debug_PrintMsg("\tFAIL!");
+        debug_PrintMsg("FAIL!\n");
 #endif // DEBUG_MODE
         
         return STATUS_FAIL;
@@ -77,16 +77,16 @@ uint8_t eps_UART_Init()
     else
     {
         // Enable UART module
-        USCI_A_UART_enable(USCI_A0_BASE);
+        USCI_A_UART_enable(EPS_UART_BASE_ADDRESS);
         
         // Enable Receive Interrupt
-        USCI_A_UART_clearInterrupt(USCI_A0_BASE, USCI_A_UART_RECEIVE_INTERRUPT);
-        USCI_A_UART_enableInterrupt(USCI_A0_BASE, USCI_A_UART_RECEIVE_INTERRUPT);
+        USCI_A_UART_clearInterrupt(EPS_UART_BASE_ADDRESS, USCI_A_UART_RECEIVE_INTERRUPT);
+        USCI_A_UART_enableInterrupt(EPS_UART_BASE_ADDRESS, USCI_A_UART_RECEIVE_INTERRUPT);
         
         __enable_interrupt();
 
 #if DEBUG_MODE == true
-        debug_PrintMsg("\tSUCCESS!");
+        debug_PrintMsg("SUCCESS!\n");
 #endif // DEBUG_MODE
 
         return STATUS_SUCCESS;

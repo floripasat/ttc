@@ -36,12 +36,12 @@
  */
 
 #include "../inc/rf-switch.h"
-#include "../driverlib/driverlib.h"
+#include "../inc/debug.h"
 
 void rf_switch_Init()
 {
 #if DEBUG_MODE == true
-    debug_PrintMsg("rf_switch_Init()");
+    debug_PrintMsg("RF Switch initialization... ");
 #endif // DEBUG_MODE
 
     GPIO_setAsOutputPin(RF_SWT_CONTROL_PORT, RF_SWT_CONTROL_PIN);
@@ -49,33 +49,33 @@ void rf_switch_Init()
 	GPIO_setOutputLowOnPin(RF_SWT_CONTROL_PORT, RF_SWT_CONTROL_PIN);
 
 #if DEBUG_MODE == true
-    debug_PrintMsg("End of rf_switch_Init()\n");
+    debug_PrintMsg("SUCCESS!\n");
 #endif // DEBUG_MODE
 }
 
 void rf_switch_Enable()
 {
 #if DEBUG_MODE == true
-    debug_PrintMsg("rf_switch_Enable()");
+    debug_PrintMsg("Switching RF Switch to beacon position... ");
 #endif // DEBUG_MODE
 
     GPIO_setOutputHighOnPin(RF_SWT_CONTROL_PORT, RF_SWT_CONTROL_PIN);
 
 #if DEBUG_MODE == true
-    debug_PrintMsg("End of rf_switch_Enable()\n");
+    debug_PrintMsg("SUCCESS!\n");
 #endif // DEBUG_MODE
 }
 
 void rf_switch_Disable()
 {
 #if DEBUG_MODE == true
-    debug_PrintMsg("rf_switch_Disable()");
+    debug_PrintMsg("Setting RF Switch to default position... ");
 #endif // DEBUG_MODE
 
     GPIO_setOutputLowOnPin(RF_SWT_CONTROL_PORT, RF_SWT_CONTROL_PIN);
-    
+
 #if DEBUG_MODE == true
-    debug_PrintMsg("End of rf_switch_Disable()\n");
+    debug_PrintMsg("SUCCESS!\n");
 #endif // DEBUG_MODE
 }
 

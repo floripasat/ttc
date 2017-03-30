@@ -36,37 +36,35 @@
  */
 
 #include "../inc/debug.h"
-#include "../driverlib/driverlib.h"
 
 uint8_t debug_Init()
 {
-    if (debug_UART_Init() == STATUS_FAIL)
+    if (debug_UART_Init() == STATUS_SUCCESS)
     {
-        return STATUS_FAIL;
-    }
-    else
-    {
-        char debug_msg[] = "*************************************\n\tFloripaSat-Beacon Debug Mode\n*************************************\n";
-/*                           "FloripaSat-TTC Copyright (C) 2016, Universidade Federal de Santa Catarina;\n"
+        char debug_msg[] = "FloripaSat-TTC Copyright (C) 2016, Universidade Federal de Santa Catarina;\n"
                            "This program comes with ABSOLUTELY NO WARRANTY.\n"
                            "This is free software, and you are welcome to redistribute it\n"
                            "under certain conditions.\n\n"
-                           "Source code: https://github.com/mariobaldini/floripasat/tree/master/ttc\n"
+                           "Source code: https://github.com/floripasat/ttc\n"
                            "Documentation: http://fsat-server.duckdns.org:8000/ttc\n\n"
                            "FloripaSat debug mode:\n"
-                           "*************************************\n"*/
+                           "*************************************\n\n";
         uint8_t i = 0;
         for(i=0;i<sizeof(debug_msg)-1;i++)
         {
-            while(!USCI_A_UART_getInterruptStatus(USCI_A1_BASE, USCI_A_UART_TRANSMIT_INTERRUPT_FLAG))
+            while(!USCI_A_UART_getInterruptStatus(DEBUG_UART_BASE_ADDRESS, USCI_A_UART_TRANSMIT_INTERRUPT_FLAG))
             {
                 
             }
             
-            USCI_A_UART_transmitData(USCI_A1_BASE, debug_msg[i]);
+            USCI_A_UART_transmitData(DEBUG_UART_BASE_ADDRESS, debug_msg[i]);
         }
         
         return STATUS_SUCCESS;
+    }
+    else
+    {
+        return STATUS_FAIL;
     }
 }
 
@@ -75,71 +73,68 @@ void debug_PrintMsg(const char *msg)
     uint8_t i = 0;
     while(msg[i] != '\0')
     {
-        while(!USCI_A_UART_getInterruptStatus(USCI_A1_BASE, USCI_A_UART_TRANSMIT_INTERRUPT_FLAG))
+        while(!USCI_A_UART_getInterruptStatus(DEBUG_UART_BASE_ADDRESS, USCI_A_UART_TRANSMIT_INTERRUPT_FLAG))
         {
             
         }
         
-        USCI_A_UART_transmitData(USCI_A1_BASE, msg[i]);
+        USCI_A_UART_transmitData(DEBUG_UART_BASE_ADDRESS, msg[i]);
         i++;
     }
-    
-    while(!USCI_A_UART_getInterruptStatus(USCI_A1_BASE, USCI_A_UART_TRANSMIT_INTERRUPT_FLAG))
-    {
-        
-    }
-    
-    USCI_A_UART_transmitData(USCI_A1_BASE, '\n');
 }
 
-void debug_PrintByte(const char *msg, uint8_t byte)
+void debug_PrintByte(uint8_t byte)
 {
-    uint8_t i = 0;
-    while(msg[i] != '\0')
-    {
-        while(!USCI_A_UART_getInterruptStatus(USCI_A1_BASE, USCI_A_UART_TRANSMIT_INTERRUPT_FLAG))
-        {
-            
-        }
-        USCI_A_UART_transmitData(USCI_A1_BASE, msg[i]);
-        i++;
-    }
-    
     char hex_msg[] = "0x";
+    uint8_t i = 0;
     for(i=0;i<sizeof(hex_msg)-1;i++)
     {
-        while(!USCI_A_UART_getInterruptStatus(USCI_A1_BASE, USCI_A_UART_TRANSMIT_INTERRUPT_FLAG))
+        while(!USCI_A_UART_getInterruptStatus(DEBUG_UART_BASE_ADDRESS, USCI_A_UART_TRANSMIT_INTERRUPT_FLAG))
         {
             
         }
-        USCI_A_UART_transmitData(USCI_A1_BASE, hex_msg[i]);
+        USCI_A_UART_transmitData(DEBUG_UART_BASE_ADDRESS, hex_msg[i]);
     }
     
-    while(!USCI_A_UART_getInterruptStatus(USCI_A1_BASE, USCI_A_UART_TRANSMIT_INTERRUPT_FLAG))
+    while(!USCI_A_UART_getInterruptStatus(DEBUG_UART_BASE_ADDRESS, USCI_A_UART_TRANSMIT_INTERRUPT_FLAG))
     {
         
     }
     uint8_t hex_to_ascii = (uint8_t)(byte >> 4);
     if (hex_to_ascii < 0x0A)
-        USCI_A_UART_transmitData(USCI_A1_BASE, hex_to_ascii + 0x30);  // 0x30 = ascii 0
+        USCI_A_UART_transmitData(DEBUG_UART_BASE_ADDRESS, hex_to_ascii + 0x30);  // 0x30 = ascii 0
     else
-        USCI_A_UART_transmitData(USCI_A1_BASE, hex_to_ascii + 0x37);  // 0x37 = ascii 7
+        USCI_A_UART_transmitData(DEBUG_UART_BASE_ADDRESS, hex_to_ascii + 0x37);  // 0x37 = ascii 7
     
-    while(!USCI_A_UART_getInterruptStatus(USCI_A1_BASE, USCI_A_UART_TRANSMIT_INTERRUPT_FLAG))
+    while(!USCI_A_UART_getInterruptStatus(DEBUG_UART_BASE_ADDRESS, USCI_A_UART_TRANSMIT_INTERRUPT_FLAG))
     {
         
     }
     hex_to_ascii = (uint8_t)(byte & 0x0F);
     if (hex_to_ascii < 0x0A)
-        USCI_A_UART_transmitData(USCI_A1_BASE, hex_to_ascii + 0x30);  // 0x30 = ascii 0
+        USCI_A_UART_transmitData(DEBUG_UART_BASE_ADDRESS, hex_to_ascii + 0x30);  // 0x30 = ascii 0
     else
-        USCI_A_UART_transmitData(USCI_A1_BASE, hex_to_ascii + 0x37);  // 0x37 = ascii 7
-    
-    while(!USCI_A_UART_getInterruptStatus(USCI_A1_BASE, USCI_A_UART_TRANSMIT_INTERRUPT_FLAG))
+        USCI_A_UART_transmitData(DEBUG_UART_BASE_ADDRESS, hex_to_ascii + 0x37);  // 0x37 = ascii 7
+}
+
+void debug_PrintDigit(uint8_t d)
+{
+    if (d < 10)
     {
-        
+        while(!USCI_A_UART_getInterruptStatus(DEBUG_UART_BASE_ADDRESS, USCI_A_UART_TRANSMIT_INTERRUPT_FLAG))
+        {
+            
+        }
+        USCI_A_UART_transmitData(DEBUG_UART_BASE_ADDRESS, d + 0x30);    // 0x30 = ascii '0'
     }
-    USCI_A_UART_transmitData(USCI_A1_BASE, '\n');
+    else
+    {
+        while(!USCI_A_UART_getInterruptStatus(DEBUG_UART_BASE_ADDRESS, USCI_A_UART_TRANSMIT_INTERRUPT_FLAG))
+        {
+            
+        }
+        USCI_A_UART_transmitData(DEBUG_UART_BASE_ADDRESS, 'N');
+    }
 }
 
 uint8_t debug_UART_Init()
@@ -160,16 +155,16 @@ uint8_t debug_UART_Init()
     uart_params.overSampling        = USCI_A_UART_LOW_FREQUENCY_BAUDRATE_GENERATION;    // Clock = 1 MHz, Baudrate = 115200 bps (See [1])
 
     // UART initialization
-    if (USCI_A_UART_init(USCI_A1_BASE, &uart_params) == STATUS_FAIL)
+    if (USCI_A_UART_init(DEBUG_UART_BASE_ADDRESS, &uart_params) == STATUS_SUCCESS)
     {
-        return STATUS_FAIL;
+        // Enable UART module
+        USCI_A_UART_enable(DEBUG_UART_BASE_ADDRESS);
+
+        return STATUS_SUCCESS;
     }
     else
     {
-        // Enable UART module
-        USCI_A_UART_enable(USCI_A1_BASE);
-
-        return STATUS_SUCCESS;
+        return STATUS_FAIL;
     }
 }
 

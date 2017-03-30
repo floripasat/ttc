@@ -37,14 +37,23 @@
 
 #include "../inc/watchdog.h"
 #include "../driverlib/driverlib.h"
+#include "../inc/debug.h"
 
 void watchdog_Init()
 {
+#if DEBUG_MODE == true
+    debug_PrintMsg("Watchdog initialization... ");
+#endif // DEBUG_MODE
+
     // Watchdog initialization (3 sec. counter and watchdog mode)
     WDT_A_initWatchdogTimer(WDT_A_BASE, WDT_A_CLOCKSOURCE_ACLK, WDT_A_CLOCKDIVIDER_32K);
     
     // Start counter
     WDT_A_start(WDT_A_BASE);
+
+#if DEBUG_MODE == true
+    debug_PrintMsg("SUCCESS!\n");
+#endif // DEBUG_MODE
 }
 
 //! \} End of watchdog implementation group

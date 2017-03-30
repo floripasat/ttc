@@ -40,9 +40,14 @@
 
 #include "../inc/ax25.h"
 #include "../inc/crc.h"
+#include "../inc/debug.h"
 
 void ax25_BeaconPacketGen(AX25_Packet *ax25_packet, uint8_t *data, uint16_t data_size)
 {
+#if DEBUG_MODE == true
+    debug_PrintMsg("Generating AX25 packet... ");
+#endif // DEBUG_MODE
+
     AX25_Transfer_Frame_Header destination;
     AX25_Transfer_Frame_Header source;
     
@@ -73,10 +78,18 @@ void ax25_BeaconPacketGen(AX25_Packet *ax25_packet, uint8_t *data, uint16_t data
     }
     ax25_packet->fcs             = crc16_CCITT(0x0000, data, data_size);
     ax25_packet->end_flag        = AX25_FLAG;
+    
+#if DEBUG_MODE == true
+    debug_PrintMsg("DONE!\n");
+#endif // DEBUG_MODE
 }
 
 void ax25_UpdateDataFromPacket(AX25_Packet *ax25_packet, uint8_t *new_data, uint16_t new_data_size)
 {
+#if DEBUG_MODE == true
+    debug_PrintMsg("Updating an existing AX25 packet... ");
+#endif // DEBUG_MODE
+
     if (new_data_size > 256)
     {
         new_data_size = 256;
@@ -89,6 +102,10 @@ void ax25_UpdateDataFromPacket(AX25_Packet *ax25_packet, uint8_t *new_data, uint
     }
     
     ax25_packet->fcs = crc16_CCITT(0x0000, new_data, new_data_size);
+
+#if DEBUG_MODE == true
+    debug_PrintMsg("DONE!\n");
+#endif // DEBUG_MODE
 }
 
 void ax25_Packet2String(AX25_Packet *ax25_packet, uint8_t *str_packet, uint16_t data_size)

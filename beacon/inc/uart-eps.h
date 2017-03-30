@@ -40,11 +40,12 @@
 #define UART_EPS_H_
 
 #include <stdint.h>
-#include "debug.h"
+#include "../driverlib/driverlib.h"
 
 // P2.5 = UART0_EPS_TX_BEACON_RX
-#define EPS_UART_PORT       GPIO_PORT_P2
-#define EPS_UART_RX_PIN     GPIO_PIN5
+#define EPS_UART_BASE_ADDRESS   USCI_A0_BASE
+#define EPS_UART_PORT           GPIO_PORT_P2
+#define EPS_UART_RX_PIN         GPIO_PIN5
 
 #define EPS_UART_PKT_LEN                0x04
 #define EPS_UART_SOD                    0x7E

@@ -43,7 +43,7 @@ uint8_t obdh_gpio_state = OBDH_GPIO_STATE_WAITING_BIT0;
 void obdh_GPIO_Init()
 {
 #if DEBUG_MODE == true
-    debug_PrintMsg("Initializing OBDH communication... ");
+    debug_PrintMsg("Initializing OBDH communication peripherals... ");
 #endif // DEBUG_MODE
 
     // Enable GPIO pinn as input pins
