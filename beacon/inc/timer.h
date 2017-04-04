@@ -51,6 +51,7 @@
 extern uint8_t timer_sec_counter;       /**< Seconds counter. */
 extern uint8_t timer_min_counter;       /**< Minutes counter. */
 extern uint8_t timer_hour_counter;      /**< Hours counter. */
+extern uint16_t timer_day_counter;      /**< Days counter. */
 //! \}
 
 /**

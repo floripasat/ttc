@@ -229,6 +229,7 @@ void TIMER1_A0_ISR()
     }
     if (timer_hour_counter == 24)       // 1 day = 24 hours
     {
+        timer_day_counter++;
         timer_hour_counter = 0;
     }
     

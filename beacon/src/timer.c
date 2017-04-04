@@ -43,6 +43,7 @@
 uint8_t timer_sec_counter = 0;
 uint8_t timer_min_counter = 0;
 uint8_t timer_hour_counter = 0;
+uint16_t timer_day_counter = 0;
 
 void timer_Init()
 {
