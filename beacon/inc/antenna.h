@@ -76,9 +76,12 @@ uint8_t antenna_IsReleased();
  * 
  * \note TO BE DEVELOPED!
  * 
- * \return none
+ * \return Deployment status. It can be:
+ *              -\b STATUS_SUCCESS
+ *              -\b STATUS_FAIL
+ *              .
  */
-void antenna_Release();
+uint8_t antenna_Release();
 
 #endif // ANTENNA_H_
 

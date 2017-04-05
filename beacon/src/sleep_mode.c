@@ -36,8 +36,10 @@
  */
 
 #include "../inc/sleep_mode.h"
+#include "../driverlib/driverlib.h"
 #include "../inc/timer.h"
 #include "../inc/cc11xx.h"
+#include "../inc/gpio-obdh.h"
 #include "../inc/debug.h"
 
 uint8_t beacon_sleep_mode = BEACON_SLEEP_MODE_OFF;
@@ -48,6 +50,8 @@ void sleep_mode_TurnOn()
 #if DEBUG_MODE == true
     debug_PrintMsg("Entering sleep mode... ");
 #endif // DEBUG_MODE
+
+    GPIO_disableInterrupt(OBDH_GPIO_PORT, OBDH_GPIO_PIN0 + OBDH_GPIO_PIN1 + OBDH_GPIO_PIN2 + OBDH_GPIO_PIN3);
 
     beacon_sleep_mode = BEACON_SLEEP_MODE_ON;
     
@@ -66,6 +70,8 @@ void sleep_mode_TurnOff()
 #if DEBUG_MODE == true
     debug_PrintMsg("Leaving sleep mode... ");
 #endif // DEBUG_MODE
+
+    GPIO_enableInterrupt(OBDH_GPIO_PORT, OBDH_GPIO_PIN0 + OBDH_GPIO_PIN1 + OBDH_GPIO_PIN2 + OBDH_GPIO_PIN3);
 
     beacon_sleep_mode = BEACON_SLEEP_MODE_OFF;
     

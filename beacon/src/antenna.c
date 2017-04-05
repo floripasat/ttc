@@ -65,11 +65,13 @@ uint8_t antenna_IsReleased()
     return ANTENNA_STATUS_RELEASED;
 }
 
-void antenna_Release()
+uint8_t antenna_Release()
 {
 #if DEBUG_MODE == true
     debug_PrintMsg("Deploying the antenna... ");
 #endif // DEBUG_MODE
+    
+    return STATUS_SUCCESS;
     
 #if DEBUG_MODE == true
     debug_PrintMsg("SUCCESS!\n");
