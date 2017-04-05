@@ -37,6 +37,8 @@
 
 #include "../inc/gpio-obdh.h"
 #include "../inc/debug.h"
+#include "../driverlib/driverlib.h"
+#include "../inc/sleep_mode.h"
 
 uint8_t obdh_gpio_state = OBDH_GPIO_STATE_WAITING_BIT0;
 
@@ -87,6 +89,137 @@ void obdh_GPIO_Timer_Init()
     initCompParam.compareValue              = OBDH_GPIO_MAX_TRANSMISSION_TIME_SEC*(uint16_t)(UCS_getSMCLK()/TIMER_B_CLOCKSOURCE_DIVIDER_40);
     
     Timer_B_initCompareMode(TIMER_B0_BASE, &initCompParam);
+}
+
+/**
+ * \fn TIMER1_B0_ISR
+ *
+ * \brief Timer B0 interrupt service routine.
+ * 
+ * This timer is triggered when the data transmission between OBDH and BEACON starts.
+ * It establish a time limit of transmission between OBDH and BEACON.
+ * 
+ * \return none
+ */
+#if defined(__TI_COMPILER_VERSION__) || defined(__IAR_SYSTEMS_ICC__)
+#pragma vector=TIMERB0_VECTOR
+__interrupt
+#elif defined(__GNUC__)
+__attribute__((interrupt(TIMERB0_VECTOR)))
+#endif
+void TIMERB0_ISR()
+{
+    uint16_t comp_val = Timer_B_getCaptureCompareCount(TIMER_B0_BASE, TIMER_B_CAPTURECOMPARE_REGISTER_0)
+	                    + OBDH_GPIO_MAX_TRANSMISSION_TIME_SEC*(uint16_t)(UCS_getSMCLK()/TIMER_B_CLOCKSOURCE_DIVIDER_40);
+    
+    // Go back to the initial state
+    obdh_gpio_state = OBDH_GPIO_STATE_WAITING_BIT0;
+    
+    // Add Offset to CCR0
+    Timer_B_setCompareValue(TIMER_B0_BASE, TIMER_B_CAPTURECOMPARE_REGISTER_0, comp_val);
+    
+    // Stop timer to wait for the next attempt
+    Timer_B_stop(TIMER_B0_BASE);
+}
+
+/**
+ * \fn Port_4
+ *
+ * \brief This is the PORT4_VECTOR interrupt vector service routine.
+ *
+ * OBDH GPIO communication interruption routine.
+ *
+ * \return none
+ */
+#if defined(__TI_COMPILER_VERSION__) || defined(__IAR_SYSTEMS_ICC__)
+#pragma vector=PORT4_VECTOR
+__interrupt
+#elif defined(__GNUC__)
+__attribute__((interrupt(PORT4_VECTOR)))
+#endif
+void Port_4()
+{
+    // Delay for the settling time of the signal
+    _delay_cycles(100);
+    
+    switch(obdh_gpio_state)
+    {
+        case OBDH_GPIO_STATE_WAITING_BIT0:
+            if ((GPIO_getInputPinValue(OBDH_GPIO_PORT, OBDH_GPIO_PIN0) == GPIO_INPUT_PIN_HIGH) &&
+                (GPIO_getInputPinValue(OBDH_GPIO_PORT, OBDH_GPIO_PIN1) == GPIO_INPUT_PIN_LOW) &&
+                (GPIO_getInputPinValue(OBDH_GPIO_PORT, OBDH_GPIO_PIN2) == GPIO_INPUT_PIN_LOW) &&
+                (GPIO_getInputPinValue(OBDH_GPIO_PORT, OBDH_GPIO_PIN3) == GPIO_INPUT_PIN_LOW))
+            {
+                // Jump to the next state
+                obdh_gpio_state = OBDH_GPIO_STATE_WAITING_BIT1;
+                
+                // Init. timer (2s to receive all the data)
+                Timer_B_startCounter(TIMER_B0_BASE, TIMER_B_CONTINUOUS_MODE);
+                
+                break;
+            }
+            else
+            {
+                obdh_gpio_state = OBDH_GPIO_STATE_ERROR;
+            }
+        case OBDH_GPIO_STATE_WAITING_BIT1:
+            if ((GPIO_getInputPinValue(OBDH_GPIO_PORT, OBDH_GPIO_PIN0) == GPIO_INPUT_PIN_LOW) &&
+                (GPIO_getInputPinValue(OBDH_GPIO_PORT, OBDH_GPIO_PIN1) == GPIO_INPUT_PIN_HIGH) &&
+                (GPIO_getInputPinValue(OBDH_GPIO_PORT, OBDH_GPIO_PIN2) == GPIO_INPUT_PIN_LOW) &&
+                (GPIO_getInputPinValue(OBDH_GPIO_PORT, OBDH_GPIO_PIN3) == GPIO_INPUT_PIN_LOW))
+            {
+                // Jump to the next state
+                obdh_gpio_state = OBDH_GPIO_STATE_WAITING_BIT2;
+                
+                break;
+            }
+            else
+            {
+                obdh_gpio_state = OBDH_GPIO_STATE_ERROR;
+            }
+        case OBDH_GPIO_STATE_WAITING_BIT2:
+            if ((GPIO_getInputPinValue(OBDH_GPIO_PORT, OBDH_GPIO_PIN0) == GPIO_INPUT_PIN_LOW) &&
+                (GPIO_getInputPinValue(OBDH_GPIO_PORT, OBDH_GPIO_PIN1) == GPIO_INPUT_PIN_LOW) &&
+                (GPIO_getInputPinValue(OBDH_GPIO_PORT, OBDH_GPIO_PIN2) == GPIO_INPUT_PIN_HIGH) &&
+                (GPIO_getInputPinValue(OBDH_GPIO_PORT, OBDH_GPIO_PIN3) == GPIO_INPUT_PIN_LOW))
+            {
+                // Jump to the next state
+                obdh_gpio_state = OBDH_GPIO_STATE_WAITING_BIT3;
+                
+                break;
+            }
+            else
+            {
+                obdh_gpio_state = OBDH_GPIO_STATE_ERROR;
+            }
+        case OBDH_GPIO_STATE_WAITING_BIT3:
+            if ((GPIO_getInputPinValue(OBDH_GPIO_PORT, OBDH_GPIO_PIN0) == GPIO_INPUT_PIN_LOW) &&
+                (GPIO_getInputPinValue(OBDH_GPIO_PORT, OBDH_GPIO_PIN1) == GPIO_INPUT_PIN_LOW) &&
+                (GPIO_getInputPinValue(OBDH_GPIO_PORT, OBDH_GPIO_PIN2) == GPIO_INPUT_PIN_LOW) &&
+                (GPIO_getInputPinValue(OBDH_GPIO_PORT, OBDH_GPIO_PIN3) == GPIO_INPUT_PIN_HIGH))
+            {
+                // Go back to the initial state
+                obdh_gpio_state = OBDH_GPIO_STATE_WAITING_BIT0;
+                
+                sleep_mode_TurnOn();
+                
+                break;
+            }
+            else
+            {
+                obdh_gpio_state = OBDH_GPIO_STATE_ERROR;
+            }
+        default:
+            // Go back to the initial state
+            obdh_gpio_state = OBDH_GPIO_STATE_WAITING_BIT0;
+            
+            // Stop timer to wait for the next attempt
+            Timer_B_stop(TIMER_B0_BASE);
+            
+            break;
+    };
+    
+    GPIO_clearInterrupt(OBDH_GPIO_PORT, OBDH_GPIO_PIN0 + OBDH_GPIO_PIN1 + OBDH_GPIO_PIN2 + OBDH_GPIO_PIN3);
 }
 
 //! \} End of gpio-obdh implementation group

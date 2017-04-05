@@ -37,6 +37,7 @@
 
 #include "../inc/uart-eps.h"
 #include "../inc/debug.h"
+#include "../inc/crc.h"
 
 // UART-EPS interruption variables initialization
 uint8_t eps_uart_received_byte                  = 0x00;
@@ -90,6 +91,64 @@ uint8_t eps_UART_Init()
 #endif // DEBUG_MODE
 
         return STATUS_SUCCESS;
+    }
+}
+
+/**
+ * \fn USCI_A0_ISR
+ *
+ * \brief This is the USCI_A0 interrupt vector service routine.
+ *
+ * UART RX interruption routine.
+ *
+ * \return none
+ */
+#if defined(__TI_COMPILER_VERSION__) || defined(__IAR_SYSTEMS_ICC__)
+#pragma vector=USCI_A0_VECTOR
+__interrupt
+#elif defined(__GNUC__)
+__attribute__((interrupt(USCI_A0_VECTOR)))
+#endif
+void USCI_A0_ISR()
+{
+    switch(__even_in_range(UCA0IV, 4))
+    {
+        // Vector 2 - RXIFG
+        case 2:
+            eps_uart_received_byte = USCI_A_UART_receiveData(USCI_A0_BASE);
+
+            switch(eps_uart_byte_counter)
+            {
+                case EPS_UART_BYTE_COUNTER_POS_SOD:
+                    if (eps_uart_received_byte == EPS_UART_SOD)
+                        eps_uart_byte_counter++;
+                    break;
+                case EPS_UART_BYTE_COUNTER_POS_CRC:
+                    if (eps_uart_received_byte == crc8(0x00, 0x07, eps_data_buffer, sizeof(eps_data_buffer)-1))
+                    {
+                        uint8_t i = 0;
+                        for(i=0;i<sizeof(eps_data_buffer);i++)
+                            eps_data[i] = eps_data_buffer[i];
+                    }
+                    else
+                    {
+                        uint8_t i = 0;
+                        for(i=0;i<sizeof(eps_data);i++)
+                            eps_data[i] = 0xFF;
+                    }
+                default:
+                    if ((eps_uart_byte_counter > EPS_UART_BYTE_COUNTER_POS_SOD) &&
+                        (eps_uart_byte_counter < EPS_UART_BYTE_COUNTER_POS_CRC))
+                    {
+                        eps_data_buffer[eps_uart_byte_counter-1] = eps_uart_received_byte;
+                        eps_uart_byte_counter++;
+                    }
+                    else
+                        eps_uart_byte_counter = EPS_UART_BYTE_COUNTER_POS_SOD;
+            };
+            break;
+        default:
+            break;
     }
 }
 
