@@ -41,7 +41,7 @@ uint8_t debug_Init()
 {
     if (debug_UART_Init() == STATUS_SUCCESS)
     {
-        char debug_msg[] = "FloripaSat-TTC Copyright (C) 2016, Universidade Federal de Santa Catarina;\n"
+        char debug_msg[] = "FloripaSat-TTC Copyright (C) 2017, Universidade Federal de Santa Catarina;\n"
                            "This program comes with ABSOLUTELY NO WARRANTY.\n"
                            "This is free software, and you are welcome to redistribute it\n"
                            "under certain conditions.\n\n"
@@ -49,14 +49,9 @@ uint8_t debug_Init()
                            "Documentation: http://fsat-server.duckdns.org:8000/ttc\n\n"
                            "FloripaSat debug mode:\n"
                            "*************************************\n\n";
-        uint8_t i = 0;
+        uint16_t i = 0;
         for(i=0;i<sizeof(debug_msg)-1;i++)
         {
-            while(!USCI_A_UART_getInterruptStatus(DEBUG_UART_BASE_ADDRESS, USCI_A_UART_TRANSMIT_INTERRUPT_FLAG))
-            {
-                
-            }
-            
             USCI_A_UART_transmitData(DEBUG_UART_BASE_ADDRESS, debug_msg[i]);
         }
         
@@ -73,68 +68,37 @@ void debug_PrintMsg(const char *msg)
     uint8_t i = 0;
     while(msg[i] != '\0')
     {
-        while(!USCI_A_UART_getInterruptStatus(DEBUG_UART_BASE_ADDRESS, USCI_A_UART_TRANSMIT_INTERRUPT_FLAG))
-        {
-            
-        }
-        
         USCI_A_UART_transmitData(DEBUG_UART_BASE_ADDRESS, msg[i]);
         i++;
     }
 }
 
-void debug_PrintByte(uint8_t byte)
-{
-    char hex_msg[] = "0x";
-    uint8_t i = 0;
-    for(i=0;i<sizeof(hex_msg)-1;i++)
-    {
-        while(!USCI_A_UART_getInterruptStatus(DEBUG_UART_BASE_ADDRESS, USCI_A_UART_TRANSMIT_INTERRUPT_FLAG))
-        {
-            
-        }
-        USCI_A_UART_transmitData(DEBUG_UART_BASE_ADDRESS, hex_msg[i]);
-    }
-    
-    while(!USCI_A_UART_getInterruptStatus(DEBUG_UART_BASE_ADDRESS, USCI_A_UART_TRANSMIT_INTERRUPT_FLAG))
-    {
-        
-    }
-    uint8_t hex_to_ascii = (uint8_t)(byte >> 4);
-    if (hex_to_ascii < 0x0A)
-        USCI_A_UART_transmitData(DEBUG_UART_BASE_ADDRESS, hex_to_ascii + 0x30);  // 0x30 = ascii 0
-    else
-        USCI_A_UART_transmitData(DEBUG_UART_BASE_ADDRESS, hex_to_ascii + 0x37);  // 0x37 = ascii 7
-    
-    while(!USCI_A_UART_getInterruptStatus(DEBUG_UART_BASE_ADDRESS, USCI_A_UART_TRANSMIT_INTERRUPT_FLAG))
-    {
-        
-    }
-    hex_to_ascii = (uint8_t)(byte & 0x0F);
-    if (hex_to_ascii < 0x0A)
-        USCI_A_UART_transmitData(DEBUG_UART_BASE_ADDRESS, hex_to_ascii + 0x30);  // 0x30 = ascii 0
-    else
-        USCI_A_UART_transmitData(DEBUG_UART_BASE_ADDRESS, hex_to_ascii + 0x37);  // 0x37 = ascii 7
-}
-
 void debug_PrintDigit(uint8_t d)
 {
-    if (d < 10)
-    {
-        while(!USCI_A_UART_getInterruptStatus(DEBUG_UART_BASE_ADDRESS, USCI_A_UART_TRANSMIT_INTERRUPT_FLAG))
-        {
-            
-        }
-        USCI_A_UART_transmitData(DEBUG_UART_BASE_ADDRESS, d + 0x30);    // 0x30 = ascii '0'
-    }
+    if (d < 0x0A)
+        USCI_A_UART_transmitData(DEBUG_UART_BASE_ADDRESS, d + 0x30);  // 0x30 = ascii 0
+    else if (d <= 0x0F)
+        USCI_A_UART_transmitData(DEBUG_UART_BASE_ADDRESS, d + 0x37);  // 0x37 = ascii 7
     else
-    {
-        while(!USCI_A_UART_getInterruptStatus(DEBUG_UART_BASE_ADDRESS, USCI_A_UART_TRANSMIT_INTERRUPT_FLAG))
-        {
-            
-        }
         USCI_A_UART_transmitData(DEBUG_UART_BASE_ADDRESS, 'N');
-    }
+}
+
+void debug_PrintInt8(uint8_t int8)
+{
+    debug_PrintMsg("0x");
+    
+    debug_PrintDigit((uint8_t)(int8 >> 4));
+    debug_PrintDigit((uint8_t)(int8 & 0x0F));
+}
+
+void debug_PrintInt16(uint16_t int16)
+{
+    debug_PrintMsg("0x");
+    
+    debug_PrintDigit((uint8_t)(int16 >> 12));
+    debug_PrintDigit((uint8_t)(int16 >> 8) & 0x0F);
+    debug_PrintDigit((uint8_t)(int16 >> 4) & 0x0F);
+    debug_PrintDigit((uint8_t)(int16 & 0x0F));
 }
 
 uint8_t debug_UART_Init()

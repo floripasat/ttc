@@ -88,24 +88,6 @@ uint8_t debug_Init();
 void debug_PrintMsg(const char *msg);
 
 /**
- * \fn debug_PrintByte
- * 
- * \brief Prints a byte over the UART.
- * 
- * Example:
- *      - Byte      = 0x65
- *      - Output    = "0x65"
- * 
- * \note
- * The byte is printed in ASCII code.
- * 
- * \param byte is the byte to be written.
- * 
- * \return None
- */
-void debug_PrintByte(uint8_t byte);
-
-/**
  * \fn debug_PrintDigit
  * 
  * \brief Prints a integer digit over the debug UART.
@@ -115,6 +97,42 @@ void debug_PrintByte(uint8_t byte);
  * \return None
  */
 void debug_PrintDigit(uint8_t d);
+
+/**
+ * \fn debug_PrintInt8
+ * 
+ * \brief Prints a 8 bits unsigned integer over the UART.
+ * 
+ * Example:
+ *      - Integer   = 0x65
+ *      - Output    = "0x65"
+ * 
+ * \note
+ * The integer is printed in ASCII code.
+ * 
+ * \param int8 is the integer to be written.
+ * 
+ * \return None
+ */
+void debug_PrintInt8(uint8_t int8);
+
+/**
+ * \fn debug_PrintInt16
+ * 
+ * \brief Prints a 16 bits unsigned integer over the UART.
+ * 
+ * Example:
+ *      - Integer   = 0x1865
+ *      - Output    = "0x1865"
+ * 
+ * \note
+ * The unsigned integer is printed in ASCII code.
+ * 
+ * \param int16 is the unsigned integer to be written.
+ * 
+ * \return None
+ */
+void debug_PrintInt16(uint16_t int16);
 
 /**
  * \fn debug_UART_Init
