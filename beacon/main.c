@@ -145,19 +145,23 @@ void main()
     rf6886_SetVreg(3.1);            // DAC output = 3,1V
 
     // Protocols initialization
-    uint8_t pkt_payload_len = pkt_payload_GetSize(eps_data);
-    uint8_t pkt_payload[pkt_payload_len + 1];
-    
     ngham_Init();
     NGHam_TX_Packet ngham_packet;
     uint8_t ngham_str_pkt[NGH_MAX_TOT_SIZE];
     uint16_t ngham_str_pkt_len = 0;
     
     AX25_Packet ax25_packet;
-    uint8_t ax25_str_pkt[AX25_FLORIPASAT_HEADER_SIZE + pkt_payload_len];
+    uint8_t ax25_str_pkt[AX25_FLORIPASAT_HEADER_SIZE + PKT_PAYLOAD_LEN + 1];
+
+    // Payload initialization
+    uint8_t pkt_payload[PKT_PAYLOAD_LEN + 1];
 
     // Status LED initialization
     led_Init();
+
+#if DEBUG_MODE == true
+    debug_PrintMsg("Running...\n");
+#endif // DEBUG_MODE
 
     // Infinite loop
     while(1)
@@ -173,10 +177,10 @@ void main()
         {
             pkt_payload_Gen(pkt_payload, eps_data);
             
-            ngham_TxPktGen(&ngham_packet, pkt_payload, pkt_payload_len);
+            ngham_TxPktGen(&ngham_packet, pkt_payload, PKT_PAYLOAD_LEN);
             ngham_Encode(&ngham_packet, ngham_str_pkt, &ngham_str_pkt_len);
             
-            ax25_BeaconPacketGen(&ax25_packet, pkt_payload, pkt_payload_len);
+            ax25_BeaconPacketGen(&ax25_packet, pkt_payload, PKT_PAYLOAD_LEN);
             ax25_Packet2String(&ax25_packet, ax25_str_pkt, sizeof(ax25_str_pkt)-1);
             
             // Flush the TX FIFO

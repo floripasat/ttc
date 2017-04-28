@@ -41,26 +41,27 @@
 
 #include <stdint.h>
 
+#include "uart-eps.h"
+
 /**
  * \brief Payload ID labels.
  * 
  * \{
  */
-#define SAT_ID      "FLORIPASAT"
-#define BATT1_ID    "BATT1"
-#define BATT2_ID    "BATT2"
+#define PKT_PAYLOAD_SAT_ID                  "FLORIPASAT"    /**< Satellite ID. */
+#define PKT_PAYLOAD_SAT_BATT_SEPARATOR      "-"             /**< Satellite ID and batteries information separator. */
+#define PKT_PAYLOAD_BATT1_ID                "BATT1"         /**< Battery 1 ID. */
+#define PKT_PAYLOAD_BATT2_ID                "BATT2"         /**< Battery 2 ID. */
+#define PKT_PAYLOAD_BATT_VALUE_SEPARATOR    "="             /**< Batteries IDs and batteries values separator. */
 //! \}
 
 /**
- * \fn pkt_payload_GetSize
+ * \brief Length of the packet payload.
  * 
- * \brief This function calculates the total length of the packet payload.
- * 
- * \param eps_data is a pointer to the packet payload.
- * 
- * \return The length of the packet payload.
+ * \{
  */
-uint8_t pkt_payload_GetSize(uint8_t *eps_data);
+#define PKT_PAYLOAD_LEN                     (sizeof(PKT_PAYLOAD_SAT_ID)-1 + sizeof(PKT_PAYLOAD_SAT_BATT_SEPARATOR)-1 + sizeof(PKT_PAYLOAD_BATT1_ID)-1 + sizeof(PKT_PAYLOAD_BATT2_ID)-1 + EPS_UART_PKT_LEN + sizeof(PKT_PAYLOAD_BATT_VALUE_SEPARATOR)-1)
+//! \}
 
 /**
  * \fn pkt_payload_Gen
