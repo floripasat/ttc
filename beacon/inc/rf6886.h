@@ -1,7 +1,7 @@
 /*
  * rf6886.h
  * 
- * Copyright (C) 2016, Universidade Federal de Santa Catarina
+ * Copyright (C) 2017, Universidade Federal de Santa Catarina
  * 
  * This file is part of FloripaSat-TTC.
  * 
@@ -23,7 +23,7 @@
 /**
  * \file rf6886.h
  * 
- * \brief Gain control of the RF6886 PA
+ * \brief Gain control of the RF6886 PA.
  * 
  * \author Gabriel Mariano Marcelino <gabriel.mm8@gmail.com>
  * 
@@ -40,13 +40,27 @@
 #define RF6886_H_
 
 #include <stdint.h>
+
 #include "../driverlib/driverlib.h"
 
-// P1.1 = ENE_3V3_PA_BEACON
-#define ENE_3V3_PA_PORT     GPIO_PORT_P1    /**< Port 1 = ENE_3V3_PA_BEACON */
-#define ENE_3V3_PA_PIN      GPIO_PIN1       /**< Pin 1 = ENE_3V3_PA_BEACON */
+/**
+ * \brief RF6886 pin map.
+ * 
+ * P1.1 = ENE_3V3_PA_BEACON
+ * 
+ * \{
+ */
+#define RF6886_PORT     GPIO_PORT_P1    /**< Port 1 = ENE_3V3_PA_BEACON. */
+#define RF6886_PIN      GPIO_PIN1       /**< Pin 1 = ENE_3V3_PA_BEACON. */
+//! \}
 
-#define V_REF 3.3                           /**< Reference volatge (Vcc) */
+/**
+ * \brief Standard reference voltage.
+ * 
+ * \{
+ */
+#define RF6886_V_REF    3.3             /**< Reference volatge (Vcc). */
+//! \}
 
 /**
  * \fn rf6886_Init()

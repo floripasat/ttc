@@ -40,15 +40,30 @@
 #define DEBUG_H_
 
 #include <stdint.h>
+#include <stdbool.h>
+
 #include "../driverlib/driverlib.h"
 
-// Turn on/off debug mode
-#define DEBUG_MODE false                    /**< Debug mode flag. */
+/**
+ * \brief Debug mode on/off flag.
+ * 
+ * Turns on/off debug mode.
+ * 
+ * \{
+ */
+#define DEBUG_MODE                  false
+//! \}
 
+/**
+ * \brief Debug mode UART pin map.
+ * 
+ * \{
+ */
 #define DEBUG_UART_BASE_ADDRESS     USCI_A1_BASE    /**< Debug UART base address */
 #define DEBUG_UART_PORT             GPIO_PORT_P8    /**< Debug UART port = P8 */
 #define DEBUG_UART_TX_PIN           GPIO_PIN2       /**< UART TX pin = P8.2 (USCI_A1_TX_BEACON) */
 #define DEBUG_UART_RX_PIN           GPIO_PIN3       /**< UART RX pin = P8.3 (USCI_A1_RX_BEACON) */
+//! \}
 
 /**
  * \fn debug_Init
@@ -133,6 +148,28 @@ void debug_PrintInt8(uint8_t int8);
  * \return None
  */
 void debug_PrintInt16(uint16_t int16);
+
+/**
+ * \fn debug_PrintByte
+ * 
+ * \brief Prints a raw byte over the UART.
+ * 
+ * \param byte is the byte to be printed.
+ * 
+ * \return None
+ */
+void debug_PrintByte(uint8_t byte);
+
+/**
+ * \fn debug_Abort
+ * 
+ * \brief Puts the program in an infinite loop.
+ * 
+ * This function can be used in case of a critical error during debug mode.
+ * 
+ * \return None
+ */
+void debug_Abort();
 
 /**
  * \fn debug_UART_Init

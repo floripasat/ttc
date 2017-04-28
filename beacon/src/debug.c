@@ -1,7 +1,7 @@
 /*
  * debug.c
  * 
- * Copyright (C) 2016, Universidade Federal de Santa Catarina
+ * Copyright (C) 2017, Universidade Federal de Santa Catarina
  * 
  * This file is part of FloripaSat-TTC.
  * 
@@ -23,7 +23,7 @@
 /**
  * \file debug.c
  * 
- * \brief Debug functions implementation
+ * \brief Debug functions implementation.
  * 
  * \author Gabriel Mariano Marcelino <gabriel.mm8@gmail.com>
  * 
@@ -99,6 +99,19 @@ void debug_PrintInt16(uint16_t int16)
     debug_PrintDigit((uint8_t)(int16 >> 8) & 0x0F);
     debug_PrintDigit((uint8_t)(int16 >> 4) & 0x0F);
     debug_PrintDigit((uint8_t)(int16 & 0x0F));
+}
+
+void debug_PrintByte(uint8_t byte)
+{
+    USCI_A_UART_transmitData(DEBUG_UART_BASE_ADDRESS, byte);
+}
+
+void debug_Abort()
+{
+    while(1)
+    {
+        
+    }
 }
 
 uint8_t debug_UART_Init()
