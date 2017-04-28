@@ -1,5 +1,5 @@
 /*
- * debug.h
+ * pkt_payload.h
  * 
  * Copyright (C) 2017, Universidade Federal de Santa Catarina
  * 
@@ -41,9 +41,15 @@
 
 #include <stdint.h>
 
+/**
+ * \brief Payload ID labels.
+ * 
+ * \{
+ */
 #define SAT_ID      "FLORIPASAT"
 #define BATT1_ID    "BATT1"
 #define BATT2_ID    "BATT2"
+//! \}
 
 /**
  * \fn pkt_payload_GetSize
@@ -57,7 +63,7 @@
 uint8_t pkt_payload_GetSize(uint8_t *eps_data);
 
 /**
- * \fn pkt_payload_gen
+ * \fn pkt_payload_Gen
  * 
  * \brief This function creates the payload of a packet, with the IDs and
  * the telemetry data.
@@ -67,10 +73,10 @@ uint8_t pkt_payload_GetSize(uint8_t *eps_data);
  * 
  * \return None
  */
-void pkt_payload_gen(uint8_t *pkt_payload, uint8_t *eps_data);
+void pkt_payload_Gen(uint8_t *pkt_payload, uint8_t *eps_data);
 
 /**
- * \fn pkt_payload_update
+ * \fn pkt_payload_Update
  * 
  * \brief This function updates only the telemetry data of a already
  * created packet.
@@ -80,7 +86,7 @@ void pkt_payload_gen(uint8_t *pkt_payload, uint8_t *eps_data);
  * 
  * \return None
  */
-void pkt_payload_update(uint8_t *pkt_payload, uint8_t *eps_data);
+void pkt_payload_Update(uint8_t *pkt_payload, uint8_t *eps_data);
 
 #endif // PKT_PAYLOAD_H_
 

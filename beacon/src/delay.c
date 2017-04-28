@@ -1,7 +1,7 @@
 /*
  * debug.c
  * 
- * Copyright (C) 2016, Universidade Federal de Santa Catarina
+ * Copyright (C) 2017, Universidade Federal de Santa Catarina
  * 
  * This file is part of FloripaSat-TTC.
  * 
@@ -35,33 +35,31 @@
  * \{
  */
 
-#include "../inc/delay.h"
 #include <msp430.h>
+
+#include "../inc/delay.h"
 
 void delay_s(uint8_t s)
 {
-    while(s)
+    while(s--)
     {
-        __delay_cycles(F_CPU);
-        s--;
+        __delay_cycles(DELAY_FREQUENCY_CPU);
     }
 }
 
-void delay_ms(uint8_t ms)
+void delay_ms(uint16_t ms)
 {
-    while(ms)
+    while(ms--)
     {
-        __delay_cycles(F_CPU/1000);
-        ms--;
+        __delay_cycles(DELAY_FREQUENCY_CPU/1000);
     }
 }
 
-void delay_us(uint8_t us)
+void delay_us(uint32_t us)
 {
-    while(us)
+    while(us--)
     {
-        __delay_cycles(F_CPU/1000000);
-        us--;
+        __delay_cycles(DELAY_FREQUENCY_CPU/1000000);
     }
 }
 

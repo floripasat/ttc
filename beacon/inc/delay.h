@@ -1,7 +1,7 @@
 /*
  * delay.h
  * 
- * Copyright (C) 2016, Universidade Federal de Santa Catarina
+ * Copyright (C) 2017, Universidade Federal de Santa Catarina
  * 
  * This file is part of FloripaSat-TTC.
  * 
@@ -41,9 +41,13 @@
 
 #include <stdint.h>
 
-#ifndef F_CPU
-#define F_CPU 8000000 // 8 MHz internal clock
-#endif // F_CPU
+/**
+ * \brief MCLK frequency.
+ * 
+ * \{
+ */
+#define DELAY_FREQUENCY_CPU     4000000     /**< Frequency in Hz. */
+//! \}
 
 /**
  * \fn delay_s
@@ -65,7 +69,7 @@ void delay_s(uint8_t s);
  * 
  * \return None
  */
-void delay_ms(uint8_t ms);
+void delay_ms(uint16_t ms);
 
 /**
  * \fn delay_us
@@ -76,7 +80,7 @@ void delay_ms(uint8_t ms);
  * 
  * \return None
  */
-void delay_us(uint8_t us);
+void delay_us(uint32_t us);
 
 #endif // DELAY_H_
 

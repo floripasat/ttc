@@ -1,5 +1,5 @@
 /*
- * debug.c
+ * pkt_payload.c
  * 
  * Copyright (C) 2017, Universidade Federal de Santa Catarina
  * 
@@ -43,7 +43,7 @@ uint8_t pkt_payload_GetSize(uint8_t *eps_data)
     return (sizeof(SAT_ID)-1 + sizeof("-")-1 + sizeof(BATT1_ID)-1 + sizeof(BATT2_ID)-1 + sizeof("=")-1 + sizeof("=")-1 + sizeof(eps_data)-1);
 }
 
-void pkt_payload_gen(uint8_t *pkt_payload, uint8_t *eps_data)
+void pkt_payload_Gen(uint8_t *pkt_payload, uint8_t *eps_data)
 {
 #if DEBUG_MODE == true
     debug_PrintMsg("Generating packet payload... ");
@@ -76,7 +76,7 @@ void pkt_payload_gen(uint8_t *pkt_payload, uint8_t *eps_data)
 #endif // DEBUG_MODE
 }
 
-void pkt_payload_update(uint8_t *pkt_payload, uint8_t *eps_data)
+void pkt_payload_Update(uint8_t *pkt_payload, uint8_t *eps_data)
 {
 #if DEBUG_MODE == true
     debug_PrintMsg("Updating data of an already generated packet payload... ");

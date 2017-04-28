@@ -1,7 +1,7 @@
 /*
  * main.c
  * 
- * Copyright (C) 2016, Universidade Federal de Santa Catarina
+ * Copyright (C) 2017, Universidade Federal de Santa Catarina
  * 
  * This file is part of FloripaSat-TTC.
  * 
@@ -23,7 +23,7 @@
 /**
  * \file main.c
  * 
- * \brief Main file
+ * \brief Main file.
  * 
  * \author Gabriel Mariano Marcelino <gabriel.mm8@gmail.com>
  * 
@@ -40,6 +40,7 @@
 #include <stdbool.h>
 
 #include "driverlib/driverlib.h"
+#include "ngham/ngham.h"
 
 #include "inc/debug.h"
 #include "inc/watchdog.h"
@@ -54,6 +55,7 @@
 #include "inc/pkt_payload.h"
 #include "inc/timer.h"
 #include "inc/sleep_mode.h"
+#include "inc/delay.h"
 
 #define BEACON_ANTENNA_DEPLOY_SLEEP_MIN     45
 #define BEACON_PKT_PERIOD_SEC               30
@@ -142,10 +144,17 @@ void main()
 
     rf6886_SetVreg(3.1);            // DAC output = 3,1V
 
-    // Data to send
+    // Protocols initialization
+    uint8_t pkt_payload_len = pkt_payload_GetSize(eps_data);
+    uint8_t pkt_payload[pkt_payload_len + 1];
+    
+    ngham_Init();
+    NGHam_TX_Packet ngham_packet;
+    uint8_t ngham_str_pkt[NGH_MAX_TOT_SIZE];
+    uint16_t ngham_str_pkt_len = 0;
+    
     AX25_Packet ax25_packet;
-    uint8_t pkt_payload[pkt_payload_GetSize(eps_data) + 1];
-    uint8_t str_packet[AX25_FLORIPASAT_HEADER_SIZE + sizeof(pkt_payload)];
+    uint8_t ax25_str_pkt[AX25_FLORIPASAT_HEADER_SIZE + pkt_payload_len];
 
     // Status LED initialization
     led_Init();
@@ -162,9 +171,13 @@ void main()
         }
         else
         {
-            pkt_payload_gen(pkt_payload, eps_data);
-            ax25_BeaconPacketGen(&ax25_packet, pkt_payload, sizeof(pkt_payload)-1);
-            ax25_Packet2String(&ax25_packet, pkt_payload, sizeof(pkt_payload)-1);
+            pkt_payload_Gen(pkt_payload, eps_data);
+            
+            ngham_TxPktGen(&ngham_packet, pkt_payload, pkt_payload_len);
+            ngham_Encode(&ngham_packet, ngham_str_pkt, &ngham_str_pkt_len);
+            
+            ax25_BeaconPacketGen(&ax25_packet, pkt_payload, pkt_payload_len);
+            ax25_Packet2String(&ax25_packet, ax25_str_pkt, sizeof(ax25_str_pkt)-1);
             
             // Flush the TX FIFO
             cc11xx_CmdStrobe(CC11XX_SFTX);
@@ -173,10 +186,26 @@ void main()
             rf6886_Enable();
             rf_switch_Enable();
 
-            // Write packet to TX FIFO
-            cc11xx_WriteTXFIFO(str_packet, sizeof(str_packet)-1);
-
-            // Enable TX (Command strobe)
+            // Write AX25 packet to TX FIFO and enable TX
+            cc11xx_WriteTXFIFO(ax25_str_pkt, sizeof(ax25_str_pkt)-1);
+            cc11xx_CmdStrobe(CC11XX_STX);
+            
+            // Disable the switch and the PA
+            rf6886_Disable();
+            rf_switch_Disable();
+            
+            // Wait for AX25 packet transmission to end
+            delay_ms((uint16_t)(1.2*sizeof(ax25_str_pkt)*1000/1200/8));
+            
+            // Flush the TX FIFO
+            cc11xx_CmdStrobe(CC11XX_SFTX);
+            
+            // Enable the switch and the PA
+            rf6886_Enable();
+            rf_switch_Enable();
+            
+            // Write NGHam packet to TX FIFO and enable TX
+            cc11xx_WriteTXFIFO(ngham_str_pkt, ngham_str_pkt_len);
             cc11xx_CmdStrobe(CC11XX_STX);
             
             // Disable the switch and the PA
