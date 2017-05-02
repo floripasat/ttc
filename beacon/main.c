@@ -175,46 +175,54 @@ void main()
         }
         else
         {
-            pkt_payload_Gen(pkt_payload, eps_data);
-            
-            ngham_TxPktGen(&ngham_packet, pkt_payload, PKT_PAYLOAD_LEN);
-            ngham_Encode(&ngham_packet, ngham_str_pkt, &ngham_str_pkt_len);
-            
-            ax25_BeaconPacketGen(&ax25_packet, pkt_payload, PKT_PAYLOAD_LEN);
-            ax25_Packet2String(&ax25_packet, ax25_str_pkt, sizeof(ax25_str_pkt)-1);
-            
-            // Flush the TX FIFO
-            cc11xx_CmdStrobe(CC11XX_SFTX);
-            
-            // Enable the switch and the PA
-            rf6886_Enable();
-            rf_switch_Enable();
+            if (obdh_gpio_obdh_state == OBDH_GPIO_OBDH_TX_OFF)
+            {
+                pkt_payload_Gen(pkt_payload, eps_data);
+                
+                ngham_TxPktGen(&ngham_packet, pkt_payload, PKT_PAYLOAD_LEN);
+                ngham_Encode(&ngham_packet, ngham_str_pkt, &ngham_str_pkt_len);
+                
+                ax25_BeaconPacketGen(&ax25_packet, pkt_payload, PKT_PAYLOAD_LEN);
+                ax25_Packet2String(&ax25_packet, ax25_str_pkt, sizeof(ax25_str_pkt)-1);
+                
+                // Flush the TX FIFO
+                cc11xx_CmdStrobe(CC11XX_SFTX);
+                
+                // Enable the switch and the PA
+                rf6886_Enable();
+                rf_switch_Enable();
 
-            // Write AX25 packet to TX FIFO and enable TX
-            cc11xx_WriteTXFIFO(ax25_str_pkt, sizeof(ax25_str_pkt)-1);
-            cc11xx_CmdStrobe(CC11XX_STX);
-            
-            // Disable the switch and the PA
-            rf6886_Disable();
-            rf_switch_Disable();
-            
-            // Wait for AX25 packet transmission to end
-            delay_ms((uint16_t)(1.2*sizeof(ax25_str_pkt)*1000/1200/8));
-            
-            // Flush the TX FIFO
-            cc11xx_CmdStrobe(CC11XX_SFTX);
-            
-            // Enable the switch and the PA
-            rf6886_Enable();
-            rf_switch_Enable();
-            
-            // Write NGHam packet to TX FIFO and enable TX
-            cc11xx_WriteTXFIFO(ngham_str_pkt, ngham_str_pkt_len);
-            cc11xx_CmdStrobe(CC11XX_STX);
-            
-            // Disable the switch and the PA
-            rf6886_Disable();
-            rf_switch_Disable();
+                // Write AX25 packet to TX FIFO and enable TX
+                cc11xx_WriteTXFIFO(ax25_str_pkt, sizeof(ax25_str_pkt)-1);
+                obdh_GPIO_SendToOBDH(OBDH_GPIO_BEACON_TX_ON);
+                cc11xx_CmdStrobe(CC11XX_STX);
+                
+                // Disable the switch and the PA
+                rf6886_Disable();
+                rf_switch_Disable();
+                
+                // Wait for AX25 packet transmission to end
+                delay_ms((uint16_t)(1.2*sizeof(ax25_str_pkt)*1000/1200/8));
+                
+                // Flush the TX FIFO
+                cc11xx_CmdStrobe(CC11XX_SFTX);
+                
+                // Enable the switch and the PA
+                rf6886_Enable();
+                rf_switch_Enable();
+                
+                // Write NGHam packet to TX FIFO and enable TX
+                cc11xx_WriteTXFIFO(ngham_str_pkt, ngham_str_pkt_len);
+                cc11xx_CmdStrobe(CC11XX_STX);
+                
+                // Wait for NGHam packet transmission to end
+                delay_ms((uint16_t)(1.2*ngham_str_pkt_len*1000/1200/8));
+                obdh_GPIO_SendToOBDH(OBDH_GPIO_BEACON_TX_OFF);
+                
+                // Disable the switch and the PA
+                rf6886_Disable();
+                rf_switch_Disable();
+            }
         }
         
         uint8_t beacon_pkt_interval_sec_counter = timer_sec_counter;

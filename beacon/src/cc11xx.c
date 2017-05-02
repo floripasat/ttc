@@ -42,7 +42,7 @@
 uint8_t cc11xx_Init()
 {
 #if DEBUG_MODE == true
-    debug_PrintMsg(CC11XX_MODEL_LABEL + " initialization... ");
+    debug_PrintMsg(CC11XX_MODEL_LABEL " initialization... ");
 #endif // DEBUG_MODE
 
     // SPI initialization
@@ -566,7 +566,7 @@ void cc11xx_GPIO_Init()
 void cc11xx_WakeUp()
 {
 #if DEBUG_MODE == true
-        debug_PrintMsg("Waking up " + CC11XX_MODEL_LABEL + "... ");
+        debug_PrintMsg("Waking up " CC11XX_MODEL_LABEL "... ");
 #endif // DEBUG_MODE
 
     GPIO_setOutputLowOnPin(CC11XX_CSN_PORT, CC11XX_CSN_PIN);

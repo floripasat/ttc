@@ -39,23 +39,41 @@
 #ifndef GPIO_OBDH_H_
 #define GPIO_OBDH_H_
 
+#include <stdint.h>
+
 #include "../driverlib/driverlib.h"
 
-#define OBDH_GPIO_PORT  GPIO_PORT_P4
-#define OBDH_GPIO_PIN0  GPIO_PIN7
-#define OBDH_GPIO_PIN1  GPIO_PIN6
-#define OBDH_GPIO_PIN2  GPIO_PIN5
-#define OBDH_GPIO_PIN3  GPIO_PIN4
+/**
+ * \brief OBDH-Beacon communication pin map.
+ * 
+ * \{
+ */
+#define OBDH_GPIO_PORT                  GPIO_PORT_P4
+#define OBDH_GPIO_INTERRUPT_PIN         GPIO_PIN7
+#define OBDH_GPIO_SHUTDOWN_PIN          GPIO_PIN6
+#define OBDH_GPIO_TX_REQUEST_PIN        GPIO_PIN5
+#define OBDH_GPIO_TX_BUSY_PIN           GPIO_PIN4
+//! \}
 
-#define OBDH_GPIO_STATE_WAITING_BIT0    0x00
-#define OBDH_GPIO_STATE_WAITING_BIT1    0x01
-#define OBDH_GPIO_STATE_WAITING_BIT2    0x02
-#define OBDH_GPIO_STATE_WAITING_BIT3    0x03
-#define OBDH_GPIO_STATE_ERROR           0x04
+/**
+ * \brief Beacon to OBDH commands.
+ * 
+ * \{
+ */
+#define OBDH_GPIO_BEACON_TX_ON          0x00
+#define OBDH_GPIO_BEACON_TX_OFF         0x01
+//! \}
 
-#define OBDH_GPIO_MAX_TRANSMISSION_TIME_SEC 2
+/**
+ * \brief TX states of the OBDH module.
+ * 
+ * \{
+ */
+#define OBDH_GPIO_OBDH_TX_ON            0x00
+#define OBDH_GPIO_OBDH_TX_OFF           0x01
+//! \}
 
-extern uint8_t obdh_gpio_state;
+extern uint8_t obdh_gpio_obdh_state;
 
 /**
  * \fn obdh_GPIO_Init
@@ -70,13 +88,15 @@ extern uint8_t obdh_gpio_state;
 void obdh_GPIO_Init();
 
 /**
- * \fn obdh_GPIO_Timer_Init
+ * \fn obdh_GPIO_SendToOBDH
  * 
- * \brief Initialization of a timer to establish a time limit of transmission between OBDH and BEACON.
+ * \brief Send a message/command to OBDH module.
+ * 
+ * \param msg is the message to be sent.
  * 
  * \return None
  */
-void obdh_GPIO_Timer_Init();
+void obdh_GPIO_SendToOBDH(uint8_t msg);
 
 #endif // GPIO_OBDH_H_
 
