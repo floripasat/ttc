@@ -60,7 +60,7 @@
  * 
  * \{
  */
-#define PKT_PAYLOAD_LEN                     (sizeof(PKT_PAYLOAD_SAT_ID)-1 + sizeof(PKT_PAYLOAD_SAT_BATT_SEPARATOR)-1 + sizeof(PKT_PAYLOAD_BATT1_ID)-1 + sizeof(PKT_PAYLOAD_BATT2_ID)-1 + EPS_UART_PKT_LEN + sizeof(PKT_PAYLOAD_BATT_VALUE_SEPARATOR)-1)
+#define PKT_PAYLOAD_LEN                     (sizeof(PKT_PAYLOAD_SAT_ID)-1 + sizeof(PKT_PAYLOAD_SAT_BATT_SEPARATOR)-1 + sizeof(PKT_PAYLOAD_BATT1_ID)-1 + sizeof(PKT_PAYLOAD_BATT2_ID)-1 + EPS_UART_PKT_LEN + 2*sizeof(PKT_PAYLOAD_BATT_VALUE_SEPARATOR)-1)
 //! \}
 
 /**

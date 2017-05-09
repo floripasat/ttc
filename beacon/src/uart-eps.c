@@ -42,8 +42,8 @@
 // UART-EPS interruption variables initialization
 uint8_t eps_uart_received_byte                  = 0x00;
 uint8_t eps_uart_byte_counter                   = 0x00;
-uint8_t eps_data_buffer[EPS_UART_PKT_LEN + 1]   = {0xFF, 0xFF, 0xFF, 0xFF};
-uint8_t eps_data[EPS_UART_PKT_LEN + 1]          = {0xFF, 0xFF, 0xFF, 0xFF};
+uint8_t eps_data_buffer[EPS_UART_PKT_LEN + 1]   = {EPS_UART_DEFAULT_DATA, EPS_UART_DEFAULT_DATA, EPS_UART_DEFAULT_DATA, EPS_UART_DEFAULT_DATA};
+uint8_t eps_data[EPS_UART_PKT_LEN + 1]          = {EPS_UART_DEFAULT_DATA, EPS_UART_DEFAULT_DATA, EPS_UART_DEFAULT_DATA, EPS_UART_DEFAULT_DATA};
 
 uint8_t eps_UART_Init()
 {
@@ -52,7 +52,7 @@ uint8_t eps_UART_Init()
 #endif // DEBUG_MODE
 
     // UART pins init.
-    GPIO_setAsPeripheralModuleFunctionInputPin(EPS_UART_PORT, GPIO_PIN5);
+    GPIO_setAsPeripheralModuleFunctionInputPin(EPS_UART_PORT, EPS_UART_RX_PIN);
     
     // Config UART (9600 bps, no parity, 1 stop bit, LSB first)
     USCI_A_UART_initParam uart_params = {0};
@@ -121,20 +121,26 @@ void USCI_A0_ISR()
             {
                 case EPS_UART_BYTE_COUNTER_POS_SOD:
                     if (eps_uart_received_byte == EPS_UART_SOD)
+                    {
                         eps_uart_byte_counter++;
+                    }
                     break;
                 case EPS_UART_BYTE_COUNTER_POS_CRC:
-                    if (eps_uart_received_byte == crc8(0x00, 0x07, eps_data_buffer, sizeof(eps_data_buffer)-1))
+                    if (eps_uart_received_byte == crc8(EPS_UART_CRC_INITIAL_VALUE, EPS_UART_CRC_POLY, eps_data_buffer, sizeof(eps_data_buffer)-1))
                     {
                         uint8_t i = 0;
-                        for(i=0;i<sizeof(eps_data_buffer);i++)
+                        for(i=0; i<sizeof(eps_data_buffer); i++)
+                        {
                             eps_data[i] = eps_data_buffer[i];
+                        }
                     }
                     else
                     {
                         uint8_t i = 0;
-                        for(i=0;i<sizeof(eps_data);i++)
-                            eps_data[i] = 0xFF;
+                        for(i=0; i<sizeof(eps_data); i++)
+                        {
+                            eps_data[i] = EPS_UART_DEFAULT_DATA;
+                        }
                     }
                 default:
                     if ((eps_uart_byte_counter > EPS_UART_BYTE_COUNTER_POS_SOD) &&
@@ -144,7 +150,9 @@ void USCI_A0_ISR()
                         eps_uart_byte_counter++;
                     }
                     else
+                    {
                         eps_uart_byte_counter = EPS_UART_BYTE_COUNTER_POS_SOD;
+                    }
             };
             break;
         default:
