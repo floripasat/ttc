@@ -42,8 +42,8 @@
 // UART-EPS interruption variables initialization
 uint8_t eps_uart_received_byte                  = 0x00;
 uint8_t eps_uart_byte_counter                   = 0x00;
-uint8_t eps_data_buffer[EPS_UART_PKT_LEN + 1]   = {EPS_UART_DEFAULT_DATA, EPS_UART_DEFAULT_DATA, EPS_UART_DEFAULT_DATA, EPS_UART_DEFAULT_DATA};
-uint8_t eps_data[EPS_UART_PKT_LEN + 1]          = {EPS_UART_DEFAULT_DATA, EPS_UART_DEFAULT_DATA, EPS_UART_DEFAULT_DATA, EPS_UART_DEFAULT_DATA};
+uint8_t eps_data_buffer[EPS_UART_PKT_LEN + 1]   = {EPS_UART_DEFAULT_DATA_MSB, EPS_UART_DEFAULT_DATA_LSB, EPS_UART_DEFAULT_DATA_MSB, EPS_UART_DEFAULT_DATA_LSB};
+uint8_t eps_data[EPS_UART_PKT_LEN + 1]          = {EPS_UART_DEFAULT_DATA_MSB, EPS_UART_DEFAULT_DATA_LSB, EPS_UART_DEFAULT_DATA_MSB, EPS_UART_DEFAULT_DATA_LSB};
 
 uint8_t eps_UART_Init()
 {
@@ -136,11 +136,10 @@ void USCI_A0_ISR()
                     }
                     else
                     {
-                        uint8_t i = 0;
-                        for(i=0; i<sizeof(eps_data); i++)
-                        {
-                            eps_data[i] = EPS_UART_DEFAULT_DATA;
-                        }
+                        eps_data[0] = EPS_UART_DEFAULT_DATA_MSB;
+                        eps_data[1] = EPS_UART_DEFAULT_DATA_LSB;
+                        eps_data[2] = EPS_UART_DEFAULT_DATA_MSB;
+                        eps_data[3] = EPS_UART_DEFAULT_DATA_LSB;
                     }
                 default:
                     if ((eps_uart_byte_counter > EPS_UART_BYTE_COUNTER_POS_SOD) &&

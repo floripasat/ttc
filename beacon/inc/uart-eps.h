@@ -53,7 +53,8 @@
 #define EPS_UART_BYTE_COUNTER_POS_SOD   0x00
 #define EPS_UART_BYTE_COUNTER_POS_CRC   EPS_UART_PKT_LEN+1
 
-#define EPS_UART_DEFAULT_DATA           0x4E    // 0x4E = 'N'
+#define EPS_UART_DEFAULT_DATA_MSB       0x07
+#define EPS_UART_DEFAULT_DATA_LSB       0xFD
 #define EPS_UART_CRC_INITIAL_VALUE      0x00
 #define EPS_UART_CRC_POLY               0x07
 

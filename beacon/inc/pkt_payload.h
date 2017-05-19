@@ -60,7 +60,7 @@
  * 
  * \{
  */
-#define PKT_PAYLOAD_LEN                     (sizeof(PKT_PAYLOAD_SAT_ID)-1 + sizeof(PKT_PAYLOAD_SAT_BATT_SEPARATOR)-1 + sizeof(PKT_PAYLOAD_BATT1_ID)-1 + sizeof(PKT_PAYLOAD_BATT2_ID)-1 + EPS_UART_PKT_LEN + 2*sizeof(PKT_PAYLOAD_BATT_VALUE_SEPARATOR)-1)
+#define PKT_PAYLOAD_LEN                     (sizeof(PKT_PAYLOAD_SAT_ID)-1 + sizeof(PKT_PAYLOAD_SAT_BATT_SEPARATOR)-1 + sizeof(PKT_PAYLOAD_BATT1_ID)-1 + sizeof(PKT_PAYLOAD_BATT2_ID)-1 + 2*5 + 2*sizeof(PKT_PAYLOAD_BATT_VALUE_SEPARATOR)-1)
 //! \}
 
 /**
@@ -88,6 +88,21 @@ void pkt_payload_Gen(uint8_t *pkt_payload, uint8_t *eps_data);
  * \return None
  */
 void pkt_payload_Update(uint8_t *pkt_payload, uint8_t *eps_data);
+
+/**
+ * \fn pkt_payload_ExtractDigits
+ * 
+ * \brief Extract the digits from a decimal number.
+ * 
+ * Example:
+ * Number 3,45 -> digit2 = 3, digit1 = 4, digit0 = 5.
+ * 
+ * \param value is decimal number to extract the digits.
+ * \param digits is the array to return the digits from the decimal number.
+ * 
+ * \return None
+ */
+static void pkt_payload_ExtractDigits(float value, uint8_t *digits);
 
 #endif // PKT_PAYLOAD_H_
 
