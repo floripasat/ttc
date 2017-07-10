@@ -79,11 +79,17 @@ void debug_print_msg(const char *msg)
 void debug_print_digit(uint8_t digit)
 {
     if (digit < 0x0A)
+    {
         USCI_A_UART_transmitData(DEBUG_UART_BASE_ADDRESS, digit + 0x30);  // 0x30 = ascii 0
-    else if (d <= 0x0F)
+    }
+    else if (digit <= 0x0F)
+    {
         USCI_A_UART_transmitData(DEBUG_UART_BASE_ADDRESS, digit + 0x37);  // 0x37 = ascii 7
+    }
     else
+    {
         USCI_A_UART_transmitData(DEBUG_UART_BASE_ADDRESS, 'N');
+    }
 }
 
 void debug_print_int8(uint8_t int8)

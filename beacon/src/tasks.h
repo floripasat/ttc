@@ -60,7 +60,7 @@ void task_transmit_packet();
  * 
  * \return None
  */
-void task_generate_packets(uint8_t *ngham_pkt_str, uint8_t *ngham_pkt_str_len, uint8_t *ax25_pkt_str, uint8_t *ax25_pkt_str_len);
+void task_generate_packets(uint8_t *ngham_pkt_str, uint16_t *ngham_pkt_str_len, uint8_t *ax25_pkt_str, uint16_t *ax25_pkt_str_len);
 
 /**
  * \fn task_enter_low_power_mode
@@ -91,7 +91,7 @@ void task_leave_low_power_mode();
  * 
  * \return The elapsed time between the initial and final time in specified time unit.
  */
-uint8_t task_check_elapsed_time(uint8_t initial_time, uint8_t final_time, uint8_t time_unit);
+uint16_t task_check_elapsed_time(uint16_t initial_time, uint16_t final_time, uint8_t time_unit);
 
 /**
  * \fn task_enter_hibernation

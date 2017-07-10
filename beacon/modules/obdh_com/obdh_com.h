@@ -41,24 +41,26 @@
 
 #include <stdint.h>
 
+#include "obdh_com_config.h"
+
 /**
  * \struct OBDHCom
  * 
  * \brief OBDH communication variables struct.
  */
-struct OBDHCom
+typedef struct
 {
     uint8_t received_byte;                      /**< Byte buffer. */
     uint8_t byte_counter;                       /**< Received packet byte counter. */
     uint8_t buffer[OBDH_COM_DATA_PKT_LEN + 1];  /**< Packet buffer. */
-};
+} OBDHCom;
 
 /**
  * \struct OBDHData
  * 
  * \brief OBDH data packet.
  */
-struct OBDHData
+typedef struct
 {
     uint8_t v_bat1[3];              /**< Battery 1 voltage. */
     uint8_t v_bat2[3];              /**< Battery 2 voltage. */
@@ -70,7 +72,7 @@ struct OBDHData
     uint8_t system_time[5];         /**< Time since last boot. */
     uint8_t sat_status[3];          /**< Overall status of the satellite. */
     uint8_t reset_counter[3];       /**< Number of OBDH resets since launch. */
-};
+} OBDHData;
 
 /**
  * \var obdh_com

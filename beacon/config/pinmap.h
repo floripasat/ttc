@@ -37,7 +37,7 @@
  */
 
 #ifndef PINMAP_H_
-#defime PINMAP_H_
+#define PINMAP_H_
 
 #include <libs/driverlib/driverlib.h>
 
@@ -80,6 +80,8 @@
 #define RADIO_GPIO_1_PORT           GPIO_PORT_P3
 #define RADIO_GPIO_1_PIN            GPIO_PIN3
 
+#define RADIO_SIM_UART_USCI         USCI_A
+#define RADIO_SIM_UART_BASE_ADDRESS USCI_A0_BASE
 #define RADIO_SIM_UART_TX_PORT      GPIO_PORT_P2
 #define RADIO_SIM_UART_TX_PIN       GPIO_PIN4
 
@@ -124,7 +126,7 @@
 #define EPS_COM_UART_PORT           GPIO_PORT_P2
 #define EPS_COM_UART_USCI           USCI_A
 #define EPS_COM_UART_BASE_ADDRESS   USCI_A0_BASE
-#deinfe EPS_COM_UART_ISR_VECTOR     USCI_A0_VECTOR
+#define EPS_COM_UART_ISR_VECTOR     USCI_A0_VECTOR
 
 #define EPS_COM_UART_RX_PORT        GPIO_PORT_P2
 #define EPS_COM_UART_RX_PIN         GPIO_PIN5

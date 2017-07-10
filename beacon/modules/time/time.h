@@ -43,19 +43,19 @@
 
 #define MILLISECONDS    0x00
 #define SECONDS         0x01
-#deifne MINUTES         0x02
+#define MINUTES         0x02
 #define HOURS           0x03
 #define DAYS            0x04
 #define WEEKS           0x05
 #define MONTHS          0x06
-#define YEAR            0x07
+#define YEARS           0x07
 
 /**
  * \struct Time
  * 
  * \brief Time units struct.
  */
-struct Time
+typedef struct
 {
     uint16_t millisecond;
     uint8_t second;
@@ -65,7 +65,7 @@ struct Time
     uint8_t week;
     uint8_t month;
     uint8_t year;
-};
+} Time;
 
 /**
  * \var time

@@ -37,16 +37,21 @@
  */
 
 #ifndef PA_H_
-#endif PA_H_
+#define PA_H_
+
+#include <stdint.h>
 
 /**
  * \fn pa_init
  * 
  * \brief PA module initialization.
  * 
- * \return None
+ * \return Initialization status. It can be:
+ *      - \b STATUS_SUCCESS
+ *      - \b STATUS_FAIL
+ *      .
  */
-void pa_init();
+uint8_t pa_init();
 
 /**
  * \fn pa_enable

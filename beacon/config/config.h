@@ -71,14 +71,14 @@
 //-- RADIO ----------------------------------
 //###########################################
 
-#define BEACON_RADIO                CC1175
+#define BEACON_RADIO                UART_SIM
 #define BEACON_RADIO_SPI_CLK        100000
 
 //###########################################
 //-- PA -------------------------------------
 //###########################################
 
-#define BEACON_PA                   RF6886
+#define BEACON_PA                   HW_NONE
 
 #define BEACON_PA_VREF              3.3
 
@@ -89,13 +89,13 @@
 //-- RF SWITCH ------------------------------
 //###########################################
 
-#define BEACON_RF_SWITCH            SKY13345_368LF
+#define BEACON_RF_SWITCH            HW_NONE
 
 //###########################################
 //-- ANTENNA --------------------------------
 //###########################################
 
-#define BEACON_ANTENNA              ISIS_ANTENNA
+#define BEACON_ANTENNA              PASSIVE_ANTENNA
 #define BEACON_ANTENNA_I2C_CLK      100000
 
 //###########################################
@@ -111,12 +111,6 @@
 #define WATCHDOG_BASE_ADDRESS       WDT_A_BASE
 #define WATCHDOG_CLK_SOURCE         WDT_A_CLOCKSOURCE_ACLK
 #define WATCHDOG_CLK_DIVIDER        WDT_A_CLOCKDIVIDER_32K  // 3 seconds WDT
-
-//###########################################
-//-- TIME TIMER -----------------------------
-//###########################################
-
-#define TIMER_
 
 #endif // CONFIG_H_
 

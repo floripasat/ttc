@@ -44,7 +44,7 @@
 void timer_init()
 {
 #if BEACON_MODE == DEBUG_MODE
-    debug_print_msg("Main timer initialization... ");
+    debug_print_msg("Time control timer initialization... ");
 #endif // DEBUG_MODE
 
     // Start timer in continuous mode sourced by SMCLK

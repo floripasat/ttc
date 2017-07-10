@@ -1,7 +1,7 @@
 /*
- * crc8.c
+ * antenna.c
  * 
- * Copyright (C) 2017, Federal University of Santa Catarina
+ * Copyright (C) 2016, Universidade Federal de Santa Catarina
  * 
  * This file is part of FloripaSat-TTC.
  * 
@@ -21,37 +21,37 @@
  */
 
 /**
- * \file crc8.c
+ * \file antenna.c
  * 
- * \brief CRC8 implementation.
+ * \brief Initialization and control of the antenna deployment pin.
  * 
  * \author Gabriel Mariano Marcelino <gabriel.mm8@gmail.com>
  * 
- * \version 1.0
+ * \version 1.0-dev
  * 
- * \date 03/06/2017
+ * \date 17/10/2016
  * 
- * \addtogroup crc
+ * \addtogroup antenna
  * \{
  */
 
-#include "crc.h"
+#include <libs/driverlib/driverlib.h>
 
-uint8_t crc8(uint8_t initial_value, uint8_t polynomial, uint8_t *data, uint8_t len)
+#include "isis_antenna.h"
+
+uint8_t antenna_Init()
 {
-    uint8_t crc = initial_value;
-    while(len--)
-    {
-        crc ^= *data++;
-        uint8_t j = 0;
-        for (j=0; j<8; j++)
-        {
-            crc = (crc << 1) ^ ((crc & 0x80)? polynomial: 0);
-        }
-        crc &= 0xFF;
-    }
-    
-    return crc;
+    return STATUS_SUCCESS;
 }
 
-//! \} End of crc group
+uint8_t antenna_IsReleased()
+{
+    return ANTENNA_STATUS_RELEASED;
+}
+
+uint8_t antenna_Release()
+{    
+    return STATUS_SUCCESS;
+}
+
+//! \} End of antenna group

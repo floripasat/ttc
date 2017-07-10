@@ -1,5 +1,5 @@
 /*
- * antenna.h
+ * uart_radio_sim.h
  * 
  * Copyright (C) 2017, Federal University of Santa Catarina.
  * 
@@ -21,62 +21,57 @@
  */
 
 /**
- * \file antenna.h
+ * \file uart_radio_sim.h
  * 
- * \brief Antenna module header.
+ * \brief UART Radio Simulation driver.
  * 
  * \author Gabriel Mariano Marcelino <gabriel.mm8@gmail.com>
  * 
  * \version 1.0-dev
  * 
- * \date 15/06/2017
+ * \date 11/06/2017
  * 
- * \defgroup antenna Antenna
- * \ingroup modules
+ * \defgroup uart_radio_sim UART Radio Simulation
+ * \ingroup drivers
  * \{
  */
 
-#ifndef ANTENNA_H_
-#define ANTENNA_H_
+#ifndef UART_RADIO_SIM_H_
+#define UART_RADIO_SIM_H_
 
 #include <stdint.h>
 
+#include <config/config.h>
+
+#define UART_RADIO_SIM_UART_USCI            RADIO_SIM_UART_USCI
+#define UART_RADIO_SIM_UART_BASE_ADDRESS    RADIO_SIM_UART_BASE_ADDRESS
+#define UART_RADIO_SIM_UART_TX_PORT         RADIO_SIM_UART_TX_PORT
+#define UART_RADIO_SIM_UART_TX_PIN          RADIO_SIM_UART_TX_PIN
+
 /**
- * \fn antenna_init
+ * \fn uart_radio_sim_init
  * 
- * \brief Antenna module initialization.
+ * \brief Initialization of the UART radio simulation.
  * 
- * \return Deployment status. It can be:
+ * \return Initiazaliton status. It can be:
  *              -\b STATUS_SUCCESS
  *              -\b STATUS_FAIL
  *              .
  */
-uint8_t antenna_init();
+uint8_t uart_radio_sim_init();
 
 /**
- * \fn antenna_is_released
+ * \fn uart_radio_sim_send_data
  * 
- * \brief Checks if the antenna is released.
+ * \brief Send data through the UART port.
  * 
- * \return Returns:
- *              -\b ANTENNA_RELEASED
- *              -\b ANTENNA_NOT_RELEASED
- *              .
+ * \param data is a pointer to the data to be written in the UART port.
+ * \param size is the size of the data to be written in the UART port.
+ * 
+ * \return None
  */
-uint8_t antenna_is_released();
+void uart_radio_sim_send_data(uint8_t *data, uint16_t size);
 
-/**
- * \fn antenna_deploy
- * 
- * \brief Antenna deployment routine.
- * 
- * \return Deployment status. It can be:
- *              -\b STATUS_SUCCESS
- *              -\b STATUS_FAIL
- *              .
- */
-uint8_t antenna_deploy();
+#endif // UART_RADIO_SIM_H_
 
-#endif // ANTENNA_H_
-
-//! \} End of antenna group
+//! \} End of uart_radio_sim group

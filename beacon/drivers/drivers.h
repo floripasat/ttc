@@ -43,10 +43,8 @@
 #include "pa/rf6886.h"
 #include "radio/cc11x5/cc11xx.h"
 #include "radio/si446x/si446x.h"
-#include "radio/si4432/si4432.h"
-#include "radio/rf4463f30.h"
-#include "radio/rfm23bpw.h"
-#include "radio/uart_radio_sim.h"
+#include "radio/rf4463/rf4463.h"
+#include "radio/uart_radio_sim/uart_radio_sim.h"
 #include "rf_switch/sky13345_368lf.h"
 
 #endif // DRIVERS_H_

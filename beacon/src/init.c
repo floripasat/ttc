@@ -54,10 +54,7 @@ void init_debug()
 
 void init_watchdog()
 {
-    while(watchdog_init() != STATUS_SUCCESS)
-    {
-        
-    }
+    watchdog_init();
 }
 
 void init_cpu()
@@ -83,7 +80,6 @@ void init_time()
 void init_timer()
 {
     timer_init();
-    timer_start();
 }
 
 void init_antenna()
@@ -116,10 +112,6 @@ void init_radio()
     {
         
     }
-    
-#if BEACON_RADIO == CC1125 || BEACON_RADIO == CC1175
-    radio_calibration();
-#endif // BEACON_RADIO
 }
 
 void init_rf_switch()

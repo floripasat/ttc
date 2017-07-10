@@ -37,22 +37,9 @@
  */
 
 #ifndef RADIO_H_
-#deifne RADIO_H_
+#define RADIO_H_
 
 #include <stdint.h>
-#include <config/config.h>
-
-#if BEACON_RADIO == CC1175 || BEACON_RADIO == CC1125
-    #include <drivers/radio/cc11x5/cc11xx.h>
-#elif BEACON_RADIO == SI4063
-    #include <drivers/radio/si446x/si446x.h>
-#elif BEACON_RADIO == RFM23BPW
-    #include <drivers/radio/rfm23bpw.h>
-#elif BEACON_RADIO == RF4463F30
-    #include <drivers/radio/rf4463f30.h>
-#elif BEACON_RADIO == UART_SIM
-    #include <drivers/radio/uart_radio.h>
-#endif // BEACON_RADIO
 
 /**
  * \fn radio_init
@@ -75,11 +62,14 @@ void radio_reset();
 /**
  * \fn radio_write_data
  * 
- * \brief Write data to the radio module.
+ * \brief Writes data to the radio module.
+ * 
+ * \param data is a pointer to an array of bytes to be written in the radio.
+ * \param len is the lenght of the data to be written.
  * 
  * \return None
  */
-void radio_write_data();
+void radio_write_data(uint8_t *data, uint16_t len);
 
 /**
  * \fn radio_read_data
@@ -89,6 +79,24 @@ void radio_write_data();
  * \return None
  */
 void radio_read_data();
+
+/**
+ * \fn radio_sleep
+ * 
+ * \brief Put the radio to sleep.
+ * 
+ * \return None
+ */
+void radio_sleep();
+
+/**
+ * \fn radio_wake_up
+ * 
+ * \brief Wakes up de radio module.
+ * 
+ * \return None
+ */
+void radio_wake_up();
 
 #endif // RADIO_H_
 

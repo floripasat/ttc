@@ -42,7 +42,6 @@
 
 #include "beacon.h"
 #include "init.h"
-#include "flags.h"
 #include "tasks.h"
 
 Beacon beacon;
@@ -84,15 +83,17 @@ void beacon_init()
 #endif // BEACON_PA
     
     init_protocols();
+    
+    beacon.flags.hibernation    = false;
+    beacon.flags.can_transmit   = true;
+    beacon.flags.transmitting   = false;
 }
 
 void beacon_run()
 {
 #if BEACON_MODE == DEBUG_MODE
     debug_print_msg("Running...\n");
-#endif // DEBUG_MODE
-    
-#if BEACON_MODE == FLIGHT_MODE
+#elif BEACON_MODE == FLIGHT_MODE
     if (!antenna_is_released())
     {
         task_antenna_deployment();
@@ -101,9 +102,9 @@ void beacon_run()
     
     while(1)
     {
-        if (flags.hibernation == false)
+        if (beacon.flags.hibernation == false)
         {
-            if (flags.can_transmit == true)
+            if (beacon.flags.can_transmit == true)
             {
                 task_transmit_packet();
             }
@@ -114,7 +115,7 @@ void beacon_run()
             {
                 if (task_check_elapsed_time(time.minute, beacon.hibernation_mode_initial_time.minute, MINUTES) >= BEACON_HIBERNATION_PERIOD_MINUTES)
                 {
-                    if (task_check_elapsed_time(time.seconds, beacon.hibernation_mode_initial_time.minute, SECONDS) >= BEACON_HIBERNATION_PERIOD_SECONDS)
+                    if (task_check_elapsed_time(time.second, beacon.hibernation_mode_initial_time.minute, SECONDS) >= BEACON_HIBERNATION_PERIOD_SECONDS)
                     {
                         task_leave_hibernation();
                     }

@@ -32,8 +32,6 @@
  * \date 23/03/2017
  * 
  * \defgroup crc CRC
- * 
- * Last modification: 03/06/2017
  * \{
  */
 

@@ -39,6 +39,8 @@
 #ifndef FLASH_H_
 #define FLASH_H_
 
+#include <stdint.h>
+
 /**
  * \fn flash_init
  * 
@@ -60,7 +62,7 @@ uint8_t flash_init();
  * 
  * \return The readed byte.
  */
-uint8_t flash_read_byte(uint8_t adr);
+uint8_t flash_read_byte(uint16_t adr);
 
 /**
  * \fn flash_write_byte

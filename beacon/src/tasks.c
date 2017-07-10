@@ -40,14 +40,15 @@
 #include <libs/libs.h>
 
 #include "tasks.h"
+#include "beacon.h"
 #include "flags.h"
 
 void task_transmit_packet()
 {
     uint8_t ngham_pkt_str[256];
-    uint8_t ngham_pkt_str_len;
+    uint16_t ngham_pkt_str_len;
     uint8_t ax25_pkt_str[256];
-    uint8_t ax25_pkt_str_len;
+    uint16_t ax25_pkt_str_len;
     
     task_generate_packets(ngham_pkt_str, &ngham_pkt_str_len, ax25_pkt_str, &ax25_pkt_str_len);
     
@@ -70,7 +71,7 @@ void task_transmit_packet()
 #endif // BEACON_RF_SWITCH
     
     // Wait for AX25 packet transmission to end
-    delay_ms((uint16_t)(1.2*sizeof(ax25_str_pkt)*1000/1200/8));
+    delay_ms((uint16_t)(1.2*sizeof(ax25_pkt_str)*1000/1200/8));
     
 #if BEACON_RF_SWITCH != HW_NONE
     rf_switch_enable_beacon();
@@ -91,7 +92,7 @@ void task_transmit_packet()
 #endif // BEACON_RF_SWITCH
 }
 
-void task_generate_packets(uint8_t *ngham_pkt_str, uint8_t *ngham_pkt_str_len, uint8_t *ax25_pkt_str, uint8_t *ax25_pkt_str_len)
+void task_generate_packets(uint8_t *ngham_pkt_str, uint16_t *ngham_pkt_str_len, uint8_t *ax25_pkt_str, uint16_t *ax25_pkt_str_len)
 {
     NGHam_TX_Packet ngham_packet;
     AX25_Packet ax25_packet;
@@ -102,7 +103,7 @@ void task_generate_packets(uint8_t *ngham_pkt_str, uint8_t *ngham_pkt_str_len, u
     ngham_Encode(&ngham_packet, ngham_pkt_str, ngham_pkt_str_len);
     
     ax25_BeaconPacketGen(&ax25_packet, packet_payload.payload, packet_payload.lenght);
-    ax25_Packet2String(&ax25_packet, ax25_pkt_str, ax25_pkt_str_len);
+    ax25_Packet2String(&ax25_packet, ax25_pkt_str, *ax25_pkt_str_len);
 }
 
 void task_enter_low_power_mode()
@@ -112,7 +113,7 @@ void task_enter_low_power_mode()
 
 void task_leave_low_power_mode()
 {
-    _BIC_SR(LPM1_EXIT);
+    //_BIC_SR(LPM1_EXIT);
 }
 
 uint16_t task_check_elapsed_time(uint16_t initial_time, uint16_t final_time, uint8_t time_unit)
@@ -121,28 +122,20 @@ uint16_t task_check_elapsed_time(uint16_t initial_time, uint16_t final_time, uin
     {
         case MILLISECONDS:
             return (uint16_t)((final_time - initial_time) % 1000);
-            break;
         case SECONDS:
             return (uint16_t)((final_time - initial_time) % 60);
-            break;
         case MINUTES:
             return (uint16_t)((final_time - initial_time) % 60);
-            break;
         case HOURS:
             return (uint16_t)((final_time - initial_time) % 24);
-            break;
         case DAYS:
             return (uint16_t)((final_time - initial_time) % 7);
-            break;
         case WEEKS:
             return (uint16_t)((final_time - initial_time) % 4);
-            break;
         case MONTHS:
             return (uint16_t)((final_time - initial_time) % 12);
-            break;
         case YEARS:
             return final_time - initial_time;
-            break;
         default:
             return 0x00;
     }
@@ -150,16 +143,28 @@ uint16_t task_check_elapsed_time(uint16_t initial_time, uint16_t final_time, uin
 
 void task_enter_hibernation()
 {
+#if BEACON_MODE == DEBUG_MODE
+    debug_print_msg("Entering in hibernation mode... ");
+#endif // DEBUG_MODE
     radio_sleep();
     
-    flags.hibernation = true;
+    beacon.flags.hibernation = true;
+#if BEACON_MODE == DEBUG_MODE
+    debug_print_msg("DONE!\n");
+#endif // DEBUG_MODE
 }
 
 void task_leave_hibernation()
 {
+#if BEACON_MODE == DEBUG_MODE
+    debug_print_msg("Leaving hibernation mode... ");
+#endif // DEBUG_MODE
     radio_wake_up();
     
-    flags.hibernation = false;
+    beacon.flags.hibernation = false;
+#if BEACON_MODE == DEBUG_MODE
+    debug_print_msg("DONE!\n");
+#endif // DEBUG_MODE
 }
 
 void task_save_time()

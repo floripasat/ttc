@@ -60,11 +60,11 @@
  * 
  * This struct contains the payload (a byte array) and the lenght of the payload in bytes.
  */
-struct PacketPayload
+typedef struct
 {
     uint8_t payload[PKT_PAYLOAD_LEN + 1];
     uint8_t lenght;
-};
+} PacketPayload;
 
 /**
  * \var packet_payload

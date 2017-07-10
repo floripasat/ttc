@@ -52,29 +52,27 @@
 #define CC1175              1
 #define CC1125              2
 #define SI4463              3
-#define SI4032              4
-#define RFM23BPW            5
-#define RF4463F30           6
-#define UART_SIM            7
+#define RF4463F30           4
+#define UART_SIM            5
 
 //#######################################
 //-- PA ---------------------------------
 //#######################################
 
-#define RF6886              8
+#define RF6886              6
 
 //#######################################
 //-- RF SWITCH --------------------------
 //#######################################
 
-#define SKY13345_368LF      9
+#define SKY13345_368LF      7
 
 //#######################################
 //-- ANTENNA ----------------------------
 //#######################################
 
-#define ISIS_ANTENNA        10
-#define PASSIVE_ANTENNA     11
+#define ISIS_ANTENNA        8
+#define PASSIVE_ANTENNA     9
 
 #endif // HARDWARE_H_
 

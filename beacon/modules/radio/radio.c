@@ -35,36 +35,105 @@
  * \{
  */
 
+#include <config/config.h>
+
+#if BEACON_RADIO == CC1175 || BEACON_RADIO == CC1125
+    #include <drivers/radio/cc11x5/cc11xx.h>
+#elif BEACON_RADIO == SI4063
+    #include <drivers/radio/si446x/si446x.h>
+#elif BEACON_RADIO == RF4463F30
+    #include <drivers/radio/rf4463/rf4463.h>
+#elif BEACON_RADIO == UART_SIM
+    #include <drivers/radio/uart_radio_sim/uart_radio_sim.h>
+#endif // BEACON_RADIO
+
 #include "radio.h"
 
 uint8_t radio_init()
 {
 #if BEACON_RADIO == CC1175 || BEACON_RADIO == CC1125
-    return cc11xx_init();
+    uint8_t init_status = cc11xx_init();
+    if (init_status == STATUS_SUCCESS)
+    {
+        cc11xx_ManualCalibration();
+        return STATUS_SUCCESS;
+    }
+    else
+    {
+        return STATUS_FAIL;
+    }
 #elif BEACON_RADIO == SI4063
     return si406x_init();
-#elif BEACON_RADIO == RFM23BPW
-    return rfm23bpw_init();
 #elif BEACON_RADIO == RF4463F30
-    return rf4463f30_init();
+    return rf4463_init();
 #elif BEACON_RADIO == UART_SIM
-    return uart_sim_init();
+    return uart_radio_sim_init();
 #endif // BEACON_RADIO
 }
 
 void radio_reset()
 {
+#if BEACON_RADIO == CC1175 || BEACON_RADIO == CC1125
     
+#elif BEACON_RADIO == SI4063
+    
+#elif BEACON_RADIO == RF4463F30
+    
+#elif BEACON_RADIO == UART_SIM
+    return;
+#endif // BEACON_RADIO
 }
 
-void radio_write_data()
+void radio_write_data(uint8_t *data, uint16_t len)
 {
+#if BEACON_RADIO == CC1175 || BEACON_RADIO == CC1125
     
+#elif BEACON_RADIO == SI4063
+    
+#elif BEACON_RADIO == RF4463F30
+    
+#elif BEACON_RADIO == UART_SIM
+    uart_radio_sim_send_data(data, len);
+#endif // BEACON_RADIO
 }
 
 void radio_read_data()
 {
+#if BEACON_RADIO == CC1175 || BEACON_RADIO == CC1125
     
+#elif BEACON_RADIO == SI4063
+    
+#elif BEACON_RADIO == RF4463F30
+    
+#elif BEACON_RADIO == UART_SIM
+    return;
+#endif // BEACON_RADIO
+}
+
+void radio_sleep()
+{
+#if BEACON_RADIO == CC1175 || BEACON_RADIO == CC1125
+    
+#elif BEACON_RADIO == SI4063
+    
+#elif BEACON_RADIO == RF4463F30
+    
+#elif BEACON_RADIO == UART_SIM
+    return;
+#endif // BEACON_RADIO
+}
+
+void radio_wake_up()
+{
+#if BEACON_RADIO == CC1175 || BEACON_RADIO == CC1125
+    
+#elif BEACON_RADIO == SI4063
+    
+#elif BEACON_RADIO == RF4463F30
+    
+#elif BEACON_RADIO == UART_SIM
+    return;
+#endif // BEACON_RADIO
 }
 
 //! \} End of radio group

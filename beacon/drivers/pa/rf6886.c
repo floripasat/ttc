@@ -89,35 +89,10 @@ void rf6886_SetVreg(float v_reg)
     {      
         v_reg = 3.3;
     }
-    if (v_reg < 0)
+    else if (v_reg < 0)
     {
         v_reg = 0;
     }
-
-#if DEBUG_MODE == true
-    debug_PrintMsg("Setting PA gain to ");
-    
-    float value = v_reg;
-    int8_t digit_1 = -1;
-    while(value >= 0)
-    {
-        value -= 1.0;
-        digit_1++;
-    }
-    value += 1.0;
-    
-    int8_t digit_0 = -1;
-    while(value >= 0)
-    {
-        value -= 0.1;
-        digit_0++;
-    }
-    
-    debug_PrintDigit((uint8_t)digit_1);
-    debug_PrintMsg(",");
-    debug_PrintDigit((uint8_t)digit_0);
-    debug_PrintMsg("V... ");
-#endif // DEBUG_MODE
 
     // 12 bits = 0xFFF
     // V_REF = 0xFFF

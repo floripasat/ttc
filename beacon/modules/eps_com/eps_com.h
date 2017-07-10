@@ -46,7 +46,7 @@
 #define EPS_COM_PKT_LEN                     0x04
 #define EPS_COM_PKT_SOD                     0x7E
 #define EPS_COM_PKT_BYTE_COUNTER_POS_SOD    0x00
-#define EPS_COM_PKT_BYTE_COUNTER_POS_CRC    EPS_COM_PKT_LEN+1
+#define EPS_COM_PKT_BYTE_COUNTER_POS_CRC    (EPS_COM_PKT_LEN+1)
 
 #define EPS_COM_DEFAULT_DATA_MSB            0x07
 #define EPS_COM_DEFAULT_DATA_LSB            0xFD
@@ -58,25 +58,25 @@
  * 
  * \brief EPS communication variables struct.
  */
-struct EPSCom
+typedef struct
 {
     uint8_t received_byte;                  /**< Byte buffer. */
     uint8_t byte_counter;                   /**< Received packet byte counter. */
     uint8_t buffer[EPS_COM_PKT_LEN + 1];    /**< Packet buffer. */
-};
+} EPSCom;
 
 /**
  * \struct EPSData
  * 
  * \brief Struct to store the data from the EPS module.
  */
-struct EPSData
+typedef struct
 {
     uint8_t bat1_msb;
     uint8_t bat1_lsb;
     uint8_t bat2_msb;
     uint8_t bat2_lsb;
-};
+} EPSData;
 
 /**
  * \var eps_com

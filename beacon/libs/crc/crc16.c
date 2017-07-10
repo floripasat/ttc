@@ -32,8 +32,6 @@
  * \date 03/06/2017
  * 
  * \addtogroup crc
- * 
- * Last modification: 03/06/2017
  * \{
  */
 
@@ -41,7 +39,7 @@
 
 uint16_t crc16(uint16_t initial_value, uint8_t polynomial, uint8_t* data, uint8_t size)
 {
-    
+   return 0x00; 
 }
 
 uint16_t crc16_CCITT(uint16_t initial_value, uint8_t* data, uint8_t size)

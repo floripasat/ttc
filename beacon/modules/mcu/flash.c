@@ -41,12 +41,12 @@
 
 uint8_t flash_init()
 {
-    
+    return 0x01;
 }
 
 uint8_t flash_read_byte(uint16_t adr)
 {
-    
+    return 0xFF;
 }
 
 void flash_write_byte(uint8_t byte, uint16_t adr)

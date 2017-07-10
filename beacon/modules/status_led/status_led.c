@@ -41,6 +41,8 @@
 void status_led_init()
 {
     GPIO_setAsOutputPin(STATUS_LED_PORT, STATUS_LED_PIN);
+    
+    status_led_disable();
 }
 
 void status_led_enable()

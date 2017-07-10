@@ -37,9 +37,9 @@
 
 #include <config/config.h>
 
-#if BEACON_RF_SWITCH == 
-    #include <drivers/rf_switch/.h>
-#endif 
+#if BEACON_RF_SWITCH == SKY13345_368LF
+    #include <drivers/rf_switch/sky13345_368lf.h>
+#endif // BEACON_RF_SWITCH
 
 #include "rf_switch.h"
 

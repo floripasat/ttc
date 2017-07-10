@@ -1,5 +1,5 @@
 /*
- * flags.h
+ * libs.h
  * 
  * Copyright (C) 2017, Federal University of Santa Catarina.
  * 
@@ -21,38 +21,28 @@
  */
 
 /**
- * \file flags.h
+ * \file libs.h
  * 
- * \brief General operation flags.
+ * \brief Libraries include header.
  * 
  * \author Gabriel Mariano Marcelino <gabriel.mm8@gmail.com>
  * 
  * \version 1.0-dev
  * 
- * \date 10/06/2017
+ * \date 10/07/2017
  * 
- * \defgroup flags Flags
- * \ingroup src
+ * \defgroup libs Libraries
  * \{
  */
 
-#ifndef FLAGS_H_
-#define FLAGS_H_
+#ifndef LIBS_H_
+#define LIBS_H_
 
-#include <stdbool.h>
+#include "ax25/ax25.h"
+#include "crc/crc.h"
+#include "driverlib/driverlib.h"
+#include "ngham/ngham.h"
 
-/**
- * \struct Flags
- * 
- * \brief Beacon general flags struct.
- */
-typedef struct
-{
-    bool hibernation;       /**< If true, the beacon is in hibernation mode, otherwise, not. */
-    bool can_transmit;      /**< If true, the beacon can transmit packets, otherwise, not. */
-    bool transmitting;      /**< If true, the beacon is transmitting packets, otherwise, not. */
-} Flags;
+#endif // LIBS_H_
 
-#endif // FLAGS_H_
-
-//! \} End of flags group
+//! \} End of libs group

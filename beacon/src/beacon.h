@@ -40,15 +40,18 @@
 
 #include <modules/modules.h>
 
+#include "flags.h"
+
 /**
  * \struct Beacon
  * 
  * \brief Beacon variables struct.
  */
-struct Beacon
+typedef struct
 {
     Time hibernation_mode_initial_time;
-};
+    Flags flags;
+} Beacon;
 
 /**
  * \var beacon

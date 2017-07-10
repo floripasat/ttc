@@ -41,8 +41,9 @@
 #include <config/config.h>
 #include <modules/modules.h>
 #include <libs/driverlib/driverlib.h>
+#include <libs/crc/crc.h>
 #include <src/tasks.h>
-#include <src/flags.h>
+#include <src/beacon.h>
 
 #include "obdh_com.h"
 #include "obdh_com_config.h"
@@ -68,6 +69,7 @@ uint8_t obdh_com_init()
     obdh_com_clear_buffer();
     
     // obdh_data initialization
+    /*
     obdh_data.v_bat1[3]             = {0xFF};
     obdh_data.v_bat2[3]             = {0xFF};
     obdh_data.i_solar_panels[13]    = {0xFF};
@@ -78,6 +80,7 @@ uint8_t obdh_com_init()
     obdh_data.system_time[5]        = {0xFF};
     obdh_data.sat_status[3]         = {0xFF};
     obdh_data.reset_counter[3]      = {0xFF};
+    */
 
 #if BEACON_MODE == DEBUG_MODE
     debug_print_msg("SUCCESS!\n");
@@ -191,12 +194,12 @@ static void obdh_com_receive_cmd(uint8_t cmd)
 #endif // DEBUG_MODE
             obdh_com_send_data(OBDH_COM_SHUTDOWN_ACK);
             task_enter_hibernation();
-            break:
+            break;
         case OBDH_COM_CMD_RF_MUTEX:
 #if BEACON_MODE == DEBUG_MODE
             debug_print_msg("RF mutex command received!\n");
 #endif // DEBUG_MODE
-            if (flags.transmitting == true)
+            if (beacon.flags.transmitting == true)
             {
 #if BEACON_MODE == DEBUG_MODE
                 debug_print_msg("All of our channels are busy now! (Elevator music starts)\n");
@@ -209,14 +212,14 @@ static void obdh_com_receive_cmd(uint8_t cmd)
                 debug_print_msg("RUN, FORREST, RUN!\n");
 #endif // DEBUG_MODE
                 obdh_com_send_data(OBDH_COM_BEACON_FREE);
-                flags.can_transmit = false;
+                beacon.flags.can_transmit = false;
             }
             break;
         case OBDH_COM_TRANSCEIVER_FREE:
 #if BEACON_MODE == DEBUG_MODE
             debug_print_msg("Beacon channel free command received!\n");
 #endif // DEBUG_MODE
-            flags.can_transmit = true;
+            beacon.flags.can_transmit = true;
             break;
         default:
 #if BEACON_MODE == DEBUG_MODE
@@ -252,45 +255,45 @@ static void obdh_com_save_data_from_buffer()
     uint8_t i = 0;
     uint8_t j = 0;
     
-    obdh_data.v_bat1[0] = buffer[j++];
-    obdh_data.v_bat1[1] = buffer[j++];
+    obdh_data.v_bat1[0] = obdh_com.buffer[j++];
+    obdh_data.v_bat1[1] = obdh_com.buffer[j++];
     
-    obdh_data.v_bat2[0] = buffer[j++];
-    obdh_data.v_bat2[1] = buffer[j++];
+    obdh_data.v_bat2[0] = obdh_com.buffer[j++];
+    obdh_data.v_bat2[1] = obdh_com.buffer[j++];
     
     for(i=0;i<OBDH_COM_I_SOLAR_PANELS_LEN;i++)
     {
-        obdh_data.i_solar_panels[i] = buffer[j++];
+        obdh_data.i_solar_panels[i] = obdh_com.buffer[j++];
     }
     
     for(i=0;i<OBDH_COM_V_SOLAR_PANELS_LEN;i++)
     {
-        obdh_data.v_solar_panels[i] = buffer[j++];
+        obdh_data.v_solar_panels[i] = obdh_com.buffer[j++];
     }
     
     for(i=0;i<OBDH_COM_TEMP_BATTS_LEN;i++)
     {
-        obdh_data.t_bats[i] = buffer[j++];
+        obdh_data.t_bats[i] = obdh_com.buffer[j++];
     }
     
     for(i=0;i<OBDH_COM_IMU_LEN;i++)
     {
-        obdh_data.imu[i] = buffer[j++];
+        obdh_data.imu[i] = obdh_com.buffer[j++];
     }
     
-    obdh_data.q_bats[0] = buffer[j++];
-    obdh_data.q_bats[1] = buffer[j++];
+    obdh_data.q_bats[0] = obdh_com.buffer[j++];
+    obdh_data.q_bats[1] = obdh_com.buffer[j++];
     
     for(i=0;i<OBDH_COM_SYSTEM_TIME_LEN;i++)
     {
-        obdh_data.system_time[i] = buffer[j++];
+        obdh_data.system_time[i] = obdh_com.buffer[j++];
     }
     
-    obdh_data.sat_status[0] = buffer[j++];
-    obdh_data.sat_status[1] = buffer[j++];
+    obdh_data.sat_status[0] = obdh_com.buffer[j++];
+    obdh_data.sat_status[1] = obdh_com.buffer[j++];
     
-    obdh_data.reset_counter[0] = buffer[j++];
-    obdh_data.reset_counter[1] = buffer[j++];
+    obdh_data.reset_counter[0] = obdh_com.buffer[j++];
+    obdh_data.reset_counter[1] = obdh_com.buffer[j++];
 }
 
 static void obdh_com_clear_buffer()

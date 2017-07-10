@@ -1,7 +1,7 @@
 /*
- * antenna.h
+ * isis_antenna.h
  * 
- * Copyright (C) 2017, Federal University of Santa Catarina.
+ * Copyright (C) 2017, Federal University of Santa Catarina
  * 
  * This file is part of FloripaSat-Beacon.
  * 
@@ -21,61 +21,67 @@
  */
 
 /**
- * \file antenna.h
+ * \file isis_antenna.h
  * 
- * \brief Antenna module header.
+ * \brief ISIS antenna driver.
  * 
  * \author Gabriel Mariano Marcelino <gabriel.mm8@gmail.com>
  * 
  * \version 1.0-dev
  * 
- * \date 15/06/2017
+ * \date 08/07/2017
  * 
- * \defgroup antenna Antenna
- * \ingroup modules
+ * \defgroup isis_antenna ISIS antenna
+ * \ingroup drivers
  * \{
  */
+ 
+#ifndef ISIS_ANTENNA_H_
+#define ISIS_ANTENNA_H_
 
-#ifndef ANTENNA_H_
-#define ANTENNA_H_
+#define ANTENNA_STATUS_NOT_RELEASED     0x00
+#define ANTENNA_STATUS_RELEASED         0x01
 
 #include <stdint.h>
 
 /**
- * \fn antenna_init
+ * \fn antenna_Init()
  * 
- * \brief Antenna module initialization.
+ * \brief Initialization of the antenna deployment peripherals.
+ * 
+ * \note TO BE DEVELOPED!
+ * 
+ * \return none
+ */
+uint8_t isis_antenna_Init();
+
+/**
+ * \fn antenna_IsReleased
+ * 
+ * \brief Verifies if the antenna is released or not.
+ * 
+ * \note TO BE DEVELOPED!
+ * 
+ * \return It can return:
+ *              -\b ANTENNA_STATUS_NOT_RELEASED if the antenna is not released.
+ *              -\b ANTENNA_STATUS_RELEASED if the antenna is released.
+ *              .
+ */
+uint8_t isis_antenna_is_released();
+
+/**
+ * \fn antenna_Release
+ * 
+ * \brief Enables the antenna deployment.
+ * 
+ * \note TO BE DEVELOPED!
  * 
  * \return Deployment status. It can be:
  *              -\b STATUS_SUCCESS
  *              -\b STATUS_FAIL
  *              .
  */
-uint8_t antenna_init();
-
-/**
- * \fn antenna_is_released
- * 
- * \brief Checks if the antenna is released.
- * 
- * \return Returns:
- *              -\b ANTENNA_RELEASED
- *              -\b ANTENNA_NOT_RELEASED
- *              .
- */
-uint8_t antenna_is_released();
-
-/**
- * \fn antenna_deploy
- * 
- * \brief Antenna deployment routine.
- * 
- * \return Deployment status. It can be:
- *              -\b STATUS_SUCCESS
- *              -\b STATUS_FAIL
- *              .
- */
-uint8_t antenna_deploy();
+uint8_t isis_antenna_release();
 
 #endif // ANTENNA_H_
 

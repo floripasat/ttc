@@ -39,9 +39,9 @@
 
 #include "pa.h"
 
-void pa_init()
+uint8_t pa_init()
 {
-    
+    return 0x01;
 }
 
 void pa_enable()

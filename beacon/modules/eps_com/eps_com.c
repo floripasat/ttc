@@ -43,11 +43,6 @@
 
 EPSCom eps_com;
 
-eps_com.eps_uart_received_byte                  = 0x00;
-eps_com.eps_uart_byte_counter                   = 0x00;
-eps_com.eps_data_buffer[EPS_UART_PKT_LEN + 1]   = {EPS_UART_DEFAULT_DATA_MSB, EPS_UART_DEFAULT_DATA_LSB, EPS_UART_DEFAULT_DATA_MSB, EPS_UART_DEFAULT_DATA_LSB};
-eps_com.eps_data[EPS_UART_PKT_LEN + 1]          = {EPS_UART_DEFAULT_DATA_MSB, EPS_UART_DEFAULT_DATA_LSB, EPS_UART_DEFAULT_DATA_MSB, EPS_UART_DEFAULT_DATA_LSB};
-
 EPSData eps_data;
 
 uint8_t eps_com_init()
@@ -55,6 +50,13 @@ uint8_t eps_com_init()
 #if BEACON_MODE == DEBUG_MODE
     debug_print_msg("EPS communication initialization... ");
 #endif // DEBUG_MODE
+
+    eps_com.received_byte   = 0x00;
+    eps_com.byte_counter    = 0x00;
+    eps_com.buffer[0]       = EPS_COM_DEFAULT_DATA_MSB;
+    eps_com.buffer[1]       = EPS_COM_DEFAULT_DATA_LSB;
+    eps_com.buffer[2]       = EPS_COM_DEFAULT_DATA_MSB;
+    eps_com.buffer[3]       = EPS_COM_DEFAULT_DATA_LSB;
 
     // UART pins init.
     GPIO_setAsPeripheralModuleFunctionInputPin(EPS_COM_UART_RX_PORT, EPS_COM_UART_RX_PIN);
@@ -109,8 +111,8 @@ static void eps_com_receive_data()
 
     switch(eps_com.byte_counter)
     {
-        case EPS_COM_BYTE_COUNTER_POS_SOD:
-            if (eps_com.received_byte == EPS_COM_SOD)
+        case EPS_COM_PKT_BYTE_COUNTER_POS_SOD:
+            if (eps_com.received_byte == EPS_COM_PKT_SOD)
             {
                 eps_com.byte_counter++;
                 
@@ -125,11 +127,11 @@ static void eps_com_receive_data()
             }
 #endif // DEBUG_MODE
             break;
-        case EPS_COM_BYTE_COUNTER_POS_CRC:
+        case EPS_COM_PKT_BYTE_COUNTER_POS_CRC:
 #if BEACON_MODE == DEBUG_MODE
                 debug_print_msg("Checking CRC... ");
 #endif // DEBUG_MODE
-            if (eps_com.received_byte == crc8(EPS_COM_CRC_INITIAL_VALUE, EPS_COM_CRC_POLY, eps_data_buffer, sizeof(eps_data_buffer)-1))
+            if (eps_com.received_byte == crc8(EPS_COM_CRC_INITIAL_VALUE, EPS_COM_CRC_POLY, eps_com.buffer, sizeof(eps_com.buffer)-1))
             {
 #if BEACON_MODE == DEBUG_MODE
                 debug_print_msg("Valid packet!\n");
@@ -150,15 +152,15 @@ static void eps_com_receive_data()
                 eps_data.bat2_lsb = EPS_COM_DEFAULT_DATA_LSB;
             }
         default:
-            if ((eps_com.byte_counter > EPS_COM_BYTE_COUNTER_POS_SOD) &&
-                (eps_com.byte_counter < EPS_COM_BYTE_COUNTER_POS_CRC))
+            if ((eps_com.byte_counter > EPS_COM_PKT_BYTE_COUNTER_POS_SOD) &&
+                (eps_com.byte_counter < EPS_COM_PKT_BYTE_COUNTER_POS_CRC))
             {
                 eps_com.buffer[eps_com.byte_counter-1] = eps_com.received_byte;
                 eps_com.byte_counter++;
             }
             else
             {
-                eps_com.byte_counter = EPS_COM_BYTE_COUNTER_POS_SOD;
+                eps_com.byte_counter = EPS_COM_PKT_BYTE_COUNTER_POS_SOD;
             }
     }
 }
