@@ -40,6 +40,7 @@
 #define OBDH_COM_H_
 
 #include <stdint.h>
+#include <stdbool.h>
 
 #include "obdh_com_config.h"
 
@@ -53,6 +54,8 @@ typedef struct
     uint8_t received_byte;                      /**< Byte buffer. */
     uint8_t byte_counter;                       /**< Received packet byte counter. */
     uint8_t buffer[OBDH_COM_DATA_PKT_LEN + 1];  /**< Packet buffer. */
+    uint8_t crc_fails;                          /**< Number of CRC failures (Packets with errors). */
+    bool is_open;                               /**< Flag to store the OBDH communication state (true = Open; false = Closed). */
 } OBDHCom;
 
 /**
@@ -73,20 +76,6 @@ typedef struct
     uint8_t sat_status[3];          /**< Overall status of the satellite. */
     uint8_t reset_counter[3];       /**< Number of OBDH resets since launch. */
 } OBDHData;
-
-/**
- * \var obdh_com
- * 
- * \brief OBDH communication data.
- */
-extern OBDHCom obdh_com;
-
-/**
- * \var obdh_data
- * 
- * \brief Last data packet received from the OBDH module.
- */
-extern OBDHData obdh_data;
 
 /**
  * \fn obdh_com_init
