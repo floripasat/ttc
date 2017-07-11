@@ -35,15 +35,14 @@
  * \{
  */
 
+#include <string.h>
+
 #include <config/config.h>
 #include <modules/debug/debug.h>
-#include <libs/crc/crc.h>
+#include <libs/libs.h>
+#include <src/beacon.h>
 
 #include "eps_com.h"
-
-EPSCom eps_com;
-
-EPSData eps_data;
 
 uint8_t eps_com_init()
 {
@@ -51,12 +50,15 @@ uint8_t eps_com_init()
     debug_print_msg("EPS communication initialization... ");
 #endif // DEBUG_MODE
 
-    eps_com.received_byte   = 0x00;
-    eps_com.byte_counter    = 0x00;
-    eps_com.buffer[0]       = EPS_COM_DEFAULT_DATA_MSB;
-    eps_com.buffer[1]       = EPS_COM_DEFAULT_DATA_LSB;
-    eps_com.buffer[2]       = EPS_COM_DEFAULT_DATA_MSB;
-    eps_com.buffer[3]       = EPS_COM_DEFAULT_DATA_LSB;
+    // eps_com initialization
+    beacon.eps_com.received_byte    = EPS_COM_DEFAULT_DATA_BYTE;
+    beacon.eps_com.byte_counter     = EPS_COM_PKT_SOD_POSITION;
+    beacon.eps_com.crc_fails        = 0;
+    beacon.eps_com.is_open          = false;
+    eps_com_clear_buffer();
+    
+    // eps_data initialization
+    eps_com_save_data_from_buffer();
 
     // UART pins init.
     GPIO_setAsPeripheralModuleFunctionInputPin(EPS_COM_UART_RX_PORT, EPS_COM_UART_RX_PIN);
@@ -76,6 +78,8 @@ uint8_t eps_com_init()
     // UART initialization
     if (USCI_A_UART_init(EPS_COM_UART_BASE_ADDRESS, &uart_params) == STATUS_FAIL)
     {
+        beacon.eps_com.is_open = false;
+        
 #if BEACON_MODE == DEBUG_MODE
         debug_print_msg("FAIL!\n");
 #endif // DEBUG_MODE
@@ -90,8 +94,8 @@ uint8_t eps_com_init()
         // Enable Receive Interrupt
         USCI_A_UART_clearInterrupt(EPS_COM_UART_BASE_ADDRESS, USCI_A_UART_RECEIVE_INTERRUPT);
         USCI_A_UART_enableInterrupt(EPS_COM_UART_BASE_ADDRESS, USCI_A_UART_RECEIVE_INTERRUPT);
-        
-        __enable_interrupt();
+
+        beacon.eps_com.is_open = true;
 
 #if BEACON_MODE == DEBUG_MODE
         debug_print_msg("SUCCESS!\n");
@@ -107,14 +111,14 @@ static void eps_com_receive_data()
         debug_print_msg("Receiving a byte from the EPS module... ");
 #endif // DEBUG_MODE
 
-    eps_com.received_byte = USCI_A_UART_receiveData(EPS_COM_UART_BASE_ADDRESS);
+    beacon.eps_com.received_byte = USCI_A_UART_receiveData(EPS_COM_UART_BASE_ADDRESS);
 
-    switch(eps_com.byte_counter)
+    switch(beacon.eps_com.byte_counter)
     {
-        case EPS_COM_PKT_BYTE_COUNTER_POS_SOD:
-            if (eps_com.received_byte == EPS_COM_PKT_SOD)
+        case EPS_COM_PKT_SOD_POSITION:
+            if (beacon.eps_com.received_byte == EPS_COM_PKT_SOD)
             {
-                eps_com.byte_counter++;
+                beacon.eps_com.byte_counter++;
                 
 #if BEACON_MODE == DEBUG_MODE
                 debug_print_msg("SOD byte received!\n");
@@ -127,42 +131,75 @@ static void eps_com_receive_data()
             }
 #endif // DEBUG_MODE
             break;
-        case EPS_COM_PKT_BYTE_COUNTER_POS_CRC:
+        case EPS_COM_CRC_POSITION:
 #if BEACON_MODE == DEBUG_MODE
                 debug_print_msg("Checking CRC... ");
 #endif // DEBUG_MODE
-            if (eps_com.received_byte == crc8(EPS_COM_CRC_INITIAL_VALUE, EPS_COM_CRC_POLY, eps_com.buffer, sizeof(eps_com.buffer)-1))
+            if (beacon.eps_com.received_byte == crc8(EPS_COM_CRC_INITIAL_VALUE, EPS_COM_CRC_POLYNOMIAL, beacon.eps_com.buffer, sizeof(beacon.eps_com.buffer)-1))
             {
 #if BEACON_MODE == DEBUG_MODE
-                debug_print_msg("Valid packet!\n");
+                debug_print_msg("VALID!\n");
 #endif // DEBUG_MODE
-                eps_data.bat1_msb = eps_com.buffer[0];
-                eps_data.bat1_lsb = eps_com.buffer[1];
-                eps_data.bat2_msb = eps_com.buffer[2];
-                eps_data.bat2_lsb = eps_com.buffer[3];
+                eps_com_save_data_from_buffer();
+                beacon.eps_com.crc_fails = 0;
             }
             else
             {
 #if BEACON_MODE == DEBUG_MODE
-                debug_print_msg("ERROR: Invalid packet!\n");
+                debug_print_msg("ERROR! INVALID!\n");
 #endif // DEBUG_MODE
-                eps_data.bat1_msb = EPS_COM_DEFAULT_DATA_MSB;
-                eps_data.bat1_lsb = EPS_COM_DEFAULT_DATA_LSB;
-                eps_data.bat2_msb = EPS_COM_DEFAULT_DATA_MSB;
-                eps_data.bat2_lsb = EPS_COM_DEFAULT_DATA_LSB;
+                eps_com_clear_buffer();
+                beacon.eps_com.crc_fails++;
             }
         default:
-            if ((eps_com.byte_counter > EPS_COM_PKT_BYTE_COUNTER_POS_SOD) &&
-                (eps_com.byte_counter < EPS_COM_PKT_BYTE_COUNTER_POS_CRC))
+            if ((beacon.eps_com.byte_counter > EPS_COM_PKT_SOD_POSITION) &&
+                (beacon.eps_com.byte_counter < EPS_COM_CRC_POSITION))
             {
-                eps_com.buffer[eps_com.byte_counter-1] = eps_com.received_byte;
-                eps_com.byte_counter++;
+                beacon.eps_com.buffer[beacon.eps_com.byte_counter-1] = beacon.eps_com.received_byte;
+                beacon.eps_com.byte_counter++;
             }
             else
             {
-                eps_com.byte_counter = EPS_COM_PKT_BYTE_COUNTER_POS_SOD;
+                beacon.eps_com.byte_counter = EPS_COM_PKT_SOD_POSITION;
             }
     }
+}
+
+static void eps_com_save_data_from_buffer()
+{
+    uint8_t i = 0;
+    uint8_t j = 0;
+    
+    beacon.eps_data.v_bat1[0] = beacon.eps_com.buffer[j++];
+    beacon.eps_data.v_bat1[1] = beacon.eps_com.buffer[j++];
+    
+    beacon.eps_data.v_bat2[0] = beacon.eps_com.buffer[j++];
+    beacon.eps_data.v_bat2[1] = beacon.eps_com.buffer[j++];
+    
+    beacon.eps_data.q_bats[0] = beacon.eps_com.buffer[j++];
+    beacon.eps_data.q_bats[1] = beacon.eps_com.buffer[j++];
+    
+    for(i=0;i<EPS_COM_T_BATS_LEN;i++)
+    {
+        beacon.eps_data.t_bats[i] = beacon.eps_com.buffer[j++];
+    }
+    
+    for(i=0;i<EPS_COM_V_SOLAR_PANELS_LEN;i++)
+    {
+        beacon.eps_data.v_solar_panels[i] = beacon.eps_com.buffer[j++];
+    }
+    
+    for(i=0;i<EPS_COM_I_SOLAR_PANELS_LEN;i++)
+    {
+        beacon.eps_data.i_solar_panels[i] = beacon.eps_com.buffer[j++];
+    }
+    
+    beacon.eps_data.energy_level = beacon.eps_com.buffer[j++];
+}
+
+static void eps_com_clear_buffer()
+{
+    memset(beacon.eps_com.buffer, EPS_COM_DEFAULT_DATA_BYTE, EPS_COM_DATA_PKT_LEN*sizeof(uint8_t));
 }
 
 /**

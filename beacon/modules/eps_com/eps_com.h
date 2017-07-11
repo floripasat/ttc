@@ -40,18 +40,9 @@
 #define EPS_COM_H_
 
 #include <stdint.h>
-#include <libs/driverlib/driverlib.h>
-#include <config/config.h>
+#include <stdbool.h>
 
-#define EPS_COM_PKT_LEN                     0x04
-#define EPS_COM_PKT_SOD                     0x7E
-#define EPS_COM_PKT_BYTE_COUNTER_POS_SOD    0x00
-#define EPS_COM_PKT_BYTE_COUNTER_POS_CRC    (EPS_COM_PKT_LEN+1)
-
-#define EPS_COM_DEFAULT_DATA_MSB            0x07
-#define EPS_COM_DEFAULT_DATA_LSB            0xFD
-#define EPS_COM_CRC_INITIAL_VALUE           0x00
-#define EPS_COM_CRC_POLY                    0x07
+#include "eps_com_config.h"
 
 /**
  * \struct EPS_Com
@@ -60,9 +51,11 @@
  */
 typedef struct
 {
-    uint8_t received_byte;                  /**< Byte buffer. */
-    uint8_t byte_counter;                   /**< Received packet byte counter. */
-    uint8_t buffer[EPS_COM_PKT_LEN + 1];    /**< Packet buffer. */
+    uint8_t received_byte;                      /**< Byte buffer. */
+    uint8_t byte_counter;                       /**< Received packet byte counter. */
+    uint8_t buffer[EPS_COM_DATA_PKT_LEN + 1];   /**< Packet buffer. */
+    uint8_t crc_fails;                          /**< Number of CRC failures (Packets with errors). */
+    bool is_open;                               /**< Flag to store the EPS communication state (true = Open; false = Closed). */
 } EPSCom;
 
 /**
@@ -72,25 +65,14 @@ typedef struct
  */
 typedef struct
 {
-    uint8_t bat1_msb;
-    uint8_t bat1_lsb;
-    uint8_t bat2_msb;
-    uint8_t bat2_lsb;
+    uint8_t v_bat1[3];
+    uint8_t v_bat2[3];
+    uint8_t q_bats[3];
+    uint8_t t_bats[7];
+    uint8_t v_solar_panels[7];
+    uint8_t i_solar_panels[13];
+    uint8_t energy_level;
 } EPSData;
-
-/**
- * \var eps_com
- * 
- * \brief 
- */
-extern EPSCom eps_com;
-
-/**
- * \var eps_data
- * 
- * \brief EPS data object.
- */
-extern EPSData eps_data;
 
 /**
  * \fn eps_com_init
@@ -115,6 +97,24 @@ uint8_t eps_com_init();
  * \return None
  */
 static void eps_com_receive_data();
+
+/**
+ * \fn eps_com_save_data_from_buffer
+ * 
+ * \brief Copy the bytes of the buffer to the eps_data struct.
+ * 
+ * \return None
+ */
+static void eps_com_save_data_from_buffer();
+
+/**
+ * \fn eps_com_clear_buffer
+ * 
+ * \brief Clears the data buffer.
+ * 
+ * \return None
+ */
+static void eps_com_clear_buffer();
 
 #endif // EPS_COM_H_
 
