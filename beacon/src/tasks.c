@@ -97,12 +97,12 @@ void task_generate_packets(uint8_t *ngham_pkt_str, uint16_t *ngham_pkt_str_len, 
     NGHam_TX_Packet ngham_packet;
     AX25_Packet ax25_packet;
     
-    packet_payload_generate(packet_payload, eps_data);
+    task_generate_packet_payload(&beacon);
     
-    ngham_TxPktGen(&ngham_packet, packet_payload.payload, packet_payload.lenght);
+    ngham_TxPktGen(&ngham_packet, beacon.packet_payload.payload, beacon.packet_payload.length);
     ngham_Encode(&ngham_packet, ngham_pkt_str, ngham_pkt_str_len);
     
-    ax25_BeaconPacketGen(&ax25_packet, packet_payload.payload, packet_payload.lenght);
+    ax25_BeaconPacketGen(&ax25_packet, beacon.packet_payload.payload, beacon.packet_payload.length);
     ax25_Packet2String(&ax25_packet, ax25_pkt_str, *ax25_pkt_str_len);
 }
 
@@ -184,9 +184,9 @@ void task_reset_system()
 
 void task_antenna_deployment()
 {
-    uint8_t minute_marker = time.minute;
+    uint8_t minute_marker = beacon.time.minute;
     
-    while(task_check_elapsed_time(minute_marker, time.minute, MINUTES) <= BEACON_ANTENNA_DEPLOY_SLEEP_MIN)
+    while(task_check_elapsed_time(minute_marker, beacon.time.minute, MINUTES) <= BEACON_ANTENNA_DEPLOY_SLEEP_MIN)
     {
 #if BEACON_MODE != DEBUG_MODE
         watchdog_reset_timer();
@@ -199,6 +199,130 @@ void task_antenna_deployment()
     {
         
     }
+}
+
+uint8_t task_get_tx_period()
+{
+    switch(beacon.energy_level)
+    {
+        case SATELLITE_ENERGY_LEVEL_1:
+            return BEACON_TX_PERIOD_SEC_L1;
+            break;
+        case SATELLITE_ENERGY_LEVEL_2:
+            return BEACON_TX_PERIOD_SEC_L2;
+            break;
+        case SATELLITE_ENERGY_LEVEL_3:
+            return BEACON_TX_PERIOD_SEC_L3;
+            break;
+        case SATELLITE_ENERGY_LEVEL_4:
+            return BEACON_TX_PERIOD_SEC_L4;
+            break;
+        case SATELLITE_ENERGY_LEVEL_5:
+            return BEACON_TX_PERIOD_SEC_L5;
+            break;
+        default:
+            return BEACON_TX_PERIOD_SEC_L5;
+            break;
+    }
+}
+
+void task_generate_packet_payload(Beacon *b)
+{
+#if BEACON_MODE == DEBUG_MODE
+    debug_print_msg("Generating packet payload from ");
+#endif // DEBUG_MODE
+
+    uint8_t i = 0;
+    uint8_t pkt_payload_counter = 0;
+    for(i=0; i<sizeof(PKT_PAYLOAD_SAT_ID)-1; i++)
+    {
+        b->packet_payload.payload[pkt_payload_counter++] = PKT_PAYLOAD_SAT_ID[i];
+    }
+    
+    if (b->obdh_com.crc_fails == 0)
+    {
+#if BEACON_MODE == DEBUG_MODE
+        debug_print_msg("OBDH data... ");
+#endif // DEBUG_MODE
+
+        b->packet_payload.payload[pkt_payload_counter++] = b->obdh_data.v_bat1[0];
+        b->packet_payload.payload[pkt_payload_counter++] = b->obdh_data.v_bat1[1];
+        
+        b->packet_payload.payload[pkt_payload_counter++] = b->obdh_data.v_bat2[0];
+        b->packet_payload.payload[pkt_payload_counter++] = b->obdh_data.v_bat2[1];
+        
+        for(i=0;i<OBDH_COM_I_SOLAR_PANELS_LEN;i++)
+        {
+            b->packet_payload.payload[pkt_payload_counter++] = b->obdh_data.i_solar_panels[i];
+        }
+        
+        for(i=0;i<OBDH_COM_V_SOLAR_PANELS_LEN;i++)
+        {
+            b->packet_payload.payload[pkt_payload_counter++] = b->obdh_data.v_solar_panels[i];
+        }
+        
+        for(i=0;i<OBDH_COM_TEMP_BATTS_LEN;i++)
+        {
+            b->packet_payload.payload[pkt_payload_counter++] = b->obdh_data.t_bats[i];
+        }
+        
+        for(i=0;i<OBDH_COM_IMU_LEN;i++)
+        {
+            b->packet_payload.payload[pkt_payload_counter++] = b->obdh_data.imu[i];
+        }
+        
+        b->packet_payload.payload[pkt_payload_counter++] = b->obdh_data.q_bats[0];
+        b->packet_payload.payload[pkt_payload_counter++] = b->obdh_data.q_bats[1];
+        
+        for(i=0;i<OBDH_COM_SYSTEM_TIME_LEN;i++)
+        {
+            b->packet_payload.payload[pkt_payload_counter++] = b->obdh_data.system_time[i];
+        }
+        
+        b->packet_payload.payload[pkt_payload_counter++] = b->obdh_data.sat_status[0];
+        b->packet_payload.payload[pkt_payload_counter++] = b->obdh_data.sat_status[1];
+        
+        b->packet_payload.payload[pkt_payload_counter++] = b->obdh_data.reset_counter[0];
+        b->packet_payload.payload[pkt_payload_counter++] = b->obdh_data.reset_counter[1];
+    }
+    else
+    {
+#if BEACON_MODE == DEBUG_MODE
+        debug_print_msg("EPS data... ");
+#endif // DEBUG_MODE
+        
+        b->packet_payload.payload[pkt_payload_counter++] = b->eps_data.v_bat1[0];
+        b->packet_payload.payload[pkt_payload_counter++] = b->eps_data.v_bat1[1];
+
+        b->packet_payload.payload[pkt_payload_counter++] = b->eps_data.v_bat2[0];
+        b->packet_payload.payload[pkt_payload_counter++] = b->eps_data.v_bat2[1];
+
+        b->packet_payload.payload[pkt_payload_counter++] = b->eps_data.q_bats[0];
+        b->packet_payload.payload[pkt_payload_counter++] = b->eps_data.q_bats[1];
+
+        for(i=0;i<EPS_COM_T_BATS_LEN;i++)
+        {
+            b->packet_payload.payload[pkt_payload_counter++] = b->eps_data.t_bats[i];
+        }
+        
+        for(i=0;i<EPS_COM_V_SOLAR_PANELS_LEN;i++)
+        {
+            b->packet_payload.payload[pkt_payload_counter++] = b->eps_data.v_solar_panels[i];
+        }
+        
+        for(i=0;i<EPS_COM_I_SOLAR_PANELS_LEN;i++)
+        {
+            b->packet_payload.payload[pkt_payload_counter++] = b->eps_data.i_solar_panels[i];
+        }
+        
+        b->packet_payload.payload[pkt_payload_counter] = b->eps_data.energy_level;
+    }
+
+    b->packet_payload.length = pkt_payload_counter;
+
+#if BEACON_MODE == DEBUG_MODE
+    debug_print_msg("DONE!\n");
+#endif // DEBUG_MODE
 }
 
 //! \} End of tasks group

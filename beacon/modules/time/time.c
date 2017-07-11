@@ -37,18 +37,16 @@
 
 #include "time.h"
 
-Time time;
-
-void time_reset()
+void time_reset(Time *time)
 {
-    time.millisecond    = 0x0000;
-    time.second         = 0x00;
-    time.minute         = 0x00;
-    time.hour           = 0x00;
-    time.day            = 0x00;
-    time.week           = 0x00;
-    time.month          = 0x00;
-    time.year           = 0x00;
+    time->millisecond   = 0x0000;
+    time->second        = 0x00;
+    time->minute        = 0x00;
+    time->hour          = 0x00;
+    time->day           = 0x00;
+    time->week          = 0x00;
+    time->month         = 0x00;
+    time->year          = 0x00;
 }
 
 //! \} End of time group

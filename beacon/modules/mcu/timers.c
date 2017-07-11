@@ -36,8 +36,9 @@
  */
 
 #include <config/config.h>
-#include <libs/driverlib/driverlib.h>
+#include <libs/libs.h>
 #include <modules/modules.h>
+#include <src/beacon.h>
 
 #include "timers.h"
 
@@ -94,21 +95,21 @@ void TIMER1_A0_ISR()
     uint16_t comp_val = Timer_A_getCaptureCompareCount(TIMER_A1_BASE, TIMER_A_CAPTURECOMPARE_REGISTER_0)
                         + (uint16_t)(UCS_getSMCLK()/TIMER_A_CLOCKSOURCE_DIVIDER_20);
     
-    time.second++;
-    if (time.second == 60)      // 1 minute = 60 seconds
+    beacon.time.second++;
+    if (beacon.time.second == 60)   // 1 minute = 60 seconds
     {
-        time.minute++;
-        time.second = 0;
+        beacon.time.minute++;
+        beacon.time.second = 0;
     }
-    if (time.minute == 60)      // 1 hour = 60 minutes
+    if (beacon.time.minute == 60)   // 1 hour = 60 minutes
     {
-        time.hour++;
-        time.minute = 0;
+        beacon.time.hour++;
+        beacon.time.minute = 0;
     }
-    if (time.hour == 24)        // 1 day = 24 hours
+    if (beacon.time.hour == 24)     // 1 day = 24 hours
     {
-        time.day++;
-        time.hour = 0;
+        beacon.time.day++;
+        beacon.time.hour = 0;
     }
     
 #if BEACON_MODE != FLIGHT_MODE

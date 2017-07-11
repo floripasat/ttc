@@ -38,6 +38,8 @@
 #ifndef INIT_H_
 #define INIT_H_
 
+#include <modules/time/time.h>
+
 /**
  * \fn init_debug
  * 
@@ -88,9 +90,11 @@ void init_status_led();
  * 
  * \brief Time control initialization routine.
  * 
+ * \param t is a pointer to a Time object.
+ * 
  * \return None
  */
-void init_time();
+void init_time(Time *t);
 
 /**
  * \fn init_timer

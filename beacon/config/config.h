@@ -51,13 +51,23 @@
 
 #define SATELLITE_ID                "FLORIPASAT"
 
+#define SATELLITE_ENERGY_LEVEL_1    0
+#define SATELLITE_ENERGY_LEVEL_2    1
+#define SATELLITE_ENERGY_LEVEL_3    2
+#define SATELLITE_ENERGY_LEVEL_4    3
+#define SATELLITE_ENERGY_LEVEL_5    4
+
 //###########################################
 //-- BEACON OPERATION -----------------------
 //###########################################
 
 #define BEACON_MODE                 TEST_MODE
 
-#define BEACON_TX_PERIOD_SEC        30
+#define BEACON_TX_PERIOD_SEC_L1     10
+#define BEACON_TX_PERIOD_SEC_L2     10
+#define BEACON_TX_PERIOD_SEC_L3     20
+#define BEACON_TX_PERIOD_SEC_L4     30
+#define BEACON_TX_PERIOD_SEC_L5     30
 
 #define BEACON_HIBERNATION_PERIOD_SECONDS   0
 #define BEACON_HIBERNATION_PERIOD_MINUTES   0

@@ -62,7 +62,7 @@ void beacon_init()
     init_status_led();
 #endif // FLIGHT_MODE
 
-    init_time();
+    init_time(&beacon.time);
     
     init_timer();
     
@@ -87,6 +87,7 @@ void beacon_init()
     beacon.flags.hibernation    = false;
     beacon.flags.can_transmit   = true;
     beacon.flags.transmitting   = false;
+    beacon.energy_level         = SATELLITE_ENERGY_LEVEL_5;
 }
 
 void beacon_run()
@@ -100,6 +101,8 @@ void beacon_run()
     }
 #endif // BEACON_MODE
     
+    __enable_interrupt();
+    
     while(1)
     {
         if (beacon.flags.hibernation == false)
@@ -111,11 +114,11 @@ void beacon_run()
         }
         else
         {
-            if (task_check_elapsed_time(time.hour, beacon.hibernation_mode_initial_time.hour, HOURS) >= BEACON_HIBERNATION_PERIOD_HOURS)
+            if (task_check_elapsed_time(beacon.time.hour, beacon.hibernation_mode_initial_time.hour, HOURS) >= BEACON_HIBERNATION_PERIOD_HOURS)
             {
-                if (task_check_elapsed_time(time.minute, beacon.hibernation_mode_initial_time.minute, MINUTES) >= BEACON_HIBERNATION_PERIOD_MINUTES)
+                if (task_check_elapsed_time(beacon.time.minute, beacon.hibernation_mode_initial_time.minute, MINUTES) >= BEACON_HIBERNATION_PERIOD_MINUTES)
                 {
-                    if (task_check_elapsed_time(time.second, beacon.hibernation_mode_initial_time.minute, SECONDS) >= BEACON_HIBERNATION_PERIOD_SECONDS)
+                    if (task_check_elapsed_time(beacon.time.second, beacon.hibernation_mode_initial_time.minute, SECONDS) >= BEACON_HIBERNATION_PERIOD_SECONDS)
                     {
                         task_leave_hibernation();
                     }
@@ -123,8 +126,8 @@ void beacon_run()
             }
         }
         
-        uint8_t second_marker = time.second;
-        while(task_check_elapsed_time(second_marker, time.second, SECONDS) < BEACON_TX_PERIOD_SEC)
+        uint8_t second_marker = beacon.time.second;
+        while(task_check_elapsed_time(second_marker, beacon.time.second, SECONDS) < task_get_tx_period())
         {
             watchdog_reset_timer();
             

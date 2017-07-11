@@ -72,9 +72,9 @@ void init_status_led()
     status_led_init();
 }
 
-void init_time()
+void init_time(Time *t)
 {
-    time_reset();
+    time_reset(t);
 }
 
 void init_timer()

@@ -39,6 +39,10 @@
 #ifndef TASKS_H_
 #define TASKS_H_
 
+#include <stdint.h>
+
+#include "beacon.h"
+
 /**
  * \fn task_transmit_packet
  * 
@@ -146,6 +150,28 @@ void task_reset_system();
  * \return None
  */
 void task_antenna_deployment();
+
+/**
+ * \fn task_get_tx_period
+ * 
+ * \brief Returns the TX period of the beacon (This value is dependent of the satellite energy level).
+ * 
+ * \return The TX period of the beacon.
+ */
+uint8_t task_get_tx_period();
+
+/**
+ * \fn task_generate_packet_payload
+ * 
+ * \brief Generates a packet payload from the OBDH or EPS data.
+ * 
+ * If the last OBDH data is not valid, the last valid EPS data is used to generate the packet payload.
+ * 
+ * \param b is a pointer to a Beacon struct.
+ * 
+ * \return None
+ */
+void task_generate_packet_payload(Beacon *b);
 
 #endif // TASKS_H_
 

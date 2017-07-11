@@ -38,9 +38,12 @@
 #ifndef BEACON_H_
 #define BEACON_H_
 
+#include <stdint.h>
+
 #include <modules/modules.h>
 
 #include "flags.h"
+#include "packet_payload.h"
 
 /**
  * \struct Beacon
@@ -49,8 +52,15 @@
  */
 typedef struct
 {
-    Time hibernation_mode_initial_time;
-    Flags flags;
+    Flags           flags;                          /**< . */
+    uint8_t         energy_level;                   /**< . */
+    Time            time;                           /**< . */
+    Time            hibernation_mode_initial_time;  /**< . */
+    OBDHCom         obdh_com;                       /**< . */
+    OBDHData        obdh_data;                      /**< . */
+    EPSCom          eps_com;                        /**< . */
+    EPSData         eps_data;                       /**< . */
+    PacketPayload   packet_payload;                 /**< . */
 } Beacon;
 
 /**

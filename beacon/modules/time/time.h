@@ -68,20 +68,15 @@ typedef struct
 } Time;
 
 /**
- * \var time
- * 
- * \brief Variable to store the time counters.
- */
-extern Time time;
-
-/**
  * \fn time_reset
  * 
  * \brief Resets all the time counters.
  * 
+ * \param time is a pointer to a Time object.
+ * 
  * \return None
  */
-void time_reset();
+void time_reset(Time *time);
 
 #endif // TIME_H_
 
