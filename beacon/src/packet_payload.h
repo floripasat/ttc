@@ -1,5 +1,5 @@
 /*
- * modules.h
+ * packet_payload.h
  * 
  * Copyright (C) 2017, Federal University of Santa Catarina.
  * 
@@ -21,38 +21,50 @@
  */
 
 /**
- * \file modules.h
+ * \file packets_payload.h
  * 
- * \brief Modules include file.
+ * \brief Packet payload struct.
  * 
  * \author Gabriel Mariano Marcelino <gabriel.mm8@gmail.com>
  * 
  * \version 1.0-dev
  * 
- * \date 09/06/2017
+ * \date 11/07/2017
  * 
- * \defgroup modules Modules
- * \ingroup beacon
+ * \defgroup pkt_pl Packet  Payload
+ * \ingroup modules
  * \{
  */
 
-#ifndef MODULES_H_
-#define MODULES_H_
+#ifndef PACKET_PAYLOAD_H_
+#define PACKET_PAYLOAD_H_
 
-#include "antenna/antenna.h"
-#include "debug/debug.h"
-#include "eps_com/eps_com.h"
-#include "mcu/flash.h"
-#include "mcu/timers.h"
-#include "mcu/watchdog.h"
-#include "obdh_com/obdh_com.h"
-#include "pa/pa.h"
-#include "radio/radio.h"
-#include "rf_switch/rf_switch.h"
-#include "status_led/status_led.h"
-#include "time/delay.h"
-#include "time/time.h"
+#include <stdint.h>
 
-#endif // MODULES_H_
+#include <config/config.h>
+#include <modules/modules.h>
 
-//! \} End of modules group
+#define PKT_PAYLOAD_SAT_ID  SATELLITE_ID
+
+#if OBDH_COM_DATA_PKT_LEN >= EPS_COM_DATA_PKT_LEN
+    #define PKT_PAYLOAD_LEN (sizeof(SATELLITE_ID)-1 + OBDH_COM_DATA_PKT_LEN)
+#else
+    #define PKT_PAYLOAD_LEN (sizeof(SATELLITE_ID)-1 + EPS_COM_DATA_PKT_LEN)
+#endif // PKT_PAYLOAD_LEN
+
+/**
+ * \struct PacketPayload
+ * 
+ * \brief PacketPayload struct.
+ * 
+ * This struct contains the payload (a byte array) and the length of the payload in bytes.
+ */
+typedef struct
+{
+    uint8_t payload[PKT_PAYLOAD_LEN + 1];
+    uint8_t length;
+} PacketPayload;
+
+#endif // PACKET_PAYLOAD_H_
+
+//! \} End of pkt_pl group
