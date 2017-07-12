@@ -77,9 +77,9 @@ void init_time(Time *t)
     time_reset(t);
 }
 
-void init_timer()
+void init_timer(Time *t)
 {
-    timer_init();
+    timer_init(t);
 }
 
 void init_antenna()

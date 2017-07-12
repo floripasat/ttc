@@ -101,9 +101,11 @@ void init_time(Time *t);
  * 
  * \brief Main timer initialization routine.
  * 
+ * \param t is a pointer to a Time object.
+ * 
  * \return None
  */
-void init_timer();
+void init_timer(Time *t);
 
 /**
  * \fn init_antenna

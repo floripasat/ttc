@@ -39,6 +39,15 @@
 #ifndef TIMERS_H_
 #define TIMERS_H_
 
+#include <modules/time/time.h>
+
+/**
+ * \var *time
+ * 
+ * \brief Time control pointer.
+ */
+Time *time;
+
 /**
  * \fn timer_init()
  * 
@@ -47,9 +56,22 @@
  * Start timer A in continuous mode sourced by SMCLK with a period of one second
  * and using compare mode.
  * 
+ * This timer is used to control the time.
+ * 
+ * \param t is a pointer to a Time object.
+ * 
  * \return None
  */
-void timer_init();
+void timer_init(Time *t);
+
+/**
+ * \fn timer_start
+ * 
+ * \brief Starts the time control timer operation.
+ * 
+ * \return None
+ */
+void timer_start();
 
 #endif // TIMERS_H_
 

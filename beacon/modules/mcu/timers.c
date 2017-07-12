@@ -36,41 +36,55 @@
  */
 
 #include <config/config.h>
-#include <libs/libs.h>
+#include <libs/driverlib/driverlib.h>
 #include <modules/modules.h>
-#include <src/beacon.h>
 
 #include "timers.h"
 
-void timer_init()
+void timer_init(Time *t)
 {
 #if BEACON_MODE == DEBUG_MODE
     debug_print_msg("Time control timer initialization... ");
 #endif // DEBUG_MODE
 
+    time = t;
+
     // Start timer in continuous mode sourced by SMCLK
-    Timer_A_initContinuousModeParam initContParam = {0};
-    initContParam.clockSource               = TIMER_A_CLOCKSOURCE_SMCLK;
-    initContParam.clockSourceDivider        = TIMER_A_CLOCKSOURCE_DIVIDER_20;
-    initContParam.timerInterruptEnable_TAIE = TIMER_A_TAIE_INTERRUPT_DISABLE;
-    initContParam.timerClear                = TIMER_A_DO_CLEAR;
-    initContParam.startTimer                = false;
+    Timer_A_initContinuousModeParam timer_cont_params = {0};
+    timer_cont_params.clockSource               = TIMER_A_CLOCKSOURCE_SMCLK;
+    timer_cont_params.clockSourceDivider        = TIMER_A_CLOCKSOURCE_DIVIDER_20;
+    timer_cont_params.timerInterruptEnable_TAIE = TIMER_A_TAIE_INTERRUPT_DISABLE;
+    timer_cont_params.timerClear                = TIMER_A_DO_CLEAR;
+    timer_cont_params.startTimer                = false;
     
-    Timer_A_initContinuousMode(TIMER_A1_BASE, &initContParam);
+    Timer_A_initContinuousMode(TIMER_BASE_ADDRESS, &timer_cont_params);
     
     // Initiaze compare mode
-    Timer_A_clearCaptureCompareInterrupt(TIMER_A1_BASE, TIMER_A_CAPTURECOMPARE_REGISTER_0);
+    Timer_A_clearCaptureCompareInterrupt(TIMER_BASE_ADDRESS, TIMER_A_CAPTURECOMPARE_REGISTER_0);
     
-    Timer_A_initCompareModeParam initCompParam = {0};
-    initCompParam.compareRegister           = TIMER_A_CAPTURECOMPARE_REGISTER_0;
-    initCompParam.compareInterruptEnable    = TIMER_A_CAPTURECOMPARE_INTERRUPT_ENABLE;
-    initCompParam.compareOutputMode         = TIMER_A_OUTPUTMODE_OUTBITVALUE;
-    initCompParam.compareValue              = (uint16_t)(UCS_getSMCLK()/TIMER_A_CLOCKSOURCE_DIVIDER_20);
+    Timer_A_initCompareModeParam timer_comp_params = {0};
+    timer_comp_params.compareRegister           = TIMER_A_CAPTURECOMPARE_REGISTER_0;
+    timer_comp_params.compareInterruptEnable    = TIMER_A_CAPTURECOMPARE_INTERRUPT_ENABLE;
+    timer_comp_params.compareOutputMode         = TIMER_A_OUTPUTMODE_OUTBITVALUE;
+    timer_comp_params.compareValue              = (uint16_t)(UCS_getSMCLK()/TIMER_A_CLOCKSOURCE_DIVIDER_20);
     
-    Timer_A_initCompareMode(TIMER_A1_BASE, &initCompParam);
+    Timer_A_initCompareMode(TIMER_BASE_ADDRESS, &timer_comp_params);
 
 #if BEACON_MODE == DEBUG_MODE
     debug_print_msg("SUCCESS!\n");
+#endif // DEBUG_MODE
+}
+
+void timer_start()
+{
+#if BEACON_MODE == DEBUG_MODE
+    debug_print_msg("Starting time counting... ");
+#endif // DEBUG_MODE
+
+    Timer_A_startCounter(TIMER_BASE_ADDRESS, TIMER_A_CONTINUOUS_MODE);
+
+#if BEACON_MODE == DEBUG_MODE
+    debug_print_msg("DONE!\n");
 #endif // DEBUG_MODE
 }
 
@@ -92,24 +106,24 @@ __attribute__((interrupt(TIMER1_A0_VECTOR)))
 #endif
 void TIMER1_A0_ISR()
 {
-    uint16_t comp_val = Timer_A_getCaptureCompareCount(TIMER_A1_BASE, TIMER_A_CAPTURECOMPARE_REGISTER_0)
+    uint16_t comp_val = Timer_A_getCaptureCompareCount(TIMER_BASE_ADDRESS, TIMER_A_CAPTURECOMPARE_REGISTER_0)
                         + (uint16_t)(UCS_getSMCLK()/TIMER_A_CLOCKSOURCE_DIVIDER_20);
     
-    beacon.time.second++;
-    if (beacon.time.second == 60)   // 1 minute = 60 seconds
+    time->second++;
+    if (time->second == 60)         // 1 minute = 60 seconds
     {
-        beacon.time.minute++;
-        beacon.time.second = 0;
+        time->minute++;
+        time->second = 0;
     }
-    if (beacon.time.minute == 60)   // 1 hour = 60 minutes
+    if (time->minute == 60)         // 1 hour = 60 minutes
     {
-        beacon.time.hour++;
-        beacon.time.minute = 0;
+        time->hour++;
+        time->minute = 0;
     }
-    if (beacon.time.hour == 24)     // 1 day = 24 hours
+    if (time->hour == 24)           // 1 day = 24 hours
     {
-        beacon.time.day++;
-        beacon.time.hour = 0;
+        time->day++;
+        time->hour = 0;
     }
     
 #if BEACON_MODE != FLIGHT_MODE
@@ -118,7 +132,7 @@ void TIMER1_A0_ISR()
 #endif // BEACON_MODE
     
     // Add Offset to CCR0
-    Timer_A_setCompareValue(TIMER_A1_BASE, TIMER_A_CAPTURECOMPARE_REGISTER_0, comp_val);
+    Timer_A_setCompareValue(TIMER_BASE_ADDRESS, TIMER_A_CAPTURECOMPARE_REGISTER_0, comp_val);
     
     // Wake up from low power mode
     _BIC_SR(LPM1_EXIT);

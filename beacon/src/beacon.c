@@ -64,7 +64,7 @@ void beacon_init()
 
     init_time(&beacon.time);
     
-    init_timer();
+    init_timer(&beacon.time);
     
     init_antenna();
     
@@ -83,6 +83,9 @@ void beacon_init()
 #endif // BEACON_PA
     
     init_protocols();
+    
+    // Starts the time control timer
+    timer_start();
     
     beacon.flags.hibernation    = false;
     beacon.flags.can_transmit   = true;

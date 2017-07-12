@@ -122,6 +122,12 @@
 #define WATCHDOG_CLK_SOURCE         WDT_A_CLOCKSOURCE_ACLK
 #define WATCHDOG_CLK_DIVIDER        WDT_A_CLOCKDIVIDER_32K  // 3 seconds WDT
 
+//###########################################
+//-- TIMER ----------------------------------
+//###########################################
+
+#define TIMER_BASE_ADDRESS          TIMER_A1_BASE
+
 #endif // CONFIG_H_
 
 //! \} End of config group
