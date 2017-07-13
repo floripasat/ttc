@@ -121,18 +121,22 @@ void init_antenna();
  * 
  * \brief EPS communication initialization routine.
  * 
+ * \param eps is a pointer to an EPS object.
+ * 
  * \return None
  */
-void init_eps_com();
+void init_eps_com(EPS *eps);
 
 /**
  * \fn init_obdh_com
  * 
  * \brief OBDH communication initialization routine.
  * 
+ * \param obdh is a pointer to an OBDH object.
+ * 
  * \return None
  */
-void init_obdh_com();
+void init_obdh_com(OBDH *obdh);
 
 /**
  * \fn init_radio

@@ -152,6 +152,17 @@ void task_reset_system();
 void task_antenna_deployment();
 
 /**
+ * \fn task_set_energy_level
+ * 
+ * \brief Sets the beacon energy level (From the data received from the OBDH or EPS modules).
+ * 
+ * \param beacon_prt is a pointer to a beacon object.
+ * 
+ * \return None
+ */
+void task_set_energy_level(Beacon *beacon_ptr);
+
+/**
  * \fn task_get_tx_period
  * 
  * \brief Returns the TX period of the beacon (This value is dependent of the satellite energy level).

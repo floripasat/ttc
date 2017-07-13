@@ -68,9 +68,9 @@ void beacon_init()
     
     init_antenna();
     
-    init_eps_com();
+    init_eps_com(&beacon.eps);
     
-    init_obdh_com();
+    init_obdh_com(&beacon.obdh);
     
     init_radio();
     
@@ -113,6 +113,7 @@ void beacon_run()
             if (beacon.flags.can_transmit == true)
             {
                 task_transmit_packet();
+                task_set_energy_level(&beacon);
             }
         }
         else

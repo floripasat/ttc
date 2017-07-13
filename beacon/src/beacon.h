@@ -56,10 +56,8 @@ typedef struct
     uint8_t         energy_level;                   /**< . */
     Time            time;                           /**< . */
     Time            hibernation_mode_initial_time;  /**< . */
-    OBDHCom         obdh_com;                       /**< . */
-    OBDHData        obdh_data;                      /**< . */
-    EPSCom          eps_com;                        /**< . */
-    EPSData         eps_data;                       /**< . */
+    OBDH            obdh;                           /**< . */
+    EPS             eps;                            /**< . */
     PacketPayload   packet_payload;                 /**< . */
 } Beacon;
 

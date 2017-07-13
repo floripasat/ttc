@@ -90,17 +90,17 @@ void init_antenna()
     }
 }
 
-void init_eps_com()
+void init_eps_com(EPS *eps)
 {
-    while(eps_com_init() != STATUS_SUCCESS)
+    while(eps_com_init(eps) != STATUS_SUCCESS)
     {
         
     }
 }
 
-void init_obdh_com()
+void init_obdh_com(OBDH *obdh)
 {
-    while(obdh_com_init() != STATUS_SUCCESS)
+    while(obdh_com_init(obdh) != STATUS_SUCCESS)
     {
         
     }
