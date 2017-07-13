@@ -47,25 +47,30 @@
 
 #include "obdh_com.h"
 
-uint8_t obdh_com_init()
+OBDH *obdh_ptr;
+
+uint8_t obdh_com_init(OBDH *obdh)
 {
 #if BEACON_MODE == DEBUG_MODE
     debug_print_msg("OBDH communication initialization... ");
 #endif // BEACON_MODE
     
+    obdh_ptr = obdh;
+    
     // obdh_com initialization
-    beacon.obdh_com.received_byte   = 0x00;
-    beacon.obdh_com.byte_counter    = 0;
-    beacon.obdh_com.crc_fails       = 0;
-    beacon.obdh_com.is_open         = false;
-    obdh_com_clear_buffer();
+    obdh->received_byte = 0x00;
+    obdh->byte_counter  = 0;
+    obdh->crc_fails     = 0;
+    obdh->is_open       = false;
+    
+    obdh_com_clear_buffer(obdh->buffer);
     
     // obdh_data initialization
-    obdh_com_save_data_from_buffer();
+    obdh_com_save_data_from_buffer(obdh->buffer, &obdh->data);
     
     if (obdh_com_spi_init() == STATUS_FAIL)
     {
-        beacon.obdh_com.is_open = false;
+        obdh->is_open = false;
         
 #if BEACON_MODE == DEBUG_MODE
         debug_print_msg("FAIL!\n");
@@ -75,7 +80,7 @@ uint8_t obdh_com_init()
     }
     else
     {
-        beacon.obdh_com.is_open = true;
+        obdh->is_open = true;
         
 #if BEACON_MODE == DEBUG_MODE
         debug_print_msg("SUCCESS!\n");
@@ -115,70 +120,70 @@ static uint8_t obdh_com_spi_init()
     }
 }
 
-static void obdh_com_receive_data()
+static void obdh_com_receive_data(OBDH *obdh)
 {
 #if BEACON_MODE == DEBUG_MODE
         debug_print_msg("Receiving a byte from the OBDH module... ");
 #endif // DEBUG_MODE
 
-    beacon.obdh_com.received_byte = USCI_A_SPI_receiveData(OBDH_COM_SPI_BASE_ADDRESS);
+    obdh->received_byte = USCI_A_SPI_receiveData(OBDH_COM_SPI_BASE_ADDRESS);
     
-    switch(beacon.obdh_com.byte_counter)
+    switch(obdh->byte_counter)
     {
         case OBDH_COM_CMD_POSITION:
-            obdh_com_receive_cmd(beacon.obdh_com.received_byte);
+            obdh_com_receive_cmd(obdh, obdh->received_byte);
             break;
         case OBDH_COM_SOD_POSITION:
-            if (beacon.obdh_com.received_byte == OBDH_COM_START_OF_DATA)
+            if (obdh->received_byte == OBDH_COM_START_OF_DATA)
             {
 #if BEACON_MODE == DEBUG_MODE
                 debug_print_msg("SOD byte received!\n");
 #endif // DEBUG_MODE
-                beacon.obdh_com.byte_counter++;
+                obdh->byte_counter++;
             }
             else
             {
 #if BEACON_MODE == DEBUG_MODE
                 debug_print_msg("ERROR! Invalid SOD byte received!\nWaiting a new valid command...\n");
 #endif // DEBUG_MODE
-                beacon.obdh_com.byte_counter = OBDH_COM_CMD_POSITION;
+                obdh->byte_counter = OBDH_COM_CMD_POSITION;
             }
             break;
         case OBDH_COM_CRC_POSITION:
 #if BEACON_MODE == DEBUG_MODE
             debug_print_msg("Checking CRC... ");
 #endif // DEBUG_MODE
-            if (beacon.obdh_com.received_byte == crc8(OBDH_COM_CRC_INITIAL_VALUE, OBDH_COM_CRC_POLYNOMIAL, beacon.obdh_com.buffer, OBDH_COM_DATA_PKT_LEN))
+            if (obdh->received_byte == crc8(OBDH_COM_CRC_INITIAL_VALUE, OBDH_COM_CRC_POLYNOMIAL, obdh->buffer, OBDH_COM_DATA_PKT_LEN))
             {
 #if BEACON_MODE == DEBUG_MODE
                 debug_print_msg("VALID!\n");
 #endif // DEBUG_MODE
-                obdh_com_save_data_from_buffer();
-                beacon.obdh_com.crc_fails = 0;
+                obdh_com_save_data_from_buffer(obdh->buffer, &obdh->data);
+                obdh->crc_fails = 0;
             }
             else
             {
 #if BEACON_MODE == DEBUG_MODE
                 debug_print_msg("ERROR! INVALID!\n");
 #endif // DEBUG_MODE
-                obdh_com_clear_buffer();
-                beacon.obdh_com.crc_fails++;
+                obdh_com_clear_buffer(obdh->buffer);
+                obdh->crc_fails++;
             }
             break;
         default:
-            if ((beacon.obdh_com.byte_counter > OBDH_COM_SOD_POSITION) && (beacon.obdh_com.byte_counter < OBDH_COM_CRC_POSITION))
+            if ((obdh->byte_counter > OBDH_COM_SOD_POSITION) && (obdh->byte_counter < OBDH_COM_CRC_POSITION))
             {
-                obdh_com_receive_pkt(beacon.obdh_com.received_byte);
+                obdh_com_receive_pkt(obdh, obdh->received_byte);
             }
             else
             {
-                beacon.obdh_com.byte_counter = OBDH_COM_CMD_POSITION;
+                obdh->byte_counter = OBDH_COM_CMD_POSITION;
             }
             break;
     }
 }
 
-static void obdh_com_receive_cmd(uint8_t cmd)
+static void obdh_com_receive_cmd(OBDH *obdh, uint8_t cmd)
 {
     switch(cmd)
     {
@@ -186,7 +191,7 @@ static void obdh_com_receive_cmd(uint8_t cmd)
 #if BEACON_MODE == DEBUG_MODE
             debug_print_msg("Data transfer command received!\n");
 #endif // DEBUG_MODE
-            beacon.obdh_com.byte_counter = OBDH_COM_SOD_POSITION;
+            obdh->byte_counter = OBDH_COM_SOD_POSITION;
             break;
         case OBDH_COM_CMD_SHUTDOWN_REQUEST:
 #if BEACON_MODE == DEBUG_MODE
@@ -229,13 +234,13 @@ static void obdh_com_receive_cmd(uint8_t cmd)
     }
 }
 
-static void obdh_com_receive_pkt(uint8_t byte)
+static void obdh_com_receive_pkt(OBDH *obdh, uint8_t byte)
 {
 #if BEACON_MODE == DEBUG_MODE
     debug_print_msg("Packet data byte received!\n");
 #endif // DEBUG_MODE
-    beacon.obdh_com.buffer[beacon.obdh_com.byte_counter - OBDH_COM_VBAT1_POS] = byte;
-    beacon.obdh_com.byte_counter++;
+    obdh->buffer[obdh->byte_counter - OBDH_COM_BAT1_VOLTAGE_POS] = byte;
+    obdh->byte_counter++;
 }
 
 void obdh_com_send_data(uint8_t data)
@@ -250,55 +255,75 @@ void obdh_com_send_data(uint8_t data)
     USCI_A_SPI_transmitData(OBDH_COM_SPI_BASE_ADDRESS, data);
 }
 
-static void obdh_com_save_data_from_buffer()
+static void obdh_com_save_data_from_buffer(uint8_t *buffer, OBDHData *obdh_data)
 {
     uint8_t i = 0;
     uint8_t j = 0;
     
-    beacon.obdh_data.v_bat1[0] = beacon.obdh_com.buffer[j++];
-    beacon.obdh_data.v_bat1[1] = beacon.obdh_com.buffer[j++];
-    
-    beacon.obdh_data.v_bat2[0] = beacon.obdh_com.buffer[j++];
-    beacon.obdh_data.v_bat2[1] = beacon.obdh_com.buffer[j++];
-    
-    for(i=0;i<OBDH_COM_I_SOLAR_PANELS_LEN;i++)
+    for(i=0; i<OBDH_COM_BAT1_VOLTAGE_LEN; i++)
     {
-        beacon.obdh_data.i_solar_panels[i] = beacon.obdh_com.buffer[j++];
+        obdh_data->bat1_voltage[i] = buffer[j++];
     }
     
-    for(i=0;i<OBDH_COM_V_SOLAR_PANELS_LEN;i++)
+    for(i=0; i<OBDH_COM_BAT2_VOLTAGE_LEN; i++)
     {
-        beacon.obdh_data.v_solar_panels[i] = beacon.obdh_com.buffer[j++];
+        obdh_data->bat2_voltage[i] = buffer[j++];
     }
     
-    for(i=0;i<OBDH_COM_TEMP_BATTS_LEN;i++)
+    for(i=0; i<OBDH_COM_SOLAR_PANELS_CURRENTS_LEN; i++)
     {
-        beacon.obdh_data.t_bats[i] = beacon.obdh_com.buffer[j++];
+        obdh_data->solar_panels_currents[i] = buffer[j++];
     }
     
-    for(i=0;i<OBDH_COM_IMU_LEN;i++)
+    for(i=0; i<OBDH_COM_SOLAR_PANELS_VOLTAGES_LEN; i++)
     {
-        beacon.obdh_data.imu[i] = beacon.obdh_com.buffer[j++];
+        obdh_data->solar_panels_voltages[i] = buffer[j++];
     }
     
-    beacon.obdh_data.q_bats[0] = beacon.obdh_com.buffer[j++];
-    beacon.obdh_data.q_bats[1] = beacon.obdh_com.buffer[j++];
-    
-    for(i=0;i<OBDH_COM_SYSTEM_TIME_LEN;i++)
+    for(i=0; i<OBDH_COM_BAT1_TEMPERATURE_LEN; i++)
     {
-        beacon.obdh_data.system_time[i] = beacon.obdh_com.buffer[j++];
+        obdh_data->bat1_temperature[i] = buffer[j++];
     }
     
-    beacon.obdh_data.sat_status[0] = beacon.obdh_com.buffer[j++];
-    beacon.obdh_data.sat_status[1] = beacon.obdh_com.buffer[j++];
+    for(i=0; i<OBDH_COM_BAT2_TEMPERATURE_LEN; i++)
+    {
+        obdh_data->bat2_temperature[i] = buffer[j++];
+    }
     
-    beacon.obdh_data.reset_counter[0] = beacon.obdh_com.buffer[j++];
-    beacon.obdh_data.reset_counter[1] = beacon.obdh_com.buffer[j++];
+    for(i=0; i<OBDH_COM_IMU_LEN; i++)
+    {
+        obdh_data->imu[i] = buffer[j++];
+    }
+    
+    for(i=0; i<OBDH_COM_BAT1_CHARGE_LEN; i++)
+    {
+        obdh_data->bat1_charge[i] = buffer[j++];
+    }
+    
+    for(i=0; i<OBDH_COM_BAT2_CHARGE_LEN; i++)
+    {
+        obdh_data->bat2_charge[i] = buffer[j++];
+    }
+    
+    for(i=0; i<OBDH_COM_SYSTEM_TIME_LEN; i++)
+    {
+        obdh_data->system_time[i] = buffer[j++];
+    }
+    
+    for(i=0; i<OBDH_COM_SAT_STATUS_LEN; i++)
+    {
+        obdh_data->sat_status[i] = buffer[j++];
+    }
+    
+    for(i=0; i<OBDH_COM_RESET_COUNTER_LEN; i++)
+    {
+        obdh_data->reset_counter[i] = buffer[j++];
+    }
 }
 
-static void obdh_com_clear_buffer()
+static void obdh_com_clear_buffer(uint8_t *buffer)
 {
-    memset(beacon.obdh_com.buffer, 0xFF, OBDH_COM_DATA_PKT_LEN*sizeof(uint8_t));
+    memset(*buffer, OBDH_COM_DEFAULT_DATA_BYTE, OBDH_COM_DATA_PKT_LEN*sizeof(uint8_t));
 }
 
 /**
@@ -320,7 +345,7 @@ void USCI_A2_ISR()
     {
         //Vector 2 - RXIFG
         case 2:
-            obdh_com_receive_data();
+            obdh_com_receive_data(obdh_ptr);
             break;
         default:
             break;

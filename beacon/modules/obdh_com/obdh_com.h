@@ -45,6 +45,27 @@
 #include "obdh_com_config.h"
 
 /**
+ * \struct OBDHData
+ * 
+ * \brief OBDH data packet.
+ */
+typedef struct
+{
+    uint8_t bat1_voltage[3];            /**< Battery 1 voltage. */
+    uint8_t bat2_voltage[3];            /**< Battery 2 voltage. */
+    uint8_t solar_panels_currents[13];  /**< Solar panels currents. */
+    uint8_t solar_panels_voltages[7];   /**< Solar panels voltages. */
+    uint8_t bat1_temperature[4];        /**< Battery 1 temperature. */
+    uint8_t bat2_temperature[4];        /**< Battery 2 temperature. */
+    uint8_t imu[13];                    /**< Accelerometer and gyroscope data. */
+    uint8_t bat1_charge[2];             /**< Battery 1 charge. */
+    uint8_t bat2_charge[2];             /**< Battery 2 charge. */
+    uint8_t system_time[5];             /**< Time since last boot. */
+    uint8_t sat_status[3];              /**< Overall status of the satellite. */
+    uint8_t reset_counter[3];           /**< Number of OBDH resets since launch. */
+} OBDHData;
+
+/**
  * \struct OBDHCom
  * 
  * \brief OBDH communication variables struct.
@@ -56,38 +77,29 @@ typedef struct
     uint8_t buffer[OBDH_COM_DATA_PKT_LEN + 1];  /**< Packet buffer. */
     uint8_t crc_fails;                          /**< Number of CRC failures (Packets with errors). */
     bool is_open;                               /**< Flag to store the OBDH communication state (true = Open; false = Closed). */
-} OBDHCom;
+    OBDHData data;                              /**< OBDH data. */
+} OBDH;
 
 /**
- * \struct OBDHData
+ * \var obdh_ptr is a pointer to an OBDH object.
  * 
- * \brief OBDH data packet.
+ * \brief 
  */
-typedef struct
-{
-    uint8_t v_bat1[3];              /**< Battery 1 voltage. */
-    uint8_t v_bat2[3];              /**< Battery 2 voltage. */
-    uint8_t i_solar_panels[13];     /**< Solar panels currents. */
-    uint8_t v_solar_panels[7];      /**< Solar panels voltages. */
-    uint8_t t_bats[7];              /**< Batteries temperatures. */
-    uint8_t imu[13];                /**< Accelerometer and gyroscope data. */
-    uint8_t q_bats[3];              /**< Total charge of the batteries. */
-    uint8_t system_time[5];         /**< Time since last boot. */
-    uint8_t sat_status[3];          /**< Overall status of the satellite. */
-    uint8_t reset_counter[3];       /**< Number of OBDH resets since launch. */
-} OBDHData;
+extern OBDH *obdh_ptr;
 
 /**
  * \fn obdh_com_init
  * 
  * \brief Initialization of the OBDH communication.
  * 
+ * \param o is a pointer to an OBDH object.
+ * 
  * \return Initialization status. It can be:
  *              -\b STATUS_SUCCESS
  *              -\b STATUS_FAIL
  *              .
  */
-uint8_t obdh_com_init();
+uint8_t obdh_com_init(OBDH *o);
 
 /**
  * \fn obdh_com_spi_init
@@ -115,22 +127,24 @@ static void obdh_com_receive_data();
  * 
  * \brief Receives and verifies a command from the OBDH module.
  * 
+ * \param obdh is a pointer to an OBDH object.
  * \param cmd is the command to be received.
  * 
  * \return None
  */
-static void obdh_com_receive_cmd(uint8_t cmd);
+static void obdh_com_receive_cmd(OBDH *obdh, uint8_t cmd);
 
 /**
  * \fn obdh_com_receive_pkt
  * 
  * \brief Receives a data packet from the OBDH module.
  * 
+ * \param obdh is a pointer to an OBDH object.
  * \param byte is a byte of the incoming packet.
  * 
  * \return None
  */
-static void obdh_com_receive_pkt(uint8_t byte);
+static void obdh_com_receive_pkt(OBDH *obdh, uint8_t byte);
 
 /**
  * \fn obdh_com_send_data
@@ -150,18 +164,23 @@ void obdh_com_send_data(uint8_t data);
  * 
  * \brief Copy the bytes of the buffer to the obdh_data struct.
  * 
+ * \param buffer is a pointer to the OBDH data buffer.
+ * \param obdh_data is a pointer to an OBDH data object.
+ * 
  * \return None
  */
-static void obdh_com_save_data_from_buffer();
+static void obdh_com_save_data_from_buffer(uint8_t *buffer, OBDHData *obdh_data);
 
 /**
  * \fn obdh_com_clear_buffer
  * 
  * \brief Clears the data packet buffer.
  * 
+ * \param buffer is a pointer to an array with the data buffer.
+ * 
  * \return None
  */
-static void obdh_com_clear_buffer();
+static void obdh_com_clear_buffer(uint8_t *buffer);
 
 #endif // OBDH_COM_H_
 
