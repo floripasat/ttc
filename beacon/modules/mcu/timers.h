@@ -46,7 +46,7 @@
  * 
  * \brief Time control pointer.
  */
-Time *time;
+extern Time *time;
 
 /**
  * \fn timer_init()

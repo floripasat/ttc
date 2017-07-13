@@ -41,6 +41,8 @@
 
 #include "timers.h"
 
+Time *time;
+
 void timer_init(Time *t)
 {
 #if BEACON_MODE == DEBUG_MODE
