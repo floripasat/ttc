@@ -501,13 +501,14 @@ uint8_t cc11xx_SPI_Init()
 	GPIO_setOutputHighOnPin(CC11XX_CSN_PORT, CC11XX_CSN_PIN);   // CSn must be kept low during SPI transfers
     
     // Config. SPI as Master
-    USCI_B_SPI_initMasterParam spi_params = {0};
 #if CC11XX_SPI_USCI == USCI_A
+    USCI_A_SPI_initMasterParam spi_params = {0};
     spi_params.selectClockSource     = USCI_A_SPI_CLOCKSOURCE_SMCLK;
     spi_params.msbFirst              = USCI_A_SPI_MSB_FIRST;
     spi_params.clockPhase            = USCI_A_SPI_PHASE_DATA_CHANGED_ONFIRST_CAPTURED_ON_NEXT;
     spi_params.clockPolarity         = USCI_A_SPI_CLOCKPOLARITY_INACTIVITY_HIGH;
 #elif CC11XX_SPI_USCI == USCI_B
+    USCI_B_SPI_initMasterParam spi_params = {0};
     spi_params.selectClockSource     = USCI_B_SPI_CLOCKSOURCE_SMCLK;
     spi_params.msbFirst              = USCI_B_SPI_MSB_FIRST;
     spi_params.clockPhase            = USCI_B_SPI_PHASE_DATA_CHANGED_ONFIRST_CAPTURED_ON_NEXT;
