@@ -93,7 +93,7 @@ uint8_t obdh_com_init(OBDH *obdh)
 static uint8_t obdh_com_spi_init()
 {
     // SPI pins init.
-    GPIO_setAsPeripheralModuleFunctionInputPin(OBDH_COM_SPI_PORT, OBDH_COM_SPI_MOSI_PIN + OBDH_COM_SPI_MISO_PIN + OBDH_COM_SPI_SCLK_PIN);
+    GPIO_setAsPeripheralModuleFunctionInputPin(OBDH_COM_SPI_PORT, OBDH_COM_SPI_MOSI_PIN + OBDH_COM_SPI_MISO_PIN + OBDH_COM_SPI_SCLK_PIN + OBDH_COM_SPI_NSEL_PIN);
     
     if (USCI_A_SPI_initSlave(OBDH_COM_SPI_BASE_ADDRESS, USCI_A_SPI_MSB_FIRST,
                              USCI_A_SPI_PHASE_DATA_CHANGED_ONFIRST_CAPTURED_ON_NEXT,
