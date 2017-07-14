@@ -151,6 +151,16 @@ void task_enter_hibernation()
     radio_sleep();
     
     beacon.flags.hibernation = true;
+    
+    beacon.hibernation_mode_initial_time.millisecond    = beacon.time.millisecond;
+    beacon.hibernation_mode_initial_time.second         = beacon.time.second;
+    beacon.hibernation_mode_initial_time.minute         = beacon.time.minute;
+    beacon.hibernation_mode_initial_time.hour           = beacon.time.hour;
+    beacon.hibernation_mode_initial_time.day            = beacon.time.day;
+    beacon.hibernation_mode_initial_time.week           = beacon.time.week;
+    beacon.hibernation_mode_initial_time.month          = beacon.time.month;
+    beacon.hibernation_mode_initial_time.year           = beacon.time.year;
+    
 #if BEACON_MODE == DEBUG_MODE
     debug_print_msg("DONE!\n");
 #endif // DEBUG_MODE
