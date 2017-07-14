@@ -42,24 +42,22 @@
 
 uint8_t si446x_init()
 {
-    GPIO_setAsOutputPin(, );
-    
-    si446x_set_state();
+    return STATUS_SUCCESS;
 }
 
 uint8_t si446x_spi_init()
 {
-    
+    return STATUS_SUCCESS;
 }
 
 uint8_t si446x_config()
 {
-    
+    return STATUS_SUCCESS;
 }
 
 void si446x_set_state(uint8_t state)
 {
-    si446x_cmd(SI446X_CMD_CHANGE_STATE);
+    /*si446x_cmd(SI446X_CMD_CHANGE_STATE);
     
     switch(state)
     {
@@ -85,7 +83,7 @@ void si446x_set_state(uint8_t state)
             break;
         default:
             GPIO_setOutputHighOnPin(SI446X_SDN_PORT, SI446X_SDN_PIN);
-    }
+    }*/
 }
 
 void si446x_cmd(uint8_t cmd)
