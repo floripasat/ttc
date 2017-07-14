@@ -81,6 +81,17 @@ static void rf4463_gpio_init();
 static uint8_t rf4463_spi_init();
 
 /**
+ * \fn rf4463_reg_config
+ * 
+ * \brief Configures the registers of the RF4463 device.
+ * 
+ * All the configuration parameters are defined in the "rf4463_reg_config.h" file.
+ * 
+ * \return None
+ */
+static void rf4463_reg_config();
+
+/**
  * \fn rf4463_reset
  * 
  * \brief Resets the RF4463 module.
@@ -307,7 +318,7 @@ bool rf4463_set_gpio_mode(uint8_t gpio0_mode, uint8_t gpio1_mode);
  *              -\b false 
  *              .
  */
-bool rf4463_set_cmd(uint8_t len, uint8_t cmd, uint8_t para_buf);
+bool rf4463_set_cmd(uint8_t len, uint8_t cmd, uint8_t *para_buf);
 
 /**
  * \fn rf4463_get_cmd
