@@ -117,23 +117,22 @@ static void eps_com_receive_data(EPS *eps);
  * 
  * \brief Copy the bytes of the buffer to the eps_data struct.
  * 
- * \param buffer is the data buffer to copy the EPS data.
- * \param eps_data is the EPSData struct to store the EPS data.
+ * \param eps is a pointer to an EPS object.
  * 
  * \return None
  */
-static void eps_com_save_data_from_buffer(uint8_t *buffer, EPSData *eps_data);
+static void eps_com_save_data_from_buffer(EPS *eps);
 
 /**
  * \fn eps_com_clear_buffer
  * 
  * \brief Clears the data buffer.
  * 
- * \param buffer is a data buffer to store the incoming EPS data.
+ * \param eps is a pointer to an EPS object.
  * 
  * \return None
  */
-static void eps_com_clear_buffer(uint8_t *buffer);
+static void eps_com_clear_buffer(EPS *eps);
 
 #endif // EPS_COM_H_
 

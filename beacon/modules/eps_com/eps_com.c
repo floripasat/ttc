@@ -59,10 +59,10 @@ uint8_t eps_com_init(EPS *eps)
     eps->crc_fails      = 0;
     eps->is_open        = false;
     
-    eps_com_clear_buffer(eps->buffer);
+    eps_com_clear_buffer(eps);
     
     // EPS data initialization
-    eps_com_save_data_from_buffer(eps->buffer, &eps->data);
+    eps_com_save_data_from_buffer(eps);
 
     // UART pins init.
     GPIO_setAsPeripheralModuleFunctionInputPin(EPS_COM_UART_RX_PORT, EPS_COM_UART_RX_PIN);
@@ -111,10 +111,6 @@ uint8_t eps_com_init(EPS *eps)
 
 static void eps_com_receive_data(EPS *eps)
 {
-#if BEACON_MODE == DEBUG_MODE
-        debug_print_msg("Receiving a byte from the EPS module... ");
-#endif // DEBUG_MODE
-
     eps->received_byte = USCI_A_UART_receiveData(EPS_COM_UART_BASE_ADDRESS);
 
     switch(eps->byte_counter)
@@ -123,38 +119,33 @@ static void eps_com_receive_data(EPS *eps)
             if (eps->received_byte == EPS_COM_PKT_SOD)
             {
                 eps->byte_counter++;
-                
-#if BEACON_MODE == DEBUG_MODE
-                debug_print_msg("SOD byte received!\n");
-#endif // DEBUG_MODE
             }
 #if BEACON_MODE == DEBUG_MODE
             else
             {
-                debug_print_msg("ERROR: Invalid SOD byte!\n");
+                debug_print_msg("ERROR: Invalid SOD byte received from the EPS module!\n");
             }
 #endif // DEBUG_MODE
             break;
         case EPS_COM_CRC_POSITION:
-#if BEACON_MODE == DEBUG_MODE
-                debug_print_msg("Checking CRC... ");
-#endif // DEBUG_MODE
             if (eps->received_byte == crc8(EPS_COM_CRC_INITIAL_VALUE, EPS_COM_CRC_POLYNOMIAL, eps->buffer, sizeof(eps->buffer)-1))
             {
 #if BEACON_MODE == DEBUG_MODE
-                debug_print_msg("VALID!\n");
+                debug_print_msg("Data was received from the EPS module!\n");
 #endif // DEBUG_MODE
-                eps_com_save_data_from_buffer(eps->buffer, &eps->data);
+                eps_com_save_data_from_buffer(eps);
                 eps->crc_fails = 0;
             }
             else
             {
 #if BEACON_MODE == DEBUG_MODE
-                debug_print_msg("ERROR! INVALID!\n");
+                debug_print_msg("ERROR! Invalid data received from the EPS module!\n");
 #endif // DEBUG_MODE
-                eps_com_clear_buffer(eps->buffer);
+                eps_com_clear_buffer(eps);
                 eps->crc_fails++;
             }
+            eps->byte_counter = EPS_COM_PKT_SOD_POSITION;
+            break;
         default:
             if ((eps->byte_counter > EPS_COM_PKT_SOD_POSITION) &&
                 (eps->byte_counter < EPS_COM_CRC_POSITION))
@@ -166,60 +157,61 @@ static void eps_com_receive_data(EPS *eps)
             {
                 eps->byte_counter = EPS_COM_PKT_SOD_POSITION;
             }
+            break;
     }
 }
 
-static void eps_com_save_data_from_buffer(uint8_t *buffer, EPSData *eps_data)
+static void eps_com_save_data_from_buffer(EPS *eps)
 {
     uint8_t i = 0;
     uint8_t j = 0;
     
     for(i=0; i<EPS_COM_BAT1_VOLTAGE_LEN; i++)
     {
-        eps_data->bat1_voltage[i] = buffer[j++];
+        eps->data.bat1_voltage[i] = eps->buffer[j++];
     }
     
     for(i=0; i<EPS_COM_BAT2_VOLTAGE_LEN; i++)
     {
-        eps_data->bat2_voltage[i] = buffer[j++];
+        eps->data.bat2_voltage[i] = eps->buffer[j++];
     }
     
     for(i=0; i<EPS_COM_BAT1_CHARGE_LEN; i++)
     {
-        eps_data->bat1_charge[i] = buffer[j++];
+        eps->data.bat1_charge[i] = eps->buffer[j++];
     }
     
     for(i=0; i<EPS_COM_BAT2_CHARGE_LEN; i++)
     {
-        eps_data->bat2_charge[i] = buffer[j++];
+        eps->data.bat2_charge[i] = eps->buffer[j++];
     }
     
     for(i=0; i<EPS_COM_BAT1_TEMPERATURE_LEN; i++)
     {
-        eps_data->bat1_temperature[i] = buffer[j++];
+        eps->data.bat1_temperature[i] = eps->buffer[j++];
     }
     
     for(i=0; i<EPS_COM_BAT2_TEMPERATURE_LEN; i++)
     {
-        eps_data->bat2_temperature[i] = buffer[j++];
+        eps->data.bat2_temperature[i] = eps->buffer[j++];
     }
     
     for(i=0; i<EPS_COM_SOLAR_PANELS_VOLTAGES_LEN; i++)
     {
-        eps_data->solar_panels_voltages[i] = buffer[j++];
+        eps->data.solar_panels_voltages[i] = eps->buffer[j++];
     }
     
     for(i=0; i<EPS_COM_SOLAR_PANELS_CURRENTS_LEN; i++)
     {
-        eps_data->solar_panels_currents[i] = buffer[j++];
+        eps->data.solar_panels_currents[i] = eps->buffer[j++];
     }
     
-    eps_data->energy_level = buffer[j++];
+    eps->data.energy_level = eps->buffer[j++];
 }
 
-static void eps_com_clear_buffer(uint8_t *buffer)
+static void eps_com_clear_buffer(EPS *eps)
 {
-    memset(*buffer, EPS_COM_DEFAULT_DATA_BYTE, EPS_COM_DATA_PKT_LEN*sizeof(uint8_t));
+    memset(eps->buffer, EPS_COM_DEFAULT_DATA_BYTE, EPS_COM_DATA_PKT_LEN*sizeof(uint8_t));
 }
 
 /**
