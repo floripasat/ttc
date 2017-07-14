@@ -39,41 +39,48 @@
 
 #include "uart_radio_sim.h"
 
-uint8_t uart_radio_sim_init()
+uint8_t uart_radio_sim_init(uint8_t init_mode)
 {
     // UART pins init.
     GPIO_setAsPeripheralModuleFunctionInputPin(UART_RADIO_SIM_UART_TX_PORT, RADIO_SIM_UART_TX_PIN);
     
-    // Config UART (115200 bps, no parity, 1 stop bit, LSB first)
-    USCI_A_UART_initParam uart_params = {0};
-    uart_params.selectClockSource   = USCI_A_UART_CLOCKSOURCE_SMCLK;
-    uart_params.clockPrescalar      = 52;		// Clock = 1 MHz, Baudrate = 1200 bps ([1] http://software-dl.ti.com/msp430/msp430_public_sw/mcu/msp430/MSP430BaudRateConverter/index.html)
-    uart_params.firstModReg         = 1;		// Clock = 1 MHz, Baudrate = 1200 bps (See [1])
-    uart_params.secondModReg        = 0;		// Clock = 1 MHz, Baudrate = 1200 bps (See [1])
-    uart_params.parity              = USCI_A_UART_NO_PARITY;
-    uart_params.msborLsbFirst       = USCI_A_UART_LSB_FIRST;
-    uart_params.numberofStopBits    = USCI_A_UART_ONE_STOP_BIT;
-    uart_params.uartMode            = USCI_A_UART_MODE;
-    uart_params.overSampling        = USCI_A_UART_OVERSAMPLING_BAUDRATE_GENERATION;    // Clock = 1 MHz, Baudrate = 1200 bps (See [1])
-    
-    // UART initialization
-    if (USCI_A_UART_init(UART_RADIO_SIM_UART_BASE_ADDRESS, &uart_params) == STATUS_SUCCESS)
+    if (init_mode == UART_RADIO_ONLY_SET_TX_PIN_AS_PERIPHERAL)
     {
-        // Enable UART module
-        USCI_A_UART_enable(UART_RADIO_SIM_UART_BASE_ADDRESS);
-
         return STATUS_SUCCESS;
     }
     else
-    {
-        return STATUS_FAIL;
+    {    
+        // Config UART (1200 bps, no parity, 1 stop bit, LSB first)
+        USCI_A_UART_initParam uart_params = {0};
+        uart_params.selectClockSource   = USCI_A_UART_CLOCKSOURCE_SMCLK;
+        uart_params.clockPrescalar      = 52;		// Clock = 1 MHz, Baudrate = 1200 bps ([1] http://software-dl.ti.com/msp430/msp430_public_sw/mcu/msp430/MSP430BaudRateConverter/index.html)
+        uart_params.firstModReg         = 1;		// Clock = 1 MHz, Baudrate = 1200 bps (See [1])
+        uart_params.secondModReg        = 0;		// Clock = 1 MHz, Baudrate = 1200 bps (See [1])
+        uart_params.parity              = USCI_A_UART_NO_PARITY;
+        uart_params.msborLsbFirst       = USCI_A_UART_LSB_FIRST;
+        uart_params.numberofStopBits    = USCI_A_UART_ONE_STOP_BIT;
+        uart_params.uartMode            = USCI_A_UART_MODE;
+        uart_params.overSampling        = USCI_A_UART_OVERSAMPLING_BAUDRATE_GENERATION;    // Clock = 1 MHz, Baudrate = 1200 bps (See [1])
+        
+        // UART initialization
+        if (USCI_A_UART_init(UART_RADIO_SIM_UART_BASE_ADDRESS, &uart_params) == STATUS_SUCCESS)
+        {
+            // Enable UART module
+            USCI_A_UART_enable(UART_RADIO_SIM_UART_BASE_ADDRESS);
+
+            return STATUS_SUCCESS;
+        }
+        else
+        {
+            return STATUS_FAIL;
+        }
     }
 }
 
 void uart_radio_sim_send_data(uint8_t *data, uint16_t size)
 {
     uint8_t i = 0;
-    for(i=0;i<size;i++)
+    for(i=0; i<size; i++)
     {
         USCI_A_UART_transmitData(UART_RADIO_SIM_UART_BASE_ADDRESS, data[i]);
     }

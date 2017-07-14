@@ -67,7 +67,7 @@ uint8_t radio_init()
 #elif BEACON_RADIO == RF4463F30
     return rf4463_init();
 #elif BEACON_RADIO == UART_SIM
-    return uart_radio_sim_init();
+    return uart_radio_sim_init(UART_RADIO_ONLY_SET_TX_PIN_AS_PERIPHERAL);
 #endif // BEACON_RADIO
 }
 

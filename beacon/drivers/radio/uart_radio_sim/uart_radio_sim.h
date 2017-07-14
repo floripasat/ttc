@@ -43,22 +43,32 @@
 
 #include <config/config.h>
 
+// UART-RADIO-SIM pin map
 #define UART_RADIO_SIM_UART_USCI            RADIO_SIM_UART_USCI
 #define UART_RADIO_SIM_UART_BASE_ADDRESS    RADIO_SIM_UART_BASE_ADDRESS
 #define UART_RADIO_SIM_UART_TX_PORT         RADIO_SIM_UART_TX_PORT
 #define UART_RADIO_SIM_UART_TX_PIN          RADIO_SIM_UART_TX_PIN
+
+// Initialization modes
+#define UART_RADIO_ONLY_SET_TX_PIN_AS_PERIPHERAL        0
+#define UART_RADIO_NORMAL_INITIALIZATION                1
 
 /**
  * \fn uart_radio_sim_init
  * 
  * \brief Initialization of the UART radio simulation.
  * 
+ * \param init_mode is the type of initialization. It can be:
+ *              -\b UART_RADIO_ONLY_SET_TX_PIN_AS_PERIPHERAL only configures the TX pin as a peripheral pin.
+ *              -\b UART_RADIO_NORMAL_INITIALIZATION initializates and configures the UART-RADIO-SIM UART port.
+ *              .
+ * 
  * \return Initiazaliton status. It can be:
  *              -\b STATUS_SUCCESS
  *              -\b STATUS_FAIL
  *              .
  */
-uint8_t uart_radio_sim_init();
+uint8_t uart_radio_sim_init(uint8_t init_mode);
 
 /**
  * \fn uart_radio_sim_send_data
