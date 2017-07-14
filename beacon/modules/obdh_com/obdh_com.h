@@ -128,11 +128,10 @@ static void obdh_com_receive_data();
  * \brief Receives and verifies a command from the OBDH module.
  * 
  * \param obdh is a pointer to an OBDH object.
- * \param cmd is the command to be received.
  * 
  * \return None
  */
-static void obdh_com_receive_cmd(OBDH *obdh, uint8_t cmd);
+static void obdh_com_receive_cmd(OBDH *obdh);
 
 /**
  * \fn obdh_com_receive_pkt
@@ -140,11 +139,10 @@ static void obdh_com_receive_cmd(OBDH *obdh, uint8_t cmd);
  * \brief Receives a data packet from the OBDH module.
  * 
  * \param obdh is a pointer to an OBDH object.
- * \param byte is a byte of the incoming packet.
  * 
  * \return None
  */
-static void obdh_com_receive_pkt(OBDH *obdh, uint8_t byte);
+static void obdh_com_receive_pkt(OBDH *obdh);
 
 /**
  * \fn obdh_com_send_data
@@ -164,23 +162,22 @@ void obdh_com_send_data(uint8_t data);
  * 
  * \brief Copy the bytes of the buffer to the obdh_data struct.
  * 
- * \param buffer is a pointer to the OBDH data buffer.
- * \param obdh_data is a pointer to an OBDH data object.
+ * \param obdh is pointer to an OBDH object.
  * 
  * \return None
  */
-static void obdh_com_save_data_from_buffer(uint8_t *buffer, OBDHData *obdh_data);
+static void obdh_com_save_data_from_buffer(OBDH *obdh);
 
 /**
  * \fn obdh_com_clear_buffer
  * 
  * \brief Clears the data packet buffer.
  * 
- * \param buffer is a pointer to an array with the data buffer.
+ * \param obdh is a pointer to an OBDH object.
  * 
  * \return None
  */
-static void obdh_com_clear_buffer(uint8_t *buffer);
+static void obdh_com_clear_buffer(OBDH *obdh);
 
 #endif // OBDH_COM_H_
 

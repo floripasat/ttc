@@ -58,15 +58,15 @@ uint8_t obdh_com_init(OBDH *obdh)
     obdh_ptr = obdh;
     
     // obdh_com initialization
-    obdh->received_byte = 0x00;
-    obdh->byte_counter  = 0;
+    obdh->received_byte = OBDH_COM_DEFAULT_DATA_BYTE;
+    obdh->byte_counter  = OBDH_COM_CMD_POSITION;
     obdh->crc_fails     = 0;
     obdh->is_open       = false;
     
-    obdh_com_clear_buffer(obdh->buffer);
+    obdh_com_clear_buffer(obdh);
     
     // obdh_data initialization
-    obdh_com_save_data_from_buffer(obdh->buffer, &obdh->data);
+    obdh_com_save_data_from_buffer(obdh);
     
     if (obdh_com_spi_init() == STATUS_FAIL)
     {
@@ -92,12 +92,6 @@ uint8_t obdh_com_init(OBDH *obdh)
 
 static uint8_t obdh_com_spi_init()
 {
-    // If clock signal from master stays low, it is not yet in SPI mode
-    while(GPIO_getInputPinValue(OBDH_COM_SPI_PORT, OBDH_COM_SPI_SCLK_PIN) == GPIO_INPUT_PIN_LOW)
-    {
-        
-    }
-    
     // SPI pins init.
     GPIO_setAsPeripheralModuleFunctionInputPin(OBDH_COM_SPI_PORT, OBDH_COM_SPI_MOSI_PIN + OBDH_COM_SPI_MISO_PIN + OBDH_COM_SPI_SCLK_PIN);
     
@@ -105,6 +99,9 @@ static uint8_t obdh_com_spi_init()
                              USCI_A_SPI_PHASE_DATA_CHANGED_ONFIRST_CAPTURED_ON_NEXT,
                              USCI_A_SPI_CLOCKPOLARITY_INACTIVITY_LOW) == STATUS_SUCCESS)
     {
+        // Set SPI Mode 3 (The initSlave function from DriverLib, only initializes in Mode 0)
+        HWREG8(OBDH_COM_SPI_BASE_ADDRESS + OFS_UCAxCTL0) |= UCMODE_3;
+        
         // Enable SPI Module
         USCI_A_SPI_enable(OBDH_COM_SPI_BASE_ADDRESS);
 
@@ -122,29 +119,22 @@ static uint8_t obdh_com_spi_init()
 
 static void obdh_com_receive_data(OBDH *obdh)
 {
-#if BEACON_MODE == DEBUG_MODE
-        debug_print_msg("Receiving a byte from the OBDH module... ");
-#endif // DEBUG_MODE
-
     obdh->received_byte = USCI_A_SPI_receiveData(OBDH_COM_SPI_BASE_ADDRESS);
     
     switch(obdh->byte_counter)
     {
         case OBDH_COM_CMD_POSITION:
-            obdh_com_receive_cmd(obdh, obdh->received_byte);
+            obdh_com_receive_cmd(obdh);
             break;
         case OBDH_COM_SOD_POSITION:
             if (obdh->received_byte == OBDH_COM_START_OF_DATA)
             {
-#if BEACON_MODE == DEBUG_MODE
-                debug_print_msg("SOD byte received!\n");
-#endif // DEBUG_MODE
                 obdh->byte_counter++;
             }
             else
             {
 #if BEACON_MODE == DEBUG_MODE
-                debug_print_msg("ERROR! Invalid SOD byte received!\nWaiting a new valid command...\n");
+                debug_print_msg("ERROR! Invalid SOD byte received!\n");
 #endif // DEBUG_MODE
                 obdh->byte_counter = OBDH_COM_CMD_POSITION;
             }
@@ -158,7 +148,7 @@ static void obdh_com_receive_data(OBDH *obdh)
 #if BEACON_MODE == DEBUG_MODE
                 debug_print_msg("VALID!\n");
 #endif // DEBUG_MODE
-                obdh_com_save_data_from_buffer(obdh->buffer, &obdh->data);
+                obdh_com_save_data_from_buffer(obdh);
                 obdh->crc_fails = 0;
             }
             else
@@ -166,14 +156,15 @@ static void obdh_com_receive_data(OBDH *obdh)
 #if BEACON_MODE == DEBUG_MODE
                 debug_print_msg("ERROR! INVALID!\n");
 #endif // DEBUG_MODE
-                obdh_com_clear_buffer(obdh->buffer);
+                obdh_com_clear_buffer(obdh);
                 obdh->crc_fails++;
             }
+            obdh->byte_counter = OBDH_COM_CMD_POSITION;
             break;
         default:
             if ((obdh->byte_counter > OBDH_COM_SOD_POSITION) && (obdh->byte_counter < OBDH_COM_CRC_POSITION))
             {
-                obdh_com_receive_pkt(obdh, obdh->received_byte);
+                obdh_com_receive_pkt(obdh);
             }
             else
             {
@@ -183,14 +174,11 @@ static void obdh_com_receive_data(OBDH *obdh)
     }
 }
 
-static void obdh_com_receive_cmd(OBDH *obdh, uint8_t cmd)
+static void obdh_com_receive_cmd(OBDH *obdh)
 {
-    switch(cmd)
+    switch(obdh->received_byte)
     {
         case OBDH_COM_CMD_START_OF_DATA_TRANSFER:
-#if BEACON_MODE == DEBUG_MODE
-            debug_print_msg("Data transfer command received!\n");
-#endif // DEBUG_MODE
             obdh->byte_counter = OBDH_COM_SOD_POSITION;
             break;
         case OBDH_COM_CMD_SHUTDOWN_REQUEST:
@@ -207,14 +195,14 @@ static void obdh_com_receive_cmd(OBDH *obdh, uint8_t cmd)
             if (beacon.flags.transmitting == true)
             {
 #if BEACON_MODE == DEBUG_MODE
-                debug_print_msg("All of our channels are busy now! (Elevator music starts)\n");
+                debug_print_msg("The Beacon is transmitting now! The transceiver must wait!\n");
 #endif // DEBUG_MODE
                 obdh_com_send_data(OBDH_COM_BEACON_BUSY);
             }
             else
             {
 #if BEACON_MODE == DEBUG_MODE
-                debug_print_msg("RUN, FORREST, RUN!\n");
+                debug_print_msg("The Beacon is not transmitting! The transceiver can transmit now!\n");
 #endif // DEBUG_MODE
                 obdh_com_send_data(OBDH_COM_BEACON_FREE);
                 beacon.flags.can_transmit = false;
@@ -234,12 +222,9 @@ static void obdh_com_receive_cmd(OBDH *obdh, uint8_t cmd)
     }
 }
 
-static void obdh_com_receive_pkt(OBDH *obdh, uint8_t byte)
+static void obdh_com_receive_pkt(OBDH *obdh)
 {
-#if BEACON_MODE == DEBUG_MODE
-    debug_print_msg("Packet data byte received!\n");
-#endif // DEBUG_MODE
-    obdh->buffer[obdh->byte_counter - OBDH_COM_BAT1_VOLTAGE_POS] = byte;
+    obdh->buffer[obdh->byte_counter - OBDH_COM_BAT1_VOLTAGE_POS] = obdh->received_byte;
     obdh->byte_counter++;
 }
 
@@ -255,75 +240,75 @@ void obdh_com_send_data(uint8_t data)
     USCI_A_SPI_transmitData(OBDH_COM_SPI_BASE_ADDRESS, data);
 }
 
-static void obdh_com_save_data_from_buffer(uint8_t *buffer, OBDHData *obdh_data)
+static void obdh_com_save_data_from_buffer(OBDH *obdh)
 {
     uint8_t i = 0;
     uint8_t j = 0;
     
     for(i=0; i<OBDH_COM_BAT1_VOLTAGE_LEN; i++)
     {
-        obdh_data->bat1_voltage[i] = buffer[j++];
+        obdh->data.bat1_voltage[i] = obdh->buffer[j++];
     }
     
     for(i=0; i<OBDH_COM_BAT2_VOLTAGE_LEN; i++)
     {
-        obdh_data->bat2_voltage[i] = buffer[j++];
+        obdh->data.bat2_voltage[i] = obdh->buffer[j++];
     }
     
     for(i=0; i<OBDH_COM_SOLAR_PANELS_CURRENTS_LEN; i++)
     {
-        obdh_data->solar_panels_currents[i] = buffer[j++];
+        obdh->data.solar_panels_currents[i] = obdh->buffer[j++];
     }
     
     for(i=0; i<OBDH_COM_SOLAR_PANELS_VOLTAGES_LEN; i++)
     {
-        obdh_data->solar_panels_voltages[i] = buffer[j++];
+        obdh->data.solar_panels_voltages[i] = obdh->buffer[j++];
     }
     
     for(i=0; i<OBDH_COM_BAT1_TEMPERATURE_LEN; i++)
     {
-        obdh_data->bat1_temperature[i] = buffer[j++];
+        obdh->data.bat1_temperature[i] = obdh->buffer[j++];
     }
     
     for(i=0; i<OBDH_COM_BAT2_TEMPERATURE_LEN; i++)
     {
-        obdh_data->bat2_temperature[i] = buffer[j++];
+        obdh->data.bat2_temperature[i] = obdh->buffer[j++];
     }
     
     for(i=0; i<OBDH_COM_IMU_LEN; i++)
     {
-        obdh_data->imu[i] = buffer[j++];
+        obdh->data.imu[i] = obdh->buffer[j++];
     }
     
     for(i=0; i<OBDH_COM_BAT1_CHARGE_LEN; i++)
     {
-        obdh_data->bat1_charge[i] = buffer[j++];
+        obdh->data.bat1_charge[i] = obdh->buffer[j++];
     }
     
     for(i=0; i<OBDH_COM_BAT2_CHARGE_LEN; i++)
     {
-        obdh_data->bat2_charge[i] = buffer[j++];
+        obdh->data.bat2_charge[i] = obdh->buffer[j++];
     }
     
     for(i=0; i<OBDH_COM_SYSTEM_TIME_LEN; i++)
     {
-        obdh_data->system_time[i] = buffer[j++];
+        obdh->data.system_time[i] = obdh->buffer[j++];
     }
     
     for(i=0; i<OBDH_COM_SAT_STATUS_LEN; i++)
     {
-        obdh_data->sat_status[i] = buffer[j++];
+        obdh->data.sat_status[i] = obdh->buffer[j++];
     }
     
     for(i=0; i<OBDH_COM_RESET_COUNTER_LEN; i++)
     {
-        obdh_data->reset_counter[i] = buffer[j++];
+        obdh->data.reset_counter[i] = obdh->buffer[j++];
     }
 }
 
-static void obdh_com_clear_buffer(uint8_t *buffer)
+static void obdh_com_clear_buffer(OBDH *obdh)
 {
-    memset(*buffer, OBDH_COM_DEFAULT_DATA_BYTE, OBDH_COM_DATA_PKT_LEN*sizeof(uint8_t));
+    memset(obdh->buffer, OBDH_COM_DEFAULT_DATA_BYTE, OBDH_COM_DATA_PKT_LEN*sizeof(uint8_t));
 }
 
 /**
