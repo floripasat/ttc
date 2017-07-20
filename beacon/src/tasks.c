@@ -47,6 +47,8 @@
 
 void task_transmit_packet()
 {
+    beacon.flags.transmitting = true;
+    
     uint8_t ngham_pkt_str[256];
     uint16_t ngham_pkt_str_len;
     uint8_t ax25_pkt_str[256];
@@ -92,6 +94,8 @@ void task_transmit_packet()
 #if BEACON_RF_SWITCH != HW_NONE
     rf_switch_disable_beacon();
 #endif // BEACON_RF_SWITCH
+
+    beacon.flags.transmitting = false;
 }
 
 void task_generate_packets(uint8_t *ngham_pkt_str, uint16_t *ngham_pkt_str_len, uint8_t *ax25_pkt_str, uint16_t *ax25_pkt_str_len)
