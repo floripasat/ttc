@@ -176,16 +176,6 @@ static void eps_com_save_data_from_buffer(EPS *eps)
         eps->data.bat2_voltage[i] = eps->buffer[j++];
     }
     
-    for(i=0; i<EPS_COM_BAT1_CHARGE_LEN; i++)
-    {
-        eps->data.bat1_charge[i] = eps->buffer[j++];
-    }
-    
-    for(i=0; i<EPS_COM_BAT2_CHARGE_LEN; i++)
-    {
-        eps->data.bat2_charge[i] = eps->buffer[j++];
-    }
-    
     for(i=0; i<EPS_COM_BAT1_TEMPERATURE_LEN; i++)
     {
         eps->data.bat1_temperature[i] = eps->buffer[j++];
@@ -196,14 +186,19 @@ static void eps_com_save_data_from_buffer(EPS *eps)
         eps->data.bat2_temperature[i] = eps->buffer[j++];
     }
     
-    for(i=0; i<EPS_COM_SOLAR_PANELS_VOLTAGES_LEN; i++)
+    for(i=0; i<EPS_COM_BAT_CHARGE_LEN; i++)
     {
-        eps->data.solar_panels_voltages[i] = eps->buffer[j++];
+        eps->data.bat_charge[i] = eps->buffer[j++];
     }
     
     for(i=0; i<EPS_COM_SOLAR_PANELS_CURRENTS_LEN; i++)
     {
         eps->data.solar_panels_currents[i] = eps->buffer[j++];
+    }
+    
+    for(i=0; i<EPS_COM_SOLAR_PANELS_VOLTAGES_LEN; i++)
+    {
+        eps->data.solar_panels_voltages[i] = eps->buffer[j++];
     }
     
     eps->data.energy_level = eps->buffer[j++];

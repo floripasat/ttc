@@ -53,12 +53,11 @@ typedef struct
 {
     uint8_t bat1_voltage[3];            /**< Battery 1 voltage. */
     uint8_t bat2_voltage[3];            /**< Battery 2 voltage. */
-    uint8_t bat1_charge[2];             /**< Battery 1 charge. */
-    uint8_t bat2_charge[2];             /**< Battery 2 charge. */
     uint8_t bat1_temperature[4];        /**< Battery 1 temperature. */
     uint8_t bat2_temperature[4];        /**< Battery 2 temperature. */
-    uint8_t solar_panels_voltages[7];   /**< Solar panels voltages. */
+    uint8_t bat_charge[3];              /**< Total charge of batteries. */
     uint8_t solar_panels_currents[13];  /**< Solar panels currents. */
+    uint8_t solar_panels_voltages[7];   /**< Solar panels voltages. */
     uint8_t energy_level;               /**< Satellite energy level. */
 } EPSData;
 

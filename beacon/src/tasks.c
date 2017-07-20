@@ -349,16 +349,6 @@ void task_generate_packet_payload(Beacon *b)
                b->eps.data.bat2_voltage,
                EPS_COM_BAT2_VOLTAGE_LEN*sizeof(uint8_t));
         
-        // Battery 1 Charge
-        memcpy(b->packet_payload.payload + EPS_COM_BAT1_CHARGE_LEN,
-               b->eps.data.bat1_charge,
-               EPS_COM_BAT1_CHARGE_LEN*sizeof(uint8_t));
-        
-        // Battery 2 Charge
-        memcpy(b->packet_payload.payload + EPS_COM_BAT2_CHARGE_LEN,
-               b->eps.data.bat2_charge,
-               EPS_COM_BAT2_CHARGE_LEN*sizeof(uint8_t));
-        
         // Battery 1 Temperature
         memcpy(b->packet_payload.payload + EPS_COM_BAT1_TEMPERATURE_LEN,
                b->eps.data.bat1_temperature,
@@ -369,15 +359,20 @@ void task_generate_packet_payload(Beacon *b)
                b->eps.data.bat2_temperature,
                EPS_COM_BAT2_TEMPERATURE_LEN*sizeof(uint8_t));
         
-        // Solar Panels Voltages
-        memcpy(b->packet_payload.payload + EPS_COM_SOLAR_PANELS_VOLTAGES_LEN,
-               b->eps.data.solar_panels_voltages,
-               EPS_COM_SOLAR_PANELS_VOLTAGES_LEN*sizeof(uint8_t));
+        // Total Charge of Batteries
+        memcpy(b->packet_payload.payload + EPS_COM_BAT_CHARGE_LEN,
+               b->eps.data.bat_charge,
+               EPS_COM_BAT_CHARGE_LEN*sizeof(uint8_t));
         
         // Solar Panels Currents
         memcpy(b->packet_payload.payload + EPS_COM_SOLAR_PANELS_CURRENTS_LEN,
                b->eps.data.solar_panels_currents,
                EPS_COM_SOLAR_PANELS_CURRENTS_LEN*sizeof(uint8_t));
+        
+        // Solar Panels Voltages
+        memcpy(b->packet_payload.payload + EPS_COM_SOLAR_PANELS_VOLTAGES_LEN,
+               b->eps.data.solar_panels_voltages,
+               EPS_COM_SOLAR_PANELS_VOLTAGES_LEN*sizeof(uint8_t));
         
         // Satellite Energy Level
         memcpy(b->packet_payload.payload + EPS_COM_ENERGY_LEVEL_LEN,
