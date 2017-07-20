@@ -255,16 +255,6 @@ static void obdh_com_save_data_from_buffer(OBDH *obdh)
         obdh->data.bat2_voltage[i] = obdh->buffer[j++];
     }
     
-    for(i=0; i<OBDH_COM_SOLAR_PANELS_CURRENTS_LEN; i++)
-    {
-        obdh->data.solar_panels_currents[i] = obdh->buffer[j++];
-    }
-    
-    for(i=0; i<OBDH_COM_SOLAR_PANELS_VOLTAGES_LEN; i++)
-    {
-        obdh->data.solar_panels_voltages[i] = obdh->buffer[j++];
-    }
-    
     for(i=0; i<OBDH_COM_BAT1_TEMPERATURE_LEN; i++)
     {
         obdh->data.bat1_temperature[i] = obdh->buffer[j++];
@@ -275,29 +265,34 @@ static void obdh_com_save_data_from_buffer(OBDH *obdh)
         obdh->data.bat2_temperature[i] = obdh->buffer[j++];
     }
     
-    for(i=0; i<OBDH_COM_IMU_LEN; i++)
+    for(i=0; i<OBDH_COM_BAT_CHARGE_LEN; i++)
     {
-        obdh->data.imu[i] = obdh->buffer[j++];
+        obdh->data.bat_charge[i] = obdh->buffer[j++];
     }
     
-    for(i=0; i<OBDH_COM_BAT1_CHARGE_LEN; i++)
+    for(i=0; i<OBDH_COM_SOLAR_PANELS_CURRENTS_LEN; i++)
     {
-        obdh->data.bat1_charge[i] = obdh->buffer[j++];
+        obdh->data.solar_panels_currents[i] = obdh->buffer[j++];
     }
     
-    for(i=0; i<OBDH_COM_BAT2_CHARGE_LEN; i++)
+    for(i=0; i<OBDH_COM_SOLAR_PANELS_VOLTAGES_LEN; i++)
     {
-        obdh->data.bat2_charge[i] = obdh->buffer[j++];
-    }
-    
-    for(i=0; i<OBDH_COM_SYSTEM_TIME_LEN; i++)
-    {
-        obdh->data.system_time[i] = obdh->buffer[j++];
+        obdh->data.solar_panels_voltages[i] = obdh->buffer[j++];
     }
     
     for(i=0; i<OBDH_COM_SAT_STATUS_LEN; i++)
     {
         obdh->data.sat_status[i] = obdh->buffer[j++];
+    }
+    
+    for(i=0; i<OBDH_COM_IMU_LEN; i++)
+    {
+        obdh->data.imu[i] = obdh->buffer[j++];
+    }
+    
+    for(i=0; i<OBDH_COM_SYSTEM_TIME_LEN; i++)
+    {
+        obdh->data.system_time[i] = obdh->buffer[j++];
     }
     
     for(i=0; i<OBDH_COM_RESET_COUNTER_LEN; i++)

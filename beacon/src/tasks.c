@@ -281,16 +281,6 @@ void task_generate_packet_payload(Beacon *b)
                b->obdh.data.bat2_voltage,
                OBDH_COM_BAT2_VOLTAGE_LEN*sizeof(uint8_t));
         
-        // Solar Panels Currents
-        memcpy(b->packet_payload.payload + OBDH_COM_SOLAR_PANELS_CURRENTS_LEN,
-               b->obdh.data.solar_panels_currents,
-               OBDH_COM_SOLAR_PANELS_CURRENTS_LEN*sizeof(uint8_t));
-        
-        // Solar Panels Voltages
-        memcpy(b->packet_payload.payload + OBDH_COM_SOLAR_PANELS_VOLTAGES_LEN,
-               b->obdh.data.solar_panels_voltages,
-               OBDH_COM_SOLAR_PANELS_VOLTAGES_LEN*sizeof(uint8_t));
-        
         // Battery 1 Temperature
         memcpy(b->packet_payload.payload + OBDH_COM_BAT1_TEMPERATURE_LEN,
                b->obdh.data.bat1_temperature,
@@ -301,30 +291,35 @@ void task_generate_packet_payload(Beacon *b)
                b->obdh.data.bat2_temperature,
                OBDH_COM_BAT2_TEMPERATURE_LEN*sizeof(uint8_t));
         
-        // IMU Data
-        memcpy(b->packet_payload.payload + OBDH_COM_IMU_LEN,
-               b->obdh.data.imu,
-               OBDH_COM_IMU_LEN*sizeof(uint8_t));
+        // Total Charge of Batteries
+        memcpy(b->packet_payload.payload + OBDH_COM_BAT_CHARGE_LEN,
+               b->obdh.data.bat_charge,
+               OBDH_COM_BAT_CHARGE_LEN*sizeof(uint8_t));
         
-        // Battery 1 Charge
-        memcpy(b->packet_payload.payload + OBDH_COM_BAT1_CHARGE_LEN,
-               b->obdh.data.bat1_charge,
-               OBDH_COM_BAT1_CHARGE_LEN*sizeof(uint8_t));
+        // Solar Panels Currents
+        memcpy(b->packet_payload.payload + OBDH_COM_SOLAR_PANELS_CURRENTS_LEN,
+               b->obdh.data.solar_panels_currents,
+               OBDH_COM_SOLAR_PANELS_CURRENTS_LEN*sizeof(uint8_t));
         
-        // Battery 2 Charge
-        memcpy(b->packet_payload.payload + OBDH_COM_BAT2_CHARGE_LEN,
-               b->obdh.data.bat2_charge,
-               OBDH_COM_BAT2_CHARGE_LEN*sizeof(uint8_t));
-        
-        // System Time
-        memcpy(b->packet_payload.payload + OBDH_COM_SYSTEM_TIME_LEN,
-               b->obdh.data.system_time,
-               OBDH_COM_SYSTEM_TIME_LEN*sizeof(uint8_t));
+        // Solar Panels Voltages
+        memcpy(b->packet_payload.payload + OBDH_COM_SOLAR_PANELS_VOLTAGES_LEN,
+               b->obdh.data.solar_panels_voltages,
+               OBDH_COM_SOLAR_PANELS_VOLTAGES_LEN*sizeof(uint8_t));
         
         // Satellite Status
         memcpy(b->packet_payload.payload + OBDH_COM_SAT_STATUS_LEN,
                b->obdh.data.sat_status,
                OBDH_COM_SAT_STATUS_LEN*sizeof(uint8_t));
+        
+        // IMU Data
+        memcpy(b->packet_payload.payload + OBDH_COM_IMU_LEN,
+               b->obdh.data.imu,
+               OBDH_COM_IMU_LEN*sizeof(uint8_t));
+        
+        // System Time
+        memcpy(b->packet_payload.payload + OBDH_COM_SYSTEM_TIME_LEN,
+               b->obdh.data.system_time,
+               OBDH_COM_SYSTEM_TIME_LEN*sizeof(uint8_t));
         
         // OBDH Reset Counter
         memcpy(b->packet_payload.payload + OBDH_COM_RESET_COUNTER_LEN,
