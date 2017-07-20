@@ -99,8 +99,8 @@ static uint8_t obdh_com_spi_init()
                              USCI_A_SPI_PHASE_DATA_CHANGED_ONFIRST_CAPTURED_ON_NEXT,
                              USCI_A_SPI_CLOCKPOLARITY_INACTIVITY_LOW) == STATUS_SUCCESS)
     {
-        // Set SPI Mode 3 (The initSlave function from DriverLib, only initializes in Mode 0)
-        HWREG8(OBDH_COM_SPI_BASE_ADDRESS + OFS_UCAxCTL0) |= UCMODE_3;
+        // Set SPI Mode 2 (The initSlave function from DriverLib, only initializes in Mode 0)
+        HWREG8(OBDH_COM_SPI_BASE_ADDRESS + OFS_UCAxCTL0) |= UCMODE_2;
         
         // Enable SPI Module
         USCI_A_SPI_enable(OBDH_COM_SPI_BASE_ADDRESS);
