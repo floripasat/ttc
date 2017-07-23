@@ -82,7 +82,7 @@
 //###########################################
 
 #define BEACON_RADIO                UART_SIM
-#define BEACON_RADIO_SPI_CLK        400000
+#define BEACON_RADIO_SPI_CLK        1000000
 
 //###########################################
 //-- PA -------------------------------------
@@ -112,7 +112,9 @@
 //-- CPU ------------------------------------
 //###########################################
 
-#define BEACON_CPU_FREQ_HZ          4000000
+#define BEACON_CPU_FREQ_HZ          16000000
+#define BEACON_CPU_FREQ_KHZ         (BEACON_CPU_FREQ_HZ/1000)
+#define BEACON_CPU_FREQ_MHZ         (BEACON_CPU_FREQ_HZ/1000000)
 
 //###########################################
 //-- WATCHDOG -------------------------------

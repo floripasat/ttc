@@ -53,9 +53,9 @@ uint8_t uart_radio_sim_init(uint8_t init_mode)
         // Config UART (1200 bps, no parity, 1 stop bit, LSB first)
         USCI_A_UART_initParam uart_params = {0};
         uart_params.selectClockSource   = USCI_A_UART_CLOCKSOURCE_SMCLK;
-        uart_params.clockPrescalar      = 52;		// Clock = 1 MHz, Baudrate = 1200 bps ([1] http://software-dl.ti.com/msp430/msp430_public_sw/mcu/msp430/MSP430BaudRateConverter/index.html)
-        uart_params.firstModReg         = 1;		// Clock = 1 MHz, Baudrate = 1200 bps (See [1])
-        uart_params.secondModReg        = 0;		// Clock = 1 MHz, Baudrate = 1200 bps (See [1])
+        uart_params.clockPrescalar      = 208;		// Clock = 4 MHz, Baudrate = 1200 bps ([1] http://software-dl.ti.com/msp430/msp430_public_sw/mcu/msp430/MSP430BaudRateConverter/index.html)
+        uart_params.firstModReg         = 5;		// Clock = 4 MHz, Baudrate = 1200 bps (See [1])
+        uart_params.secondModReg        = 0;		// Clock = 4 MHz, Baudrate = 1200 bps (See [1])
         uart_params.parity              = USCI_A_UART_NO_PARITY;
         uart_params.msborLsbFirst       = USCI_A_UART_LSB_FIRST;
         uart_params.numberofStopBits    = USCI_A_UART_ONE_STOP_BIT;

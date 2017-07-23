@@ -131,14 +131,14 @@ uint8_t debug_uart_init()
     // Config UART (115200 bps, no parity, 1 stop bit, LSB first)
     USCI_A_UART_initParam uart_params = {0};
     uart_params.selectClockSource   = USCI_A_UART_CLOCKSOURCE_SMCLK;
-    uart_params.clockPrescalar      = 8;		// Clock = 1 MHz, Baudrate = 115200 bps	([1] http://software-dl.ti.com/msp430/msp430_public_sw/mcu/msp430/MSP430BaudRateConverter/index.html)
-    uart_params.firstModReg         = 0;		// Clock = 1 MHz, Baudrate = 115200 bps (See [1])
-    uart_params.secondModReg        = 6;		// Clock = 1 MHz, Baudrate = 115200 bps (See [1])
+    uart_params.clockPrescalar      = 2;		// Clock = 4 MHz, Baudrate = 115200 bps	([1] http://software-dl.ti.com/msp430/msp430_public_sw/mcu/msp430/MSP430BaudRateConverter/index.html)
+    uart_params.firstModReg         = 2;		// Clock = 4 MHz, Baudrate = 115200 bps (See [1])
+    uart_params.secondModReg        = 3;		// Clock = 4 MHz, Baudrate = 115200 bps (See [1])
     uart_params.parity              = USCI_A_UART_NO_PARITY;
     uart_params.msborLsbFirst       = USCI_A_UART_LSB_FIRST;
     uart_params.numberofStopBits    = USCI_A_UART_ONE_STOP_BIT;
     uart_params.uartMode            = USCI_A_UART_MODE;
-    uart_params.overSampling        = USCI_A_UART_LOW_FREQUENCY_BAUDRATE_GENERATION;    // Clock = 1 MHz, Baudrate = 115200 bps (See [1])
+    uart_params.overSampling        = USCI_A_UART_OVERSAMPLING_BAUDRATE_GENERATION;     // Clock = 1 MHz, Baudrate = 115200 bps (See [1])
 
     // UART initialization
     if (USCI_A_UART_init(DEBUG_UART_BASE_ADDRESS, &uart_params) == STATUS_SUCCESS)

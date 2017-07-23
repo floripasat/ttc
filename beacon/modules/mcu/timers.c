@@ -54,7 +54,7 @@ void timer_init(Time *t)
     // Start timer in continuous mode sourced by SMCLK
     Timer_A_initContinuousModeParam timer_cont_params = {0};
     timer_cont_params.clockSource               = TIMER_A_CLOCKSOURCE_SMCLK;
-    timer_cont_params.clockSourceDivider        = TIMER_A_CLOCKSOURCE_DIVIDER_20;
+    timer_cont_params.clockSourceDivider        = TIMER_A_CLOCKSOURCE_DIVIDER_64;
     timer_cont_params.timerInterruptEnable_TAIE = TIMER_A_TAIE_INTERRUPT_DISABLE;
     timer_cont_params.timerClear                = TIMER_A_DO_CLEAR;
     timer_cont_params.startTimer                = false;
@@ -68,7 +68,7 @@ void timer_init(Time *t)
     timer_comp_params.compareRegister           = TIMER_A_CAPTURECOMPARE_REGISTER_0;
     timer_comp_params.compareInterruptEnable    = TIMER_A_CAPTURECOMPARE_INTERRUPT_ENABLE;
     timer_comp_params.compareOutputMode         = TIMER_A_OUTPUTMODE_OUTBITVALUE;
-    timer_comp_params.compareValue              = (uint16_t)(UCS_getSMCLK()/TIMER_A_CLOCKSOURCE_DIVIDER_20);
+    timer_comp_params.compareValue              = (uint16_t)(UCS_getSMCLK()/64);
     
     Timer_A_initCompareMode(TIMER_BASE_ADDRESS, &timer_comp_params);
 
@@ -109,7 +109,7 @@ __attribute__((interrupt(TIMER1_A0_VECTOR)))
 void TIMER1_A0_ISR()
 {
     uint16_t comp_val = Timer_A_getCaptureCompareCount(TIMER_BASE_ADDRESS, TIMER_A_CAPTURECOMPARE_REGISTER_0)
-                        + (uint16_t)(UCS_getSMCLK()/TIMER_A_CLOCKSOURCE_DIVIDER_20);
+                        + (uint16_t)(UCS_getSMCLK()/64);
     
     time->second++;
     if (time->second == 60)         // 1 minute = 60 seconds

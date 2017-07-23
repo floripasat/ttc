@@ -59,7 +59,7 @@ void init_watchdog()
 
 void init_cpu()
 {
-    
+    cpu_init();
 }
 
 void init_memory()

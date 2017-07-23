@@ -1,5 +1,5 @@
 /*
- * modules.h
+ * cpu.h
  * 
  * Copyright (C) 2017, Federal University of Santa Catarina.
  * 
@@ -21,39 +21,38 @@
  */
 
 /**
- * \file modules.h
+ * \file cpu.h
  * 
- * \brief Modules include file.
+ * \brief CPU initialization functions.
  * 
  * \author Gabriel Mariano Marcelino <gabriel.mm8@gmail.com>
  * 
  * \version 1.0-dev
  * 
- * \date 09/06/2017
+ * \date 23/07/2017
  * 
- * \defgroup modules Modules
- * \ingroup beacon
+ * \defgroup cpu CPU
+ * \ingroup modules
  * \{
  */
 
-#ifndef MODULES_H_
-#define MODULES_H_
+#ifndef CPU_H
+#define CPU_H_
 
-#include "antenna/antenna.h"
-#include "debug/debug.h"
-#include "eps_com/eps_com.h"
-#include "mcu/cpu.h"
-#include "mcu/flash.h"
-#include "mcu/timers.h"
-#include "mcu/watchdog.h"
-#include "obdh_com/obdh_com.h"
-#include "pa/pa.h"
-#include "radio/radio.h"
-#include "rf_switch/rf_switch.h"
-#include "status_led/status_led.h"
-#include "time/delay.h"
-#include "time/time.h"
+/**
+ * \fn cpu_init
+ * 
+ * \brief Configures the CPU clocks.
+ * 
+ *      - \b MCLK = 16 MHz
+ *      - \b SMCLK = 4 MHz
+ *      - \b ACLK = 32,768 kHz
+ *      .
+ * 
+ * \return None
+ */
+void cpu_init();
 
-#endif // MODULES_H_
+#endif // CPU_H_
 
-//! \} End of modules group
+//! \} End of cpu group
