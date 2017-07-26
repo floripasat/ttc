@@ -112,7 +112,7 @@ void beacon_run()
         {
             if (beacon.flags.can_transmit == true)
             {
-                task_transmit_packet();
+                task_transmit_packet(&beacon);
                 task_set_energy_level(&beacon);
             }
         }

@@ -45,9 +45,9 @@
 #include "beacon.h"
 #include "flags.h"
 
-void task_transmit_packet()
+void task_transmit_packet(Beacon *beacon_ptr)
 {
-    beacon.flags.transmitting = true;
+    beacon_ptr->flags.transmitting = true;
     
     uint8_t ngham_pkt_str[256];
     uint16_t ngham_pkt_str_len;
@@ -95,7 +95,7 @@ void task_transmit_packet()
     rf_switch_disable_beacon();
 #endif // BEACON_RF_SWITCH
 
-    beacon.flags.transmitting = false;
+    beacon_ptr->flags.transmitting = false;
 }
 
 void task_generate_packets(uint8_t *ngham_pkt_str, uint16_t *ngham_pkt_str_len, uint8_t *ax25_pkt_str, uint16_t *ax25_pkt_str_len)

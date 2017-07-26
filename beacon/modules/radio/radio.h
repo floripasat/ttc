@@ -76,9 +76,12 @@ void radio_write_data(uint8_t *data, uint16_t len);
  * 
  * \brief Read data from the radio module.
  * 
+ * \param buffer is a pointer to an array to store the RX FIFO data.
+ * \param len is the length of the RX FIFO data.
+ * 
  * \return None
  */
-void radio_read_data();
+void radio_read_data(uint8_t *buffer, uint8_t *len);
 
 /**
  * \fn radio_sleep

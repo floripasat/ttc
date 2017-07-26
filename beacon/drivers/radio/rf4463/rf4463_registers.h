@@ -40,12 +40,6 @@
 #ifndef RF4463_REGISTERS_H_
 #define RF4463_REGISTERS_H_
 
-#define RF4463_PART_INFO                                    0x4463
-#define RF4463_CTS_REPLY                                    0xFF
-#define RF4463_CTS_TIMEOUT                                  2500        // Waiting time for a valid FFh CTS reading. The typical time is 20 us.
-#define RF4463_TX_TIMEOUT                                   500         // Waiting time for packet send interrupt. this time is depended on tx length and data rate of wireless.
-#define RF4463_FREQ_CHANNEL                                 0           // Frequency channel.
-
 //###################################################################
 //-- COMMANDS -------------------------------------------------------
 //###################################################################

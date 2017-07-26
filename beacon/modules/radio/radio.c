@@ -43,6 +43,7 @@
     #include <drivers/radio/si446x/si446x.h>
 #elif BEACON_RADIO == RF4463F30
     #include <drivers/radio/rf4463/rf4463.h>
+    #include <modules/time/delay.h>
 #elif BEACON_RADIO == UART_SIM
     #include <drivers/radio/uart_radio_sim/uart_radio_sim.h>
 #endif // BEACON_RADIO
@@ -65,7 +66,17 @@ uint8_t radio_init()
 #elif BEACON_RADIO == SI4063
     return si406x_init();
 #elif BEACON_RADIO == RF4463F30
-    return rf4463_init();
+    uint8_t init_status = rf4463_init();
+    if (init_status == STATUS_SUCCESS)
+    {
+        rf4463_enter_standby_mode();
+        delay_ms(100);
+        return STATUS_SUCCESS;
+    }
+    else
+    {
+        return STATUS_FAIL;
+    }
 #elif BEACON_RADIO == UART_SIM
     return uart_radio_sim_init(UART_RADIO_ONLY_SET_TX_PIN_AS_PERIPHERAL);
 #endif // BEACON_RADIO
@@ -78,7 +89,7 @@ void radio_reset()
 #elif BEACON_RADIO == SI4063
     
 #elif BEACON_RADIO == RF4463F30
-    
+    rf4463_power_on_reset();
 #elif BEACON_RADIO == UART_SIM
     return;
 #endif // BEACON_RADIO
@@ -91,20 +102,21 @@ void radio_write_data(uint8_t *data, uint16_t len)
 #elif BEACON_RADIO == SI4063
     
 #elif BEACON_RADIO == RF4463F30
-    
+    rf4463_tx_packet(data, len);
+    rf4463_enter_standby_mode();
 #elif BEACON_RADIO == UART_SIM
     uart_radio_sim_send_data(data, len);
 #endif // BEACON_RADIO
 }
 
-void radio_read_data()
+void radio_read_data(uint8_t *buffer, uint8_t *len)
 {
 #if BEACON_RADIO == CC1175 || BEACON_RADIO == CC1125
     
 #elif BEACON_RADIO == SI4063
     
 #elif BEACON_RADIO == RF4463F30
-    
+    *len = rf4463_rx_packet(buffer);
 #elif BEACON_RADIO == UART_SIM
     return;
 #endif // BEACON_RADIO
@@ -117,7 +129,7 @@ void radio_sleep()
 #elif BEACON_RADIO == SI4063
     
 #elif BEACON_RADIO == RF4463F30
-    
+    rf4463_enter_standby_mode();
 #elif BEACON_RADIO == UART_SIM
     return;
 #endif // BEACON_RADIO
@@ -130,7 +142,7 @@ void radio_wake_up()
 #elif BEACON_RADIO == SI4063
     
 #elif BEACON_RADIO == RF4463F30
-    
+    return;
 #elif BEACON_RADIO == UART_SIM
     return;
 #endif // BEACON_RADIO

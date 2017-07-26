@@ -81,8 +81,8 @@
 //-- RADIO ----------------------------------
 //###########################################
 
-#define BEACON_RADIO                UART_SIM
-#define BEACON_RADIO_SPI_CLK        1000000
+#define BEACON_RADIO                RF4463F30
+#define BEACON_RADIO_SPI_CLK        100000
 
 //###########################################
 //-- PA -------------------------------------

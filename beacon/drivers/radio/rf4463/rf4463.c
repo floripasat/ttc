@@ -44,14 +44,13 @@
 #include "rf4463_pinmap.h"
 #include "rf4463_config.h"
 #include "rf4463_registers.h"
-#include "rf4463_reg_config.h"
+#include "radio_config_Si4463.h"
 
 const uint8_t RF4463_CONFIGURATION_DATA[] = RADIO_CONFIGURATION_DATA_ARRAY;
 
 uint8_t rf4463_init()
 {
     rf4463_gpio_init();
-    rf4463_turn_off_pa();
     
     if (rf4463_spi_init() == STATUS_FAIL)
     {
@@ -59,7 +58,7 @@ uint8_t rf4463_init()
     }
     
     // Reset the RF4463
-    rf4463_reset();
+    rf4463_power_on_reset();
     
     // Registers configuration
     rf4463_reg_config();
@@ -68,12 +67,14 @@ uint8_t rf4463_init()
     rf4463_set_tx_power(127);
     
     // Check if the RF4463 is working
-    if (!rf4463_check_device())
+    if (rf4463_check_device())
+    {
+        return STATUS_SUCCESS;
+    }
+    else
     {
         return STATUS_FAIL;
     }
-    
-    return STATUS_SUCCESS;
 }
 
 static void rf4463_gpio_init()
@@ -83,6 +84,9 @@ static void rf4463_gpio_init()
     
     GPIO_setAsOutputPin(RF4463_GPIO0_PORT, RF4463_GPIO0_PIN);
     GPIO_setAsOutputPin(RF4463_GPIO0_PORT, RF4463_GPIO1_PIN);
+    
+    // Set SDN to low
+    GPIO_setOutputLowOnPin(RF4463_SDN_PORT, RF4463_SDN_PIN);
 }
 
 static uint8_t rf4463_spi_init()
@@ -99,14 +103,14 @@ static uint8_t rf4463_spi_init()
     USCI_A_SPI_initMasterParam spi_params = {0};
     spi_params.selectClockSource     = USCI_A_SPI_CLOCKSOURCE_SMCLK;
     spi_params.msbFirst              = USCI_A_SPI_MSB_FIRST;
-    spi_params.clockPhase            = USCI_A_SPI_PHASE_DATA_CHANGED_ONFIRST_CAPTURED_ON_NEXT;
-    spi_params.clockPolarity         = USCI_A_SPI_CLOCKPOLARITY_INACTIVITY_HIGH;
+    spi_params.clockPhase            = USCI_A_SPI_PHASE_DATA_CAPTURED_ONFIRST_CHANGED_ON_NEXT;
+    spi_params.clockPolarity         = USCI_A_SPI_CLOCKPOLARITY_INACTIVITY_LOW;
 #elif RF4463_SPI_USCI == USCI_B
     USCI_B_SPI_initMasterParam spi_params = {0};
     spi_params.selectClockSource     = USCI_B_SPI_CLOCKSOURCE_SMCLK;
     spi_params.msbFirst              = USCI_B_SPI_MSB_FIRST;
     spi_params.clockPhase            = USCI_B_SPI_PHASE_DATA_CHANGED_ONFIRST_CAPTURED_ON_NEXT;
-    spi_params.clockPolarity         = USCI_B_SPI_CLOCKPOLARITY_INACTIVITY_HIGH;
+    spi_params.clockPolarity         = USCI_B_SPI_CLOCKPOLARITY_INACTIVITY_LOW;
 #endif // RF4463_SPI_USCI
     spi_params.clockSourceFrequency  = UCS_getSMCLK();
     spi_params.desiredSpiClock       = RF4463_SPI_CLK;
@@ -130,6 +134,71 @@ static uint8_t rf4463_spi_init()
     }
 }
 
+void rf4463_spi_write_byte(uint8_t byte)
+{
+#if RF4463_SPI_USCI == USCI_A
+    // Wait until TX buffer ready
+    while(!USCI_A_SPI_getInterruptStatus(RF4463_SPI_BASE_ADDRESS, USCI_A_SPI_TRANSMIT_INTERRUPT))
+    {
+
+    }
+    USCI_A_SPI_clearInterrupt(RF4463_SPI_BASE_ADDRESS, USCI_A_SPI_TRANSMIT_INTERRUPT);
+    
+    USCI_A_SPI_transmitData(RF4463_SPI_BASE_ADDRESS, byte);
+#elif RF4463_SPI_USCI == USCI_B
+    // Wait until TX buffer ready
+    while(!USCI_B_SPI_getInterruptStatus(RF4463_SPI_BASE_ADDRESS, USCI_B_SPI_TRANSMIT_INTERRUPT))
+    {
+
+    }
+    USCI_B_SPI_clearInterrupt(RF4463_SPI_BASE_ADDRESS, USCI_B_SPI_TRANSMIT_INTERRUPT);
+    
+    USCI_B_SPI_transmitData(RF4463_SPI_BASE_ADDRESS, byte);
+#endif // RF4463_SPI_USCI
+}
+
+void rf4463_spi_write(uint8_t *data, uint16_t size)
+{
+    while(size--)
+    {
+        rf4463_spi_write_byte(*data++);
+    }
+}
+
+uint8_t rf4463_spi_read_byte()
+{
+    // Transmit 0 to keep the clock and receive the data
+    rf4463_spi_write_byte(0);
+    
+#if RF4463_SPI_USCI == USCI_A
+    // Wait until new data was written into RX buffer
+    while(!USCI_A_SPI_getInterruptStatus(RF4463_SPI_BASE_ADDRESS, USCI_A_SPI_RECEIVE_INTERRUPT))
+    {
+        
+    }
+    USCI_A_SPI_clearInterrupt(RF4463_SPI_BASE_ADDRESS, USCI_A_SPI_RECEIVE_INTERRUPT);
+    
+    return USCI_A_SPI_receiveData(RF4463_SPI_BASE_ADDRESS);
+#elif RF4463_SPI_USCI == USCI_B
+    // Wait until new data was written into RX buffer
+    while(!USCI_B_SPI_getInterruptStatus(RF4463_SPI_BASE_ADDRESS, USCI_B_SPI_RECEIVE_INTERRUPT))
+    {
+        
+    }
+    USCI_B_SPI_clearInterrupt(RF4463_SPI_BASE_ADDRESS, USCI_B_SPI_RECEIVE_INTERRUPT);
+    
+    return USCI_B_SPI_receiveData(RF4463_SPI_BASE_ADDRESS);
+#endif // RF4463_SPI_USCI
+}
+
+void rf4463_spi_read(uint8_t *data, uint16_t size)
+{
+    while(size--)
+    {
+        *data++ = rf4463_spi_read_byte();
+    }
+}
+
 static void rf4463_reg_config()
 {
     // Set RF parameter like frequency, data rate, etc.
@@ -144,15 +213,15 @@ static void rf4463_reg_config()
     buf[3] = RF4463_GPIO_TX_STATE;
     buf[4] = RF4463_NIRQ_INTERRUPT_SIGNAL;
     buf[5] = RF4463_GPIO_SPI_DATA_OUT;
-    rf4463_set_cmd(6, RF4463_CMD_GPIO_PIN_CFG, buf);
+    rf4463_set_cmd(RF4463_CMD_GPIO_PIN_CFG, buf, 6);
     
     // Frequency adjust (Frequency will be inaccurate if you change this parameter)
     buf[0] = 98;
-    rf4463_set_properties(RF4463_PROPERTY_GLOBAL_XO_TUNE, 1, buf);
+    rf4463_set_properties(RF4463_PROPERTY_GLOBAL_XO_TUNE, buf, 1);
     
     // TX = RX = 64 byte, PH mode, high performance mode
     buf[0] = 0x40;
-    rf4463_set_properties(RF4463_PROPERTY_GLOBAL_CONFIG, 1, buf);
+    rf4463_set_properties(RF4463_PROPERTY_GLOBAL_CONFIG, buf, 1);
     
     // Set preamble
     buf[0] = 0x08;      // 8 bytes Preamble			
@@ -164,7 +233,7 @@ static void rf4463_reg_config()
     buf[6] = 0x00;
     buf[7] = 0x00;
     buf[8] = 0x00;
-    rf4463_set_properties(RF4463_PROPERTY_PREAMBLE_TX_LENGTH, 9, buf);
+    rf4463_set_properties(RF4463_PROPERTY_PREAMBLE_TX_LENGTH, buf, 9);
     
     // Set sync. words
     buf[0] = 0x2D;
@@ -173,15 +242,15 @@ static void rf4463_reg_config()
     
     // Set CRC
     buf[0] = RF4463_CRC_SEED_ALL_1S|RF4463_CRC_ITU_T ;			
-    rf4463_set_properties(RF4463_PROPERTY_PKT_CRC_CONFIG, 1, buf);
+    rf4463_set_properties(RF4463_PROPERTY_PKT_CRC_CONFIG, buf, 1);
     
     buf[0] = RF4463_CRC_ENDIAN;
-    rf4463_set_properties(RF4463_PROPERTY_PKT_CONFIG1, 1, buf);
+    rf4463_set_properties(RF4463_PROPERTY_PKT_CONFIG1, buf, 1);
 
     buf[0] = RF4463_IN_FIFO|RF4463_DST_FIELD_ENUM_2;
     buf[1] = RF4463_SRC_FIELD_ENUM_1;
     buf[2] = 0x00;
-    rf4463_set_properties(RF4463_PROPERTY_PKT_LEN, 3, buf);
+    rf4463_set_properties(RF4463_PROPERTY_PKT_LEN, buf, 3);
 
     // Set length of Field 1 -- 4
     // Variable len, field as length field, field 2 as data field
@@ -198,7 +267,7 @@ static void rf4463_reg_config()
     buf[9] = 0x00;
     buf[10] = 0x00;
     buf[11] = 0x00;
-    rf4463_set_properties(RF4463_PROPERTY_PKT_FIELD_1_LENGTH_12_8, 12, buf);
+    rf4463_set_properties(RF4463_PROPERTY_PKT_FIELD_1_LENGTH_12_8, buf, 12);
 
     buf[0] = 0x00;
     buf[1] = 0x00;
@@ -208,12 +277,12 @@ static void rf4463_reg_config()
     buf[5] = 0x00;
     buf[6] = 0x00;
     buf[7] = 0x00;
-    rf4463_set_properties(RF4463_PROPERTY_PKT_FIELD_4_LENGTH_12_8, 8, buf);
+    rf4463_set_properties(RF4463_PROPERTY_PKT_FIELD_4_LENGTH_12_8, buf, 8);
 }
 
-void rf4463_reset()
+void rf4463_power_on_reset()
 {
-    uint8_t buffer[] = {RF_POWER_UP};
+    uint8_t buffer[8] = {RF_POWER_UP};
     
     GPIO_setOutputHighOnPin(RF4463_SDN_PORT, RF4463_SDN_PIN);
     delay_ms(100);
@@ -222,7 +291,7 @@ void rf4463_reset()
     
     // Send power-up command
     GPIO_setOutputLowOnPin(RF4463_NSEL_PORT, RF4463_NSEL_PIN);
-    rf4463_spi_write(buffer, sizeof(buffer));
+    rf4463_spi_write(buffer, 7);
     GPIO_setOutputHighOnPin(RF4463_NSEL_PORT, RF4463_NSEL_PIN);
     
     delay_ms(200);
@@ -265,7 +334,7 @@ bool rf4463_rx_init()
 {
     uint8_t length = 50;
     
-    rf4463_set_properties(RF4463_PROPERTY_PKT_FIELD_2_LENGTH_7_0, sizeof(length), &length);     // Reload RX FIFO size
+    rf4463_set_properties(RF4463_PROPERTY_PKT_FIELD_2_LENGTH_7_0, &length, 1);      // Reload RX FIFO size
     rf4463_fifo_reset();        // Clear FIFO
     rf4463_set_rx_interrupt();
     rf4463_clear_interrupts();
@@ -274,69 +343,17 @@ bool rf4463_rx_init()
     return true;
 }
 
-void rf4463_spi_write_byte(uint8_t byte)
-{
-#if RF4463_SPI_USCI == USCI_A
-    USCI_A_SPI_clearInterrupt(RF4463_SPI_BASE_ADDRESS, USCI_A_SPI_RECEIVE_INTERRUPT);
-    USCI_A_SPI_transmitData(RF4463_SPI_BASE_ADDRESS, byte);
-#elif RF4463_SPI_USCI == USCI_B
-    USCI_B_SPI_clearInterrupt(RF4463_SPI_BASE_ADDRESS, USCI_B_SPI_RECEIVE_INTERRUPT);
-    USCI_B_SPI_transmitData(RF4463_SPI_BASE_ADDRESS, byte);
-#endif // RF4463_SPI_USCI
-}
-
-void rf4463_spi_write(uint8_t *data, uint16_t size)
-{
-    while(size--)
-    {
-        rf4463_spi_write_byte(*data++);
-    }
-}
-
-uint8_t rf4463_spi_read_byte()
-{
-#if RF4463_SPI_USCI == USCI_A
-    // Wait until new data was written into RX buffer
-    while(!USCI_A_SPI_getInterruptStatus(RF4463_SPI_BASE_ADDRESS, USCI_A_SPI_RECEIVE_INTERRUPT))
-    {
-        
-    }
-    
-    USCI_A_SPI_clearInterrupt(RF4463_SPI_BASE_ADDRESS, USCI_A_SPI_RECEIVE_INTERRUPT);
-    
-    return USCI_A_SPI_receiveData(RF4463_SPI_BASE_ADDRESS);
-#elif RF4463_SPI_USCI == USCI_B
-    // Wait until new data was written into RX buffer
-    while(!USCI_B_SPI_getInterruptStatus(RF4463_SPI_BASE_ADDRESS, USCI_B_SPI_RECEIVE_INTERRUPT))
-    {
-        
-    }
-    
-    USCI_B_SPI_clearInterrupt(RF4463_SPI_BASE_ADDRESS, USCI_B_SPI_RECEIVE_INTERRUPT);
-    
-    return USCI_B_SPI_receiveData(RF4463_SPI_BASE_ADDRESS);
-#endif // RF4463_SPI_USCI
-}
-
-void rf4463_spi_read(uint8_t *data, uint16_t size)
-{
-    while(size--)
-    {
-        *data++ = rf4463_spi_read_byte();
-    }
-}
-
 bool rf4463_check_device()
 {
-    uint8_t buffer[9];
+    uint8_t buffer[10];
     uint16_t part_info;
     
-    if (!rf4463_get_cmd(9, RF4463_CMD_PART_INFO, buffer))
+    if (!rf4463_get_cmd(RF4463_CMD_PART_INFO, buffer, 9))
     {
         return false;
     }
     
-    part_info = buffer[2] << 8 | buffer[3];
+    part_info = (buffer[2] << 8) | buffer[3];
     if (part_info != RF4463_PART_INFO)
     {
         return false;
@@ -349,47 +366,43 @@ bool rf4463_check_device()
 
 bool rf4463_check_cts()
 {
-    uint16_t timeout_counter;
-    timeout_counter = RF4463_CTS_TIMEOUT;
+    uint16_t timeout_counter = RF4463_CTS_TIMEOUT;
     
     while(timeout_counter--)
     {
-        GPIO_setOutputLowOnPin(RF4463_NSEL_PORT, RF4463_NSEL_PIN);
-        
-        rf4463_spi_write_byte(RF4463_CMD_READ_BUF);
-        
         if (rf4463_spi_read_byte() == RF4463_CTS_REPLY) // Read CTS
         {
-            GPIO_setOutputHighOnPin(RF4463_NSEL_PORT, RF4463_NSEL_PIN);
             return true;
         }
-        
-        GPIO_setOutputHighOnPin(RF4463_NSEL_PORT, RF4463_NSEL_PIN);
     }
     
     return	false;
 }
 
-bool rf4463_get_cmd(uint8_t length, uint8_t cmd, uint8_t *para_buf)
+bool rf4463_get_cmd(uint8_t cmd, uint8_t *para_buf, uint8_t length)
 {
+    GPIO_setOutputLowOnPin(RF4463_NSEL_PORT, RF4463_NSEL_PIN);
+    rf4463_spi_write_byte(cmd);                     // Send the command
     if (!rf4463_check_cts())
     {
+        GPIO_setOutputHighOnPin(RF4463_NSEL_PORT, RF4463_NSEL_PIN);
         return false;
     }
-    
-    GPIO_setOutputLowOnPin(RF4463_NSEL_PORT, RF4463_NSEL_PIN);
-    rf4463_spi_write_byte(cmd);    // Send the read command
+    delay_ms(10);
     GPIO_setOutputHighOnPin(RF4463_NSEL_PORT, RF4463_NSEL_PIN);
     
-    // Check if the RF4463 is ready
-    if (!rf4463_check_cts())
-    {
-        return false;
-    }
+    delay_ms(10);
     
     GPIO_setOutputLowOnPin(RF4463_NSEL_PORT, RF4463_NSEL_PIN);
-    rf4463_spi_write_byte(RF4463_CMD_READ_BUF);     // Turn to read command mode
+    rf4463_spi_write_byte(RF4463_CMD_READ_BUF);     // Send read buffer command to grab the command parameters
+    if (!rf4463_check_cts())
+    {
+        GPIO_setOutputHighOnPin(RF4463_NSEL_PORT, RF4463_NSEL_PIN);
+        return false;
+    }
+    delay_ms(10);
     rf4463_spi_read(para_buf, length);              // Read the parameters
+    delay_ms(10);
     GPIO_setOutputHighOnPin(RF4463_NSEL_PORT, RF4463_NSEL_PIN);
     
     return true;
@@ -402,22 +415,26 @@ bool rf4463_set_tx_power(uint8_t pwr)
         return false;
     }
     
-    uint8_t buffer[4] = {0x08, 0x00, 0x00, 0x3D};
+    uint8_t buffer[5];
+    buffer[0] = 0x08;
     buffer[1] = pwr;
+    buffer[2] = 0x00;
+    buffer[3] = 0x3D;
     
-    return rf4463_set_properties(RF4463_PROPERTY_PA_MODE, sizeof(buffer), buffer);
+    return rf4463_set_properties(RF4463_PROPERTY_PA_MODE, buffer, 4);
 }
 
-bool rf4463_set_properties(uint16_t start_property, uint8_t length, uint8_t *para_buf)
+bool rf4463_set_properties(uint16_t start_property, uint8_t *para_buf, uint8_t length)
 {
-    uint8_t buffer[4];
-    
     if (!rf4463_check_cts())
     {
         return false;
     }
     
-    buffer[0] = RF4463_CMD_SET_PROPERTY;
+    delay_ms(10);
+    
+    uint8_t buffer[5];
+    buffer[0] = RF4463_CMD_SET_PROPERTY;    // CMD
     buffer[1] = start_property >> 8;        // GROUP
     buffer[2] = length;                     // NUM_PROPS
     buffer[3] = start_property & 0xFF;      // START_PROP
@@ -425,6 +442,7 @@ bool rf4463_set_properties(uint16_t start_property, uint8_t length, uint8_t *par
     GPIO_setOutputLowOnPin(RF4463_NSEL_PORT, RF4463_NSEL_PIN);
     rf4463_spi_write(buffer, 4);            // Set start property and read length
     rf4463_spi_write(para_buf, length);     // Set parameters
+    delay_ms(10);
     GPIO_setOutputHighOnPin(RF4463_NSEL_PORT, RF4463_NSEL_PIN);
     
     return true;
@@ -437,7 +455,9 @@ bool rf4463_get_properties(uint16_t start_property, uint8_t length, uint8_t *par
         return false;
     }
     
-    uint8_t buffer[4];
+    delay_ms(10);
+    
+    uint8_t buffer[5];
     buffer[0] = RF4463_CMD_GET_PROPERTY;
     buffer[1] = start_property >> 8;    // GROUP
     buffer[2] = length;                 // NUM_PROPS
@@ -445,6 +465,7 @@ bool rf4463_get_properties(uint16_t start_property, uint8_t length, uint8_t *par
     
     GPIO_setOutputLowOnPin(RF4463_NSEL_PORT, RF4463_NSEL_PIN);
     rf4463_spi_write(buffer, 4);        // Set start property and read length
+    delay_ms(10);
     GPIO_setOutputHighOnPin(RF4463_NSEL_PORT, RF4463_NSEL_PIN);
     
     if (!rf4463_check_cts())
@@ -452,9 +473,12 @@ bool rf4463_get_properties(uint16_t start_property, uint8_t length, uint8_t *par
         return false;
     }
     
+    delay_ms(10);
+    
     GPIO_setOutputLowOnPin(RF4463_NSEL_PORT, RF4463_NSEL_PIN);
     rf4463_spi_write_byte(RF4463_CMD_READ_BUF);     // Turn to read command mode
     rf4463_spi_write(para_buf, length);             // Read parameters
+    delay_ms(10);
     GPIO_setOutputHighOnPin(RF4463_NSEL_PORT, RF4463_NSEL_PIN);
     
     return true;
@@ -462,6 +486,7 @@ bool rf4463_get_properties(uint16_t start_property, uint8_t length, uint8_t *par
 
 void rf4463_set_config(const uint8_t *parameters, uint16_t para_len)
 {
+    // Command buffer starts with the length of the command in RADIO_CONFIGURATION_DATA_ARRAY
     uint8_t cmd_len;
     uint16_t cmd;
     uint16_t pos;
@@ -477,14 +502,14 @@ void rf4463_set_config(const uint8_t *parameters, uint16_t para_len)
         cmd = parameters[pos++];                    // Get command
         memcpy(buffer, parameters + pos, cmd_len);  // Get parameters
         
-        rf4463_set_cmd(cmd_len, cmd, buffer);
+        rf4463_set_cmd(cmd, buffer, cmd_len);
         pos += cmd_len;
     }
 }
 
 bool rf4463_set_preamble_len(uint8_t len)
 {
-    return rf4463_set_properties(RF4463_PROPERTY_PREAMBLE_TX_LENGTH, 1, &len);
+    return rf4463_set_properties(RF4463_PROPERTY_PREAMBLE_TX_LENGTH, &len, 1);
 }
 
 bool rf4463_set_sync_word(uint8_t *sync_word, uint8_t len)
@@ -496,30 +521,41 @@ bool rf4463_set_sync_word(uint8_t *sync_word, uint8_t len)
     
     uint8_t buffer[5];
     buffer[0] = len - 1;
-    memcpy(buffer + 1, sync_word, len);
+    uint8_t i = 0;
+    for(i=0; i<len; i++)
+    {
+        buffer[i + 1] = sync_word[i];
+    }
     
-    return rf4463_set_properties(RF4463_PROPERTY_SYNC_CONFIG, sizeof(buffer), buffer);
+    return rf4463_set_properties(RF4463_PROPERTY_SYNC_CONFIG, buffer, len);
 }
 
 bool rf4463_set_gpio_mode(uint8_t gpio0_mode, uint8_t gpio1_mode)
 {
-    uint8_t buffer[] = {0x00, 0x00, 0x00, 0x00, 0x00, 0x00};
+    uint8_t buffer[7];
     buffer[0] = gpio0_mode;
     buffer[1] = gpio1_mode;
+    buffer[2] = 0x00;
+    buffer[3] = 0x00;
+    buffer[4] = 0x00;
+    buffer[5] = 0x00;
     
-    return rf4463_set_cmd(sizeof(buffer), RF4463_CMD_GPIO_PIN_CFG, buffer);
+    return rf4463_set_cmd(RF4463_CMD_GPIO_PIN_CFG, buffer, 6);
 }
 
-bool rf4463_set_cmd(uint8_t len, uint8_t cmd, uint8_t *para_buf)
+bool rf4463_set_cmd(uint8_t cmd, uint8_t *para_buf, uint8_t len)
 {
     if (!rf4463_check_cts())
     {
         return false;
     }
     
+    delay_ms(10);
+    
     GPIO_setOutputLowOnPin(RF4463_NSEL_PORT, RF4463_NSEL_PIN);
     rf4463_spi_write_byte(cmd);         // Send the command
     rf4463_spi_write(para_buf, len);    // Send the parameters
+    delay_ms(10);
     GPIO_setOutputHighOnPin(RF4463_NSEL_PORT, RF4463_NSEL_PIN);
     
     return true;
@@ -527,33 +563,51 @@ bool rf4463_set_cmd(uint8_t len, uint8_t cmd, uint8_t *para_buf)
 
 bool rf4463_set_tx_interrupt()
 {
-    uint8_t buffer[3] = {0x01, 0x20, 0x00};     // Enable PACKET_SENT interruption
+    uint8_t buffer[4];      // Enable PACKET_SENT interruption
     
-    return rf4463_set_properties(RF4463_PROPERTY_INT_CTL_ENABLE, 3, buffer);
+    buffer[0] = 0x01;
+    buffer[1] = 0x20;
+    buffer[2] = 0x00;
+    
+    return rf4463_set_properties(RF4463_PROPERTY_INT_CTL_ENABLE, buffer, 3);
 }
 
 bool rf4463_set_rx_interrupt()
 {
-    uint8_t buffer[3] = {0x03, 0x18, 0x00};     // Enable PACKET_RX interrution
+    uint8_t buffer[4];      // Enable PACKET_RX interrution
     
-    return rf4463_set_properties(RF4463_PROPERTY_INT_CTL_ENABLE, 3, buffer);
+    buffer[0] = 0x03;
+    buffer[1] = 0x18;
+    buffer[2] = 0x00;
+    
+    return rf4463_set_properties(RF4463_PROPERTY_INT_CTL_ENABLE, buffer, 3);
 }
 
 bool rf4463_clear_interrupts()
 {
-    uint8_t buffer[] = {0x00, 0x00, 0x00};
+    uint8_t buffer[4];
     
-    return rf4463_set_cmd(sizeof(buffer), RF4463_CMD_GET_INT_STATUS, buffer);
+    buffer[0] = 0x00;
+    buffer[1] = 0x00;
+    buffer[2] = 0x00;
+    
+    return rf4463_set_cmd(RF4463_CMD_GET_INT_STATUS, buffer, 3);
 }
 
 void rf4463_write_tx_fifo(uint8_t *data, uint8_t len)
 {
     
-    rf4463_set_properties(RF4463_PROPERTY_PKT_FIELD_2_LENGTH_7_0, sizeof(len), &len);
-    uint8_t buffer[len+1];
+    rf4463_set_properties(RF4463_PROPERTY_PKT_FIELD_2_LENGTH_7_0, &len, 1);
+    uint8_t buffer[128];
     buffer[0] = len;
-    memcpy(buffer+1, data, len);
-    rf4463_set_cmd(len+1, RF4463_CMD_TX_FIFO_WRITE, buffer);
+    
+    uint8_t i = 0;
+    for(i=0; i<len; i++)
+    {
+        buffer[i + 1] = data[i];
+    }
+    
+    rf4463_set_cmd(RF4463_CMD_TX_FIFO_WRITE, buffer, len + 1);
 }
 
 uint8_t rf4463_read_rx_fifo(uint8_t *data)
@@ -577,32 +631,41 @@ void rf4463_fifo_reset()
 {
     uint8_t data = 0x03;
     
-    rf4463_set_cmd(sizeof(data), RF4463_CMD_FIFO_INFO, &data);
+    rf4463_set_cmd(RF4463_CMD_FIFO_INFO, &data, 1);
 }
 
 void rf4463_enter_tx_mode()
 {
-    uint8_t buffer[] = {0x00, 0x30, 0x00, 0x00};
+    uint8_t buffer[5];
     
     buffer[0] = RF4463_FREQ_CHANNEL;
+    buffer[1] = 0x30;                   // TXCOMPLETE_STATE = Ready State; RETRANSMIT = 0 = No re-transmition; START = 0 = Start TX immediately
+    buffer[2] = 0x00;                   // TX packet length MSB (If equal zero, default length)
+    buffer[3] = 0x00;                   // TX packet length LSB (If equal zero, default length)
     
-    rf4463_set_cmd(4, RF4463_CMD_START_TX, buffer);
+    rf4463_set_cmd(RF4463_CMD_START_TX, buffer, 4);
 }
 
 void rf4463_enter_rx_mode()
 {
-    uint8_t buffer[] = {0x00, 0x00, 0x00, 0x00, 0x00, 0x08, 0x08};
+    uint8_t buffer[8];
     
     buffer[0] = RF4463_FREQ_CHANNEL;
+    buffer[1] = 0x00;
+    buffer[2] = 0x00;
+    buffer[3] = 0x00;
+    buffer[4] = 0x00;
+    buffer[5] = 0x08;
+    buffer[6] = 0x08;
     
-    rf4463_set_cmd(7, RF4463_CMD_START_RX, buffer);
+    rf4463_set_cmd(RF4463_CMD_START_RX, buffer, 7);
 }
 
 bool rf4463_enter_standby_mode()
 {
     uint8_t data = 0x01;
     
-    return rf4463_set_cmd(1, RF4463_CMD_CHANGE_STATE, &data);
+    return rf4463_set_cmd(RF4463_CMD_CHANGE_STATE, &data, 1);
 }
 
 bool rf4463_wait_nIRQ()
@@ -615,16 +678,6 @@ bool rf4463_wait_nIRQ()
     {
         return true;
     }
-}
-
-void rf4463_turn_on_pa()
-{
-    GPIO_setOutputLowOnPin(RF4463_SDN_PORT, RF4463_SDN_PIN);
-}
-
-void rf4463_turn_off_pa()
-{
-    GPIO_setOutputHighOnPin(RF4463_SDN_PORT, RF4463_SDN_PIN);
 }
 
 //! \} End of rf4463 group

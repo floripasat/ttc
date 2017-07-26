@@ -92,13 +92,13 @@ static uint8_t rf4463_spi_init();
 static void rf4463_reg_config();
 
 /**
- * \fn rf4463_reset
+ * \fn rf4463_power_on_reset
  * 
- * \brief Resets the RF4463 module.
+ * \brief Power on reset procedure of the RF4463 module.
  * 
  * \return None
  */
-void rf4463_reset();
+void rf4463_power_on_reset();
 
 /**
  * \fn rf4463_tx_packet
@@ -226,15 +226,15 @@ bool rf4463_set_tx_power(uint8_t pwr);
  * \brief 
  * 
  * \param start_property
- * \param length
  * \param para_buf
+ * \param length
  * 
  * \return It can return:
  *              -\b true 
  *              -\b false 
  *              .
  */
-bool rf4463_set_properties(uint16_t start_property, uint8_t length, uint8_t *para_buf);
+bool rf4463_set_properties(uint16_t start_property, uint8_t *para_buf, uint8_t length);
 
 /**
  * \fn rf4463_get_properties
@@ -309,32 +309,32 @@ bool rf4463_set_gpio_mode(uint8_t gpio0_mode, uint8_t gpio1_mode);
  * 
  * \brief 
  * 
- * \param len
  * \param cmd
  * \param para_buf
+ * \param len
  * 
  * \return It can return:
  *              -\b true 
  *              -\b false 
  *              .
  */
-bool rf4463_set_cmd(uint8_t len, uint8_t cmd, uint8_t *para_buf);
+bool rf4463_set_cmd(uint8_t cmd, uint8_t *para_buf, uint8_t len);
 
 /**
  * \fn rf4463_get_cmd
  * 
  * \brief Reads a command.
  * 
- * \param length is the length of the parameter to read.
  * \param cmd is the command to read.
  * \param para_buf is buffer to store the parameters.
+ * \param length is the length of the parameter to read.
  * 
  * \return It can return:
  *              -\b true if no error occurs.
  *              -\b false if an error occurs.
  *              .
  */
-bool rf4463_get_cmd(uint8_t length, uint8_t cmd, uint8_t *para_buf);
+bool rf4463_get_cmd(uint8_t cmd, uint8_t *para_buf, uint8_t length);
 
 /**
  * \fn rf4463_set_tx_interrupt
@@ -445,24 +445,6 @@ bool rf4463_enter_standby_mode();
  *              .
  */
 bool rf4463_wait_nIRQ();
-
-/**
- * \fn rf4463_turn_on_pa
- * 
- * \brief Turns on the PA.
- * 
- * \return None
- */
-void rf4463_turn_on_pa();
-
-/**
- * \fn rf4463_turn_off_pa
- * 
- * \brief Turns off the PA.
- * 
- * \return None
- */
-void rf4463_turn_off_pa();
 
 #endif // RF4463_H_
 
