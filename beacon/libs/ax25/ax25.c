@@ -112,29 +112,35 @@ void ax25_UpdateDataFromPacket(AX25_Packet *ax25_packet, uint8_t *new_data, uint
 
 void ax25_Packet2String(AX25_Packet *ax25_packet, uint8_t *str_packet, uint16_t data_size)
 {
-    str_packet[0] = ax25_packet->start_flag;
+    uint16_t j = 0;
+    
+    str_packet[j++] = ax25_packet->start_flag;
     
     uint8_t i = 0;
-    for(i=0;i<7;i++)
-        str_packet[i+1] = ax25_packet->dst_adr.callsign[i];
-    
-    str_packet[7] = ax25_packet->dst_adr.ssid;
-    
-    for(i=0;i<7;i++)
-        str_packet[i+8] = ax25_packet->src_adr.callsign[i];
-    
-    str_packet[14] = ax25_packet->src_adr.ssid;
-    str_packet[15] = ax25_packet->control_bits;
-    str_packet[16] = ax25_packet->protocol_id;
-    
-    for(i=0;i<data_size;i++)
+    for(i=0; i<7; i++)
     {
-        str_packet[i+17] = ax25_packet->data[i];
+        str_packet[j++] = ax25_packet->dst_adr.callsign[i];
     }
     
-    str_packet[16 + data_size + 1] = (uint8_t)((ax25_packet->fcs & 0xFF00) >> 8);    // CRC16 MSB
-    str_packet[16 + data_size + 2] = (uint8_t)(ax25_packet->fcs & 0x00FF);           // CRC16 LSB
-    str_packet[16 + data_size + 3] = ax25_packet->end_flag;
+    str_packet[j++] = ax25_packet->dst_adr.ssid;
+    
+    for(i=0; i<7; i++)
+    {
+        str_packet[j++] = ax25_packet->src_adr.callsign[i];
+    }
+    
+    str_packet[j++] = ax25_packet->src_adr.ssid;
+    str_packet[j++] = ax25_packet->control_bits;
+    str_packet[j++] = ax25_packet->protocol_id;
+    
+    for(i=0; i<data_size; i++)
+    {
+        str_packet[j++] = ax25_packet->data[i];
+    }
+    
+    str_packet[j++] = (uint8_t)((ax25_packet->fcs & 0xFF00) >> 8);  // CRC16 MSB
+    str_packet[j++] = (uint8_t)(ax25_packet->fcs & 0x00FF);         // CRC16 LSB
+    str_packet[j++] = ax25_packet->end_flag;
 }
 
 //! \} End of ax25 implementation group

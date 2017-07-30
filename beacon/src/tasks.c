@@ -56,60 +56,78 @@ void task_transmit_packet(Beacon *beacon_ptr)
     
     task_generate_packets(ngham_pkt_str, &ngham_pkt_str_len, ax25_pkt_str, &ax25_pkt_str_len);
     
-#if BEACON_RF_SWITCH != HW_NONE
-    rf_switch_enable_beacon();
-#endif // BEACON_RF_SWITCH
+#if BEACON_PACKET_PROTOCOL & PACKET_NGHAM
+    #if BEACON_RF_SWITCH != HW_NONE
+        rf_switch_enable_beacon();
+    #endif // BEACON_RF_SWITCH
 
-#if BEACON_PA != HW_NONE
-    pa_enable();
-#endif // BEACON_PA
-    
-    radio_write_data(ngham_pkt_str, ngham_pkt_str_len);
+    #if BEACON_PA != HW_NONE
+        pa_enable();
+    #endif // BEACON_PA
+        
+        uint8_t buffer[128];
+        uint8_t i = 0;
+        for(i=0; i<ngham_pkt_str_len-8; i++)
+        {
+            buffer[i] = ngham_pkt_str[i+8];     // Removing preamble and sync word from the NGHam packet
+        }
+        
+        //radio_write_data(ngham_pkt_str, ngham_pkt_str_len);
+        radio_write_data(buffer, ngham_pkt_str_len-8);
 
-#if BEACON_PA != HW_NONE
-    pa_disable();
-#endif // BEACON_PA
+    #if BEACON_PA != HW_NONE
+        pa_disable();
+    #endif // BEACON_PA
 
-#if BEACON_RF_SWITCH != HW_NONE
-    rf_switch_disable_beacon();
-#endif // BEACON_RF_SWITCH
-    
-    // Wait for AX25 packet transmission to end
-    delay_ms((uint16_t)(1.2*sizeof(ax25_pkt_str)*1000/1200/8));
-    
-#if BEACON_RF_SWITCH != HW_NONE
-    rf_switch_enable_beacon();
-#endif // BEACON_RF_SWITCH
+    #if BEACON_RF_SWITCH != HW_NONE
+        rf_switch_disable_beacon();
+    #endif // BEACON_RF_SWITCH
+#endif // PACKET_NGHAM
 
-#if BEACON_PA != HW_NONE
-    pa_enable();
-#endif // BEACON_PA
-    
-    radio_write_data(ax25_pkt_str, ax25_pkt_str_len);
+#if BEACON_PACKET_PROTOCOL & PACKET_AX25
+        // Wait for AX25 packet transmission to end
+        delay_ms((uint16_t)(1.2*sizeof(ax25_pkt_str)*1000/1200/8));
 
-#if BEACON_PA != HW_NONE
-    pa_disable();
-#endif // BEACON_PA
+    #if BEACON_RF_SWITCH != HW_NONE
+        rf_switch_enable_beacon();
+    #endif // BEACON_RF_SWITCH
 
-#if BEACON_RF_SWITCH != HW_NONE
-    rf_switch_disable_beacon();
-#endif // BEACON_RF_SWITCH
+    #if BEACON_PA != HW_NONE
+        pa_enable();
+    #endif // BEACON_PA
+
+    #if BEACON_PACKET_PROTOCOL & PACKET_AX25    
+        radio_write_data(ax25_pkt_str, ax25_pkt_str_len);
+    #endif // PACKET_AX25
+
+    #if BEACON_PA != HW_NONE
+        pa_disable();
+    #endif // BEACON_PA
+
+    #if BEACON_RF_SWITCH != HW_NONE
+        rf_switch_disable_beacon();
+    #endif // BEACON_RF_SWITCH
+#endif // PACKET_AX25
 
     beacon_ptr->flags.transmitting = false;
 }
 
 void task_generate_packets(uint8_t *ngham_pkt_str, uint16_t *ngham_pkt_str_len, uint8_t *ax25_pkt_str, uint16_t *ax25_pkt_str_len)
-{
-    NGHam_TX_Packet ngham_packet;
-    AX25_Packet ax25_packet;
-    
+{    
     task_generate_packet_payload(&beacon);
     
+#if BEACON_PACKET_PROTOCOL & PACKET_NGHAM
+    NGHam_TX_Packet ngham_packet;
     ngham_TxPktGen(&ngham_packet, beacon.packet_payload.payload, beacon.packet_payload.length);
     ngham_Encode(&ngham_packet, ngham_pkt_str, ngham_pkt_str_len);
+#endif // PACKET_NGHAM
+
+#if BEACON_PACKET_PROTOCOL & PACKET_AX25
+    AX25_Packet ax25_packet;
     
     ax25_BeaconPacketGen(&ax25_packet, beacon.packet_payload.payload, beacon.packet_payload.length);
     ax25_Packet2String(&ax25_packet, ax25_pkt_str, *ax25_pkt_str_len);
+#endif // PACKET_AX25
 }
 
 void task_enter_low_power_mode()
@@ -258,132 +276,140 @@ void task_generate_packet_payload(Beacon *b)
     debug_print_msg("Generating packet payload from ");
 #endif // DEBUG_MODE
 
-    uint8_t i = 0;
     uint8_t pkt_payload_counter = 0;
+
+#if BEACON_PACKET_PAYLOAD_CONTENT & PAYLOAD_SAT_ID
+    uint8_t i = 0;
     for(i=0; i<sizeof(PKT_PAYLOAD_SAT_ID)-1; i++)
     {
         b->packet_payload.payload[pkt_payload_counter++] = PKT_PAYLOAD_SAT_ID[i];
     }
+#endif // PAYLOAD_SAT_ID
     
     if (b->obdh.crc_fails == 0)
     {
-#if BEACON_MODE == DEBUG_MODE
-        debug_print_msg("OBDH data... ");
-#endif // DEBUG_MODE
-        
-        // Battery 1 Voltage
-        memcpy(b->packet_payload.payload,
-               b->obdh.data.bat1_voltage,
-               OBDH_COM_BAT1_VOLTAGE_LEN*sizeof(uint8_t));
-        
-        // Battery 2 Voltage
-        memcpy(b->packet_payload.payload + OBDH_COM_BAT2_VOLTAGE_LEN,
-               b->obdh.data.bat2_voltage,
-               OBDH_COM_BAT2_VOLTAGE_LEN*sizeof(uint8_t));
-        
-        // Battery 1 Temperature
-        memcpy(b->packet_payload.payload + OBDH_COM_BAT1_TEMPERATURE_LEN,
-               b->obdh.data.bat1_temperature,
-               OBDH_COM_BAT1_TEMPERATURE_LEN*sizeof(uint8_t));
-        
-        // Battery 2 Temperature
-        memcpy(b->packet_payload.payload + OBDH_COM_BAT2_TEMPERATURE_LEN,
-               b->obdh.data.bat2_temperature,
-               OBDH_COM_BAT2_TEMPERATURE_LEN*sizeof(uint8_t));
-        
-        // Total Charge of Batteries
-        memcpy(b->packet_payload.payload + OBDH_COM_BAT_CHARGE_LEN,
-               b->obdh.data.bat_charge,
-               OBDH_COM_BAT_CHARGE_LEN*sizeof(uint8_t));
-        
-        // Solar Panels Currents
-        memcpy(b->packet_payload.payload + OBDH_COM_SOLAR_PANELS_CURRENTS_LEN,
-               b->obdh.data.solar_panels_currents,
-               OBDH_COM_SOLAR_PANELS_CURRENTS_LEN*sizeof(uint8_t));
-        
-        // Solar Panels Voltages
-        memcpy(b->packet_payload.payload + OBDH_COM_SOLAR_PANELS_VOLTAGES_LEN,
-               b->obdh.data.solar_panels_voltages,
-               OBDH_COM_SOLAR_PANELS_VOLTAGES_LEN*sizeof(uint8_t));
-        
-        // Satellite Status
-        memcpy(b->packet_payload.payload + OBDH_COM_SAT_STATUS_LEN,
-               b->obdh.data.sat_status,
-               OBDH_COM_SAT_STATUS_LEN*sizeof(uint8_t));
-        
-        // IMU Data
-        memcpy(b->packet_payload.payload + OBDH_COM_IMU_LEN,
-               b->obdh.data.imu,
-               OBDH_COM_IMU_LEN*sizeof(uint8_t));
-        
-        // System Time
-        memcpy(b->packet_payload.payload + OBDH_COM_SYSTEM_TIME_LEN,
-               b->obdh.data.system_time,
-               OBDH_COM_SYSTEM_TIME_LEN*sizeof(uint8_t));
-        
-        // OBDH Reset Counter
-        memcpy(b->packet_payload.payload + OBDH_COM_RESET_COUNTER_LEN,
-               b->obdh.data.reset_counter,
-               OBDH_COM_RESET_COUNTER_LEN*sizeof(uint8_t));
-        
-        b->packet_payload.length = OBDH_COM_DATA_PKT_LEN;
+#if BEACON_PACKET_PAYLOAD_CONTENT & PAYLOAD_OBDH_DATA
+    #if BEACON_MODE == DEBUG_MODE
+            debug_print_msg("OBDH data... ");
+    #endif // DEBUG_MODE
+            
+            // Battery 1 Voltage
+            memcpy(b->packet_payload.payload,
+                   b->obdh.data.bat1_voltage,
+                   OBDH_COM_BAT1_VOLTAGE_LEN*sizeof(uint8_t));
+            
+            // Battery 2 Voltage
+            memcpy(b->packet_payload.payload + OBDH_COM_BAT2_VOLTAGE_LEN,
+                   b->obdh.data.bat2_voltage,
+                   OBDH_COM_BAT2_VOLTAGE_LEN*sizeof(uint8_t));
+            
+            // Battery 1 Temperature
+            memcpy(b->packet_payload.payload + OBDH_COM_BAT1_TEMPERATURE_LEN,
+                   b->obdh.data.bat1_temperature,
+                   OBDH_COM_BAT1_TEMPERATURE_LEN*sizeof(uint8_t));
+            
+            // Battery 2 Temperature
+            memcpy(b->packet_payload.payload + OBDH_COM_BAT2_TEMPERATURE_LEN,
+                   b->obdh.data.bat2_temperature,
+                   OBDH_COM_BAT2_TEMPERATURE_LEN*sizeof(uint8_t));
+            
+            // Total Charge of Batteries
+            memcpy(b->packet_payload.payload + OBDH_COM_BAT_CHARGE_LEN,
+                   b->obdh.data.bat_charge,
+                   OBDH_COM_BAT_CHARGE_LEN*sizeof(uint8_t));
+            
+            // Solar Panels Currents
+            memcpy(b->packet_payload.payload + OBDH_COM_SOLAR_PANELS_CURRENTS_LEN,
+                   b->obdh.data.solar_panels_currents,
+                   OBDH_COM_SOLAR_PANELS_CURRENTS_LEN*sizeof(uint8_t));
+            
+            // Solar Panels Voltages
+            memcpy(b->packet_payload.payload + OBDH_COM_SOLAR_PANELS_VOLTAGES_LEN,
+                   b->obdh.data.solar_panels_voltages,
+                   OBDH_COM_SOLAR_PANELS_VOLTAGES_LEN*sizeof(uint8_t));
+            
+            // Satellite Status
+            memcpy(b->packet_payload.payload + OBDH_COM_SAT_STATUS_LEN,
+                   b->obdh.data.sat_status,
+                   OBDH_COM_SAT_STATUS_LEN*sizeof(uint8_t));
+            
+            // IMU Data
+            memcpy(b->packet_payload.payload + OBDH_COM_IMU_LEN,
+                   b->obdh.data.imu,
+                   OBDH_COM_IMU_LEN*sizeof(uint8_t));
+            
+            // System Time
+            memcpy(b->packet_payload.payload + OBDH_COM_SYSTEM_TIME_LEN,
+                   b->obdh.data.system_time,
+                   OBDH_COM_SYSTEM_TIME_LEN*sizeof(uint8_t));
+            
+            // OBDH Reset Counter
+            memcpy(b->packet_payload.payload + OBDH_COM_RESET_COUNTER_LEN,
+                   b->obdh.data.reset_counter,
+                   OBDH_COM_RESET_COUNTER_LEN*sizeof(uint8_t));
+            
+            pkt_payload_counter += OBDH_COM_DATA_PKT_LEN;
+#endif // PAYLOAD_OBDH_DATA
     }
     else if (b->eps.crc_fails == 0)
     {
-#if BEACON_MODE == DEBUG_MODE
-        debug_print_msg("EPS data... ");
-#endif // DEBUG_MODE
-        
-        // Battery 1 Voltage
-        memcpy(b->packet_payload.payload + EPS_COM_BAT1_VOLTAGE_LEN,
-               b->eps.data.bat1_voltage,
-               EPS_COM_BAT1_VOLTAGE_LEN*sizeof(uint8_t));
-        
-        // Battery 2 Voltage
-        memcpy(b->packet_payload.payload + EPS_COM_BAT2_VOLTAGE_LEN,
-               b->eps.data.bat2_voltage,
-               EPS_COM_BAT2_VOLTAGE_LEN*sizeof(uint8_t));
-        
-        // Battery 1 Temperature
-        memcpy(b->packet_payload.payload + EPS_COM_BAT1_TEMPERATURE_LEN,
-               b->eps.data.bat1_temperature,
-               EPS_COM_BAT1_TEMPERATURE_LEN*sizeof(uint8_t));
-        
-        // Battery 2 Temperature
-        memcpy(b->packet_payload.payload + EPS_COM_BAT2_TEMPERATURE_LEN,
-               b->eps.data.bat2_temperature,
-               EPS_COM_BAT2_TEMPERATURE_LEN*sizeof(uint8_t));
-        
-        // Total Charge of Batteries
-        memcpy(b->packet_payload.payload + EPS_COM_BAT_CHARGE_LEN,
-               b->eps.data.bat_charge,
-               EPS_COM_BAT_CHARGE_LEN*sizeof(uint8_t));
-        
-        // Solar Panels Currents
-        memcpy(b->packet_payload.payload + EPS_COM_SOLAR_PANELS_CURRENTS_LEN,
-               b->eps.data.solar_panels_currents,
-               EPS_COM_SOLAR_PANELS_CURRENTS_LEN*sizeof(uint8_t));
-        
-        // Solar Panels Voltages
-        memcpy(b->packet_payload.payload + EPS_COM_SOLAR_PANELS_VOLTAGES_LEN,
-               b->eps.data.solar_panels_voltages,
-               EPS_COM_SOLAR_PANELS_VOLTAGES_LEN*sizeof(uint8_t));
-        
-        // Satellite Energy Level
-        memcpy(b->packet_payload.payload + EPS_COM_ENERGY_LEVEL_LEN,
-               &b->eps.data.energy_level,
-               EPS_COM_ENERGY_LEVEL_LEN*sizeof(uint8_t));
-        
-        b->packet_payload.length = EPS_COM_DATA_PKT_LEN;
+#if BEACON_PACKET_PAYLOAD_CONTENT & PAYLOAD_EPS_DATA
+    #if BEACON_MODE == DEBUG_MODE
+            debug_print_msg("EPS data... ");
+    #endif // DEBUG_MODE
+            
+            // Battery 1 Voltage
+            memcpy(b->packet_payload.payload + EPS_COM_BAT1_VOLTAGE_LEN,
+                   b->eps.data.bat1_voltage,
+                   EPS_COM_BAT1_VOLTAGE_LEN*sizeof(uint8_t));
+            
+            // Battery 2 Voltage
+            memcpy(b->packet_payload.payload + EPS_COM_BAT2_VOLTAGE_LEN,
+                   b->eps.data.bat2_voltage,
+                   EPS_COM_BAT2_VOLTAGE_LEN*sizeof(uint8_t));
+            
+            // Battery 1 Temperature
+            memcpy(b->packet_payload.payload + EPS_COM_BAT1_TEMPERATURE_LEN,
+                   b->eps.data.bat1_temperature,
+                   EPS_COM_BAT1_TEMPERATURE_LEN*sizeof(uint8_t));
+            
+            // Battery 2 Temperature
+            memcpy(b->packet_payload.payload + EPS_COM_BAT2_TEMPERATURE_LEN,
+                   b->eps.data.bat2_temperature,
+                   EPS_COM_BAT2_TEMPERATURE_LEN*sizeof(uint8_t));
+            
+            // Total Charge of Batteries
+            memcpy(b->packet_payload.payload + EPS_COM_BAT_CHARGE_LEN,
+                   b->eps.data.bat_charge,
+                   EPS_COM_BAT_CHARGE_LEN*sizeof(uint8_t));
+            
+            // Solar Panels Currents
+            memcpy(b->packet_payload.payload + EPS_COM_SOLAR_PANELS_CURRENTS_LEN,
+                   b->eps.data.solar_panels_currents,
+                   EPS_COM_SOLAR_PANELS_CURRENTS_LEN*sizeof(uint8_t));
+            
+            // Solar Panels Voltages
+            memcpy(b->packet_payload.payload + EPS_COM_SOLAR_PANELS_VOLTAGES_LEN,
+                   b->eps.data.solar_panels_voltages,
+                   EPS_COM_SOLAR_PANELS_VOLTAGES_LEN*sizeof(uint8_t));
+            
+            // Satellite Energy Level
+            memcpy(b->packet_payload.payload + EPS_COM_ENERGY_LEVEL_LEN,
+                   &b->eps.data.energy_level,
+                   EPS_COM_ENERGY_LEVEL_LEN*sizeof(uint8_t));
+            
+            pkt_payload_counter += EPS_COM_DATA_PKT_LEN;
+#endif // PAYLOAD_EPS_DATA
     }
     else
     {
 #if BEACON_MODE == DEBUG_MODE
         debug_print_msg("no data... ");
 #endif // DEBUG_MODE
-        b->packet_payload.length = pkt_payload_counter;
     }
-
+    
+    b->packet_payload.length = pkt_payload_counter;
+    
 #if BEACON_MODE == DEBUG_MODE
     debug_print_msg("DONE!\n");
 #endif // DEBUG_MODE

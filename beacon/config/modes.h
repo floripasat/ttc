@@ -43,6 +43,14 @@
 #define TEST_MODE                   1
 #define FLIGHT_MODE                 2
 
+#define PAYLOAD_SAT_ID              1
+#define PAYLOAD_OBDH_DATA           2
+#define PAYLOAD_EPS_DATA            4
+
+#define PACKET_NGHAM                1
+#define PACKET_AX25                 2
+#define PACKET_RAW                  4
+
 #endif // MODES_H_
 
 //! \} End of modes group
