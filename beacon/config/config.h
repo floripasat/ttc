@@ -45,29 +45,29 @@
 #include "pinmap.h"
 #include "hardware.h"
 
-//###########################################
-//-- SATELLITE DATA -------------------------
-//###########################################
+//########################################################
+//-- SATELLITE DATA --------------------------------------
+//########################################################
 
-#define SATELLITE_ID                "FLORIPASAT"
+#define SATELLITE_ID                        "FLORIPASAT"
 
-#define SATELLITE_ENERGY_LEVEL_1    0
-#define SATELLITE_ENERGY_LEVEL_2    1
-#define SATELLITE_ENERGY_LEVEL_3    2
-#define SATELLITE_ENERGY_LEVEL_4    3
-#define SATELLITE_ENERGY_LEVEL_5    4
+#define SATELLITE_ENERGY_LEVEL_1            0
+#define SATELLITE_ENERGY_LEVEL_2            1
+#define SATELLITE_ENERGY_LEVEL_3            2
+#define SATELLITE_ENERGY_LEVEL_4            3
+#define SATELLITE_ENERGY_LEVEL_5            4
 
-//###########################################
-//-- BEACON OPERATION -----------------------
-//###########################################
+//########################################################
+//-- BEACON OPERATION ------------------------------------
+//########################################################
 
-#define BEACON_MODE                 TEST_MODE
+#define BEACON_MODE                         TEST_MODE
 
-#define BEACON_TX_PERIOD_SEC_L1     10
-#define BEACON_TX_PERIOD_SEC_L2     10
-#define BEACON_TX_PERIOD_SEC_L3     20
-#define BEACON_TX_PERIOD_SEC_L4     30
-#define BEACON_TX_PERIOD_SEC_L5     30
+#define BEACON_TX_PERIOD_SEC_L1             10
+#define BEACON_TX_PERIOD_SEC_L2             10
+#define BEACON_TX_PERIOD_SEC_L3             20
+#define BEACON_TX_PERIOD_SEC_L4             30
+#define BEACON_TX_PERIOD_SEC_L5             30
 
 #define BEACON_HIBERNATION_PERIOD_SECONDS   0
 #define BEACON_HIBERNATION_PERIOD_MINUTES   0
@@ -77,58 +77,66 @@
 #define BEACON_ANTENNA_DEPLOY_SLEEP_MIN     45
 #define BEACON_ANTENNA_DEPLOY_SLEEP_HOUR    0
 
-//###########################################
-//-- RADIO ----------------------------------
-//###########################################
+//########################################################
+//-- BEACON PACKETS --------------------------------------
+//########################################################
 
-#define BEACON_RADIO                RF4463F30
-#define BEACON_RADIO_SPI_CLK        100000
+#define BEACON_PACKET_PAYLOAD_CONTENT       (PAYLOAD_SAT_ID)
 
-//###########################################
-//-- PA -------------------------------------
-//###########################################
+#define BEACON_PACKET_PROTOCOL              (PACKET_NGHAM)
 
-#define BEACON_PA                   HW_NONE
+//########################################################
+//-- RADIO -----------------------------------------------
+//########################################################
 
-#define BEACON_PA_VREF              3.3
+#define BEACON_RADIO                        RF4463F30
+#define BEACON_RADIO_SPI_CLK                100000
 
-#define BEACON_PA_DAC_BASE_ADDRESS  DAC12_A_BASE
-#define BEACON_PA_DAC_SUBMODULE     DAC12_A_SUBMODULE_0
+//########################################################
+//-- PA --------------------------------------------------
+//########################################################
 
-//###########################################
-//-- RF SWITCH ------------------------------
-//###########################################
+#define BEACON_PA                           HW_NONE
 
-#define BEACON_RF_SWITCH            HW_NONE
+#define BEACON_PA_VREF                      3.3
 
-//###########################################
-//-- ANTENNA --------------------------------
-//###########################################
+#define BEACON_PA_DAC_BASE_ADDRESS          DAC12_A_BASE
+#define BEACON_PA_DAC_SUBMODULE             DAC12_A_SUBMODULE_0
 
-#define BEACON_ANTENNA              PASSIVE_ANTENNA
-#define BEACON_ANTENNA_I2C_CLK      100000
+//########################################################
+//-- RF SWITCH -------------------------------------------
+//########################################################
 
-//###########################################
-//-- CPU ------------------------------------
-//###########################################
+#define BEACON_RF_SWITCH                    HW_NONE
 
-#define BEACON_CPU_FREQ_HZ          16000000
-#define BEACON_CPU_FREQ_KHZ         (BEACON_CPU_FREQ_HZ/1000)
-#define BEACON_CPU_FREQ_MHZ         (BEACON_CPU_FREQ_HZ/1000000)
+//########################################################
+//-- ANTENNA ---------------------------------------------
+//########################################################
 
-//###########################################
-//-- WATCHDOG -------------------------------
-//###########################################
+#define BEACON_ANTENNA                      PASSIVE_ANTENNA
+#define BEACON_ANTENNA_I2C_CLK              100000
 
-#define WATCHDOG_BASE_ADDRESS       WDT_A_BASE
-#define WATCHDOG_CLK_SOURCE         WDT_A_CLOCKSOURCE_ACLK
-#define WATCHDOG_CLK_DIVIDER        WDT_A_CLOCKDIVIDER_32K  // 3 seconds WDT
+//########################################################
+//-- CPU -------------------------------------------------
+//########################################################
 
-//###########################################
-//-- TIMER ----------------------------------
-//###########################################
+#define BEACON_CPU_FREQ_HZ                  16000000
+#define BEACON_CPU_FREQ_KHZ                 (BEACON_CPU_FREQ_HZ/1000)
+#define BEACON_CPU_FREQ_MHZ                 (BEACON_CPU_FREQ_HZ/1000000)
 
-#define TIMER_BASE_ADDRESS          TIMER_A1_BASE
+//########################################################
+//-- WATCHDOG --------------------------------------------
+//########################################################
+
+#define WATCHDOG_BASE_ADDRESS               WDT_A_BASE
+#define WATCHDOG_CLK_SOURCE                 WDT_A_CLOCKSOURCE_ACLK
+#define WATCHDOG_CLK_DIVIDER                WDT_A_CLOCKDIVIDER_512K  // 16 seconds WDT
+
+//########################################################
+//-- TIMER -----------------------------------------------
+//########################################################
+
+#define TIMER_BASE_ADDRESS                  TIMER_A1_BASE
 
 #endif // CONFIG_H_
 

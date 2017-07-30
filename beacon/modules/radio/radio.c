@@ -43,7 +43,6 @@
     #include <drivers/radio/si446x/si446x.h>
 #elif BEACON_RADIO == RF4463F30
     #include <drivers/radio/rf4463/rf4463.h>
-    #include <modules/time/delay.h>
 #elif BEACON_RADIO == UART_SIM
     #include <drivers/radio/uart_radio_sim/uart_radio_sim.h>
 #endif // BEACON_RADIO
@@ -70,7 +69,6 @@ uint8_t radio_init()
     if (init_status == STATUS_SUCCESS)
     {
         rf4463_enter_standby_mode();
-        delay_ms(100);
         return STATUS_SUCCESS;
     }
     else
@@ -89,7 +87,7 @@ void radio_reset()
 #elif BEACON_RADIO == SI4063
     
 #elif BEACON_RADIO == RF4463F30
-    rf4463_power_on_reset();
+    rf4463_init();
 #elif BEACON_RADIO == UART_SIM
     return;
 #endif // BEACON_RADIO

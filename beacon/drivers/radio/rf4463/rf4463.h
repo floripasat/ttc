@@ -69,18 +69,6 @@ uint8_t rf4463_init();
 static void rf4463_gpio_init();
 
 /**
- * \fn rf4463_spi_init
- * 
- * \brief RF4463 SPI interface initialization.
- * 
- * \return Initialization status. It can be:
- *              -\b STATUS_SUCCESS
- *              -\b STATUS_FAIL
- *              .
- */
-static uint8_t rf4463_spi_init();
-
-/**
  * \fn rf4463_reg_config
  * 
  * \brief Configures the registers of the RF4463 device.
@@ -137,50 +125,6 @@ uint8_t rf4463_rx_packet(uint8_t *rx_buf);
  *              .
  */
 bool rf4463_rx_init();
-
-/**
- * \fn rf4463_spi_write_byte
- * 
- * \brief Transfers a byte through the SPI interface.
- * 
- * \param byte is the byte to be transferes.
- * 
- * \return None
- */
-void rf4463_spi_write_byte(uint8_t byte);
-
-/**
- * \fn rf4463_spi_write
- * 
- * \brief Transfers an array through the SPI interface.
- * 
- * \param data is an array to be  transfered.
- * \param size is the size of the data to be transfered.
- * 
- * \return None
- */
-void rf4463_spi_write(uint8_t *data, uint16_t size);
-
-/**
- * \fn rf4463_spi_read_byte
- * 
- * \brief Reads a byte from the SPI interface.
- * 
- * \return The byte read from the SPI interface.
- */
-uint8_t rf4463_spi_read_byte();
-
-/**
- * \fn rf4463_spi_read
- * 
- * \brief Reads data from the SPI interface
- * 
- * \param data is a pointer to where the incoming data will be stored.
- * \param size is how many bytes will be read from the SPI interface.
- * 
- * \return None
- */
-void rf4463_spi_read(uint8_t *data, uint16_t size);
 
 /**
  * \fn rf4463_check_device

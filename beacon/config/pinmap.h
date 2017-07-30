@@ -53,8 +53,8 @@
 //##################################################
 
 #define RADIO_SPI_PORT              GPIO_PORT_P2
-#define RADIO_SPI_USCI              USCI_A
-#define RADIO_SPI_BASE_ADDRESS      USCI_A0_BASE
+#define RADIO_SPI_USCI              USCI_B
+#define RADIO_SPI_BASE_ADDRESS      USCI_B0_BASE
 
 #define RADIO_SPI_NSEL_PORT         GPIO_PORT_P2
 #define RADIO_SPI_NSEL_PIN          GPIO_PIN0
