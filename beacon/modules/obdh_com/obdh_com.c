@@ -186,7 +186,10 @@ static void obdh_com_receive_cmd(OBDH *obdh)
             debug_print_msg("Shutdown command received!\n");
 #endif // DEBUG_MODE
             obdh_com_send_data(OBDH_COM_SHUTDOWN_ACK);
-            task_enter_hibernation();
+            if (beacon.flags.hibernation == false)
+            {
+                task_enter_hibernation();
+            }
             break;
         case OBDH_COM_CMD_RF_MUTEX:
 #if BEACON_MODE == DEBUG_MODE
