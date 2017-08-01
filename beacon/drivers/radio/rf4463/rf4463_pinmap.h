@@ -70,6 +70,9 @@
 #define RF4463_GPIO1_PORT               RADIO_GPIO_1_PORT
 #define RF4463_GPIO1_PIN                RADIO_GPIO_1_PIN
 
+#define RF4463_POWER_ENABLE_PORT        RADIO_POWER_ENABLE_PORT
+#define RF4463_POWER_ENABLE_PIN         RADIO_POWER_ENABLE_PIN
+
 #endif // RF4463_PINMAP_H_
 
 //! \} End of rf4463 group

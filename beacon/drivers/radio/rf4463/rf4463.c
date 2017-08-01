@@ -80,6 +80,9 @@ uint8_t rf4463_init()
 
 static void rf4463_gpio_init()
 {
+    GPIO_setAsOutputPin(RF4463_POWER_ENABLE_PORT, RF4463_POWER_ENABLE_PIN);
+    GPIO_setOutputHighOnPin(RF4463_POWER_ENABLE_PORT, RF4463_POWER_ENABLE_PIN);     // Enable RF4463 power
+    
     GPIO_setAsOutputPin(RF4463_SDN_PORT, RF4463_SDN_PIN);
     GPIO_setAsInputPin(RF4463_nIRQ_PORT, RF4463_nIRQ_PIN);
     
