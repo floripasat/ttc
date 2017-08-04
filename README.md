@@ -3,9 +3,9 @@
 
 This module is divided in two submodules:
 * Beacon
-* Transceiver
+* Telemetry
 
-The software of the transceiver submodule is under development in the OBDH module, and for now is not described in this page.
+The software of the telemetry submodule is under development in the OBDH module, and for now is not described in this page.
 
 ## Hardware
 
@@ -38,10 +38,10 @@ The software of the transceiver submodule is under development in the OBDH modul
 
 ## Packets Protocols
 
-Every packet is transmitted in two protocols:
+The packets are transmitted in two protocols:
 
-* [NGHam](https://github.com/skagmo/ngham)
-* [AX.25](http://www.ax25.net/)
+* [NGHam](https://github.com/skagmo/ngham) (Telemetry and beacon)
+* [AX.25](http://www.ax25.net/) (Beacon)
 
 ### Packet Header Data
 
