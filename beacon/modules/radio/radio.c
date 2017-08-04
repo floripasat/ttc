@@ -100,7 +100,7 @@ void radio_write_data(uint8_t *data, uint16_t len)
 #elif BEACON_RADIO == SI4063
     
 #elif BEACON_RADIO == RF4463F30
-    rf4463_tx_packet(data, len);
+    rf4463_tx_long_packet(data, len);
     rf4463_enter_standby_mode();
 #elif BEACON_RADIO == UART_SIM
     uart_radio_sim_send_data(data, len);

@@ -85,9 +85,6 @@ void task_transmit_packet(Beacon *beacon_ptr)
 #endif // PACKET_NGHAM
 
 #if BEACON_PACKET_PROTOCOL & PACKET_AX25
-        // Wait for AX25 packet transmission to end
-        delay_ms((uint16_t)(1.2*sizeof(ax25_pkt_str)*1000/1200/8));
-
     #if BEACON_RF_SWITCH != HW_NONE
         rf_switch_enable_beacon();
     #endif // BEACON_RF_SWITCH

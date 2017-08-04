@@ -104,6 +104,20 @@ void rf4463_power_on_reset();
 bool rf4463_tx_packet(uint8_t *send_buf, uint8_t send_len);
 
 /**
+ * \fn rf4463_tx_long_packet
+ * 
+ * \brief Transmit a long packet (> FIFO buffer, or 64 bytes) through RF.
+ * 
+ * Reference: AN633, Figure 62.
+ * 
+ * \param packet is the packet to send.
+ * \param len is the length of the packet.
+ * 
+ * \return None
+ */
+bool rf4463_tx_long_packet(uint8_t *packet, uint16_t len);
+
+/**
  * \fn rf4463_rx_packet
  * 
  * \brief 
@@ -389,6 +403,18 @@ bool rf4463_enter_standby_mode();
  *              .
  */
 bool rf4463_wait_nIRQ();
+
+/**
+ * \fn rf4463_wait_gpio1()
+ * 
+ * \brief Checks GPIO1 interruption.
+ * 
+ * \return It can return:
+ *              -\b true if an interrupt occurs.
+ *              -\b false if no interrupt occurs.
+ *              .
+ */
+bool rf4463_wait_gpio1();
 
 #endif // RF4463_H_
 

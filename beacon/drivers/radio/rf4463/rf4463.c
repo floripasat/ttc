@@ -87,7 +87,7 @@ static void rf4463_gpio_init()
     GPIO_setAsInputPin(RF4463_nIRQ_PORT, RF4463_nIRQ_PIN);
     
     GPIO_setAsOutputPin(RF4463_GPIO0_PORT, RF4463_GPIO0_PIN);
-    GPIO_setAsOutputPin(RF4463_GPIO0_PORT, RF4463_GPIO1_PIN);
+    GPIO_setAsInputPin(RF4463_GPIO1_PORT, RF4463_GPIO1_PIN);
     
     // Set SDN to low
     GPIO_setOutputLowOnPin(RF4463_SDN_PORT, RF4463_SDN_PIN);
@@ -134,12 +134,80 @@ bool rf4463_tx_packet(uint8_t *send_buf, uint8_t send_len)
     
     while(tx_timer--)
     {
-        if (rf4463_wait_nIRQ())         // Wait "interruption"
+        if (rf4463_wait_nIRQ())         // Wait packet sent interruption
         {
             return true;
         }
         
         delay_ms(1);
+    }
+    
+    rf4463_init();
+    
+    return false;
+}
+
+bool rf4463_tx_long_packet(uint8_t *packet, uint16_t len)
+{
+    if (len < RF4463_TX_FIFO_LEN)
+    {
+        return rf4463_tx_packet(packet, (uint8_t)(len));
+    }
+    
+    rf4463_fifo_reset();        // Clear FIFO
+    
+    rf4463_write_tx_fifo(packet, RF4463_TX_FIFO_LEN);
+    uint16_t long_pkt_pos = RF4463_TX_FIFO_LEN;
+    
+    rf4463_set_tx_interrupt();
+    rf4463_clear_interrupts();
+    rf4463_enter_tx_mode();
+    
+    uint8_t fifo_buffer[RF4463_TX_FIFO_ALMOST_EMPTY_THRESHOLD + 1];
+    uint16_t tx_timer = RF4463_TX_TIMEOUT;
+    uint8_t i = 0;
+    
+    while(tx_timer--)
+    {
+        if (rf4463_wait_gpio1())
+        {
+            rf4463_clear_interrupts();
+            
+            for(i=0; i<RF4463_TX_FIFO_ALMOST_EMPTY_THRESHOLD; i++)
+            {
+                fifo_buffer[i] = packet[long_pkt_pos++];
+            }
+            
+            rf4463_write_tx_fifo(fifo_buffer, RF4463_TX_FIFO_ALMOST_EMPTY_THRESHOLD);
+            tx_timer = RF4463_TX_TIMEOUT;
+        }
+        else
+        {
+            uint8_t bytes_to_transfer = len - long_pkt_pos;
+            
+            if (bytes_to_transfer < RF4463_TX_FIFO_ALMOST_EMPTY_THRESHOLD)
+            {
+                rf4463_clear_interrupts();
+                
+                for(i=0; i<RF4463_TX_FIFO_ALMOST_EMPTY_THRESHOLD; i++)
+                {
+                    fifo_buffer[i] = packet[long_pkt_pos++];
+                }
+                
+                rf4463_write_tx_fifo(fifo_buffer, bytes_to_transfer);
+                tx_timer = RF4463_TX_TIMEOUT;
+                
+                while(tx_timer--)
+                {
+                    if (rf4463_wait_nIRQ())         // Wait packet sent interruption
+                    {
+                        rf4463_clear_interrupts();
+                        
+                        return true;
+                    }
+                }
+            }
+        }
     }
     
     rf4463_init();
@@ -483,6 +551,18 @@ bool rf4463_wait_nIRQ()
     else
     {
         return true;
+    }
+}
+
+bool rf4463_wait_gpio1()
+{
+    if (GPIO_getInputPinValue(RF4463_GPIO1_PORT, RF4463_GPIO1_PIN) == GPIO_INPUT_PIN_HIGH)
+    {
+        return true;
+    }
+    else
+    {
+        return false;
     }
 }
 
