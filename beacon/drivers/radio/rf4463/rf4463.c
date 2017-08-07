@@ -478,10 +478,9 @@ void rf4463_write_tx_fifo(uint8_t *data, uint8_t len)
 {
     rf4463_set_properties(RF4463_PROPERTY_PKT_FIELD_2_LENGTH_7_0, &len, 1);
     uint8_t buffer[128];
-    buffer[0] = len;
-    memcpy(buffer + 1, data, len);
+    memcpy(buffer, data, len);
     
-    rf4463_set_cmd(RF4463_CMD_TX_FIFO_WRITE, buffer, len + 1);
+    rf4463_set_cmd(RF4463_CMD_TX_FIFO_WRITE, buffer, len);
 }
 
 uint8_t rf4463_read_rx_fifo(uint8_t *data)
