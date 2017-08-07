@@ -81,7 +81,7 @@
 //-- BEACON PACKETS --------------------------------------
 //########################################################
 
-#define BEACON_PACKET_PAYLOAD_CONTENT       (PAYLOAD_SAT_ID)
+#define BEACON_PACKET_PAYLOAD_CONTENT       (PAYLOAD_SAT_ID | PAYLOAD_OBDH_DATA | PAYLOAD_EPS_DATA)
 
 #define BEACON_PACKET_PROTOCOL              (PACKET_NGHAM)
 

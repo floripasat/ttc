@@ -56,7 +56,7 @@ uint8_t eps_com_init(EPS *eps)
     // EPS initialization
     eps->received_byte  = EPS_COM_DEFAULT_DATA_BYTE;
     eps->byte_counter   = EPS_COM_PKT_SOD_POSITION;
-    eps->crc_fails      = 0;
+    eps->crc_fails      = 0xFF;
     eps->is_open        = false;
     
     eps_com_clear_buffer(eps);
@@ -142,7 +142,14 @@ static void eps_com_receive_data(EPS *eps)
                 debug_print_msg("ERROR! Invalid data received from the EPS module!\n");
 #endif // DEBUG_MODE
                 eps_com_clear_buffer(eps);
-                eps->crc_fails++;
+                if (eps->crc_fails == 0xFF)
+                {
+                    eps->crc_fails = 1;
+                }
+                else
+                {
+                    eps->crc_fails++;
+                }
             }
             eps->byte_counter = EPS_COM_PKT_SOD_POSITION;
             break;

@@ -289,63 +289,71 @@ void task_generate_packet_payload(Beacon *b)
     #if BEACON_MODE == DEBUG_MODE
             debug_print_msg("OBDH data... ");
     #endif // DEBUG_MODE
-            
             // Battery 1 Voltage
-            memcpy(b->packet_payload.payload,
-                   b->obdh.data.bat1_voltage,
-                   OBDH_COM_BAT1_VOLTAGE_LEN*sizeof(uint8_t));
+            for(i=0; i<OBDH_COM_BAT1_VOLTAGE_LEN; i++)
+            {
+                b->packet_payload.payload[pkt_payload_counter++] = b->obdh.data.bat1_voltage[i];
+            }
             
             // Battery 2 Voltage
-            memcpy(b->packet_payload.payload + OBDH_COM_BAT2_VOLTAGE_LEN,
-                   b->obdh.data.bat2_voltage,
-                   OBDH_COM_BAT2_VOLTAGE_LEN*sizeof(uint8_t));
+            for(i=0; i<OBDH_COM_BAT2_VOLTAGE_LEN; i++)
+            {
+                b->packet_payload.payload[pkt_payload_counter++] = b->obdh.data.bat2_voltage[i];
+            }
             
             // Battery 1 Temperature
-            memcpy(b->packet_payload.payload + OBDH_COM_BAT1_TEMPERATURE_LEN,
-                   b->obdh.data.bat1_temperature,
-                   OBDH_COM_BAT1_TEMPERATURE_LEN*sizeof(uint8_t));
+            for(i=0; i<OBDH_COM_BAT1_TEMPERATURE_LEN; i++)
+            {
+                b->packet_payload.payload[pkt_payload_counter++] = b->obdh.data.bat1_temperature[i];
+            }
             
             // Battery 2 Temperature
-            memcpy(b->packet_payload.payload + OBDH_COM_BAT2_TEMPERATURE_LEN,
-                   b->obdh.data.bat2_temperature,
-                   OBDH_COM_BAT2_TEMPERATURE_LEN*sizeof(uint8_t));
+            for(i=0; i<OBDH_COM_BAT2_TEMPERATURE_LEN; i++)
+            {
+                b->packet_payload.payload[pkt_payload_counter++] = b->obdh.data.bat2_temperature[i];
+            }
             
             // Total Charge of Batteries
-            memcpy(b->packet_payload.payload + OBDH_COM_BAT_CHARGE_LEN,
-                   b->obdh.data.bat_charge,
-                   OBDH_COM_BAT_CHARGE_LEN*sizeof(uint8_t));
+            for(i=0; i<OBDH_COM_BAT_CHARGE_LEN; i++)
+            {
+                b->packet_payload.payload[pkt_payload_counter++] = b->obdh.data.bat_charge[i];
+            }
             
             // Solar Panels Currents
-            memcpy(b->packet_payload.payload + OBDH_COM_SOLAR_PANELS_CURRENTS_LEN,
-                   b->obdh.data.solar_panels_currents,
-                   OBDH_COM_SOLAR_PANELS_CURRENTS_LEN*sizeof(uint8_t));
+            for(i=0; i<OBDH_COM_SOLAR_PANELS_CURRENTS_LEN; i++)
+            {
+                b->packet_payload.payload[pkt_payload_counter++] = b->obdh.data.solar_panels_currents[i];
+            }
             
             // Solar Panels Voltages
-            memcpy(b->packet_payload.payload + OBDH_COM_SOLAR_PANELS_VOLTAGES_LEN,
-                   b->obdh.data.solar_panels_voltages,
-                   OBDH_COM_SOLAR_PANELS_VOLTAGES_LEN*sizeof(uint8_t));
+            for(i=0; i<OBDH_COM_SOLAR_PANELS_VOLTAGES_LEN; i++)
+            {
+                b->packet_payload.payload[pkt_payload_counter++] = b->obdh.data.solar_panels_voltages[i];
+            }
             
             // Satellite Status
-            memcpy(b->packet_payload.payload + OBDH_COM_SAT_STATUS_LEN,
-                   b->obdh.data.sat_status,
-                   OBDH_COM_SAT_STATUS_LEN*sizeof(uint8_t));
+            for(i=0; i<OBDH_COM_SAT_STATUS_LEN; i++)
+            {
+                b->packet_payload.payload[pkt_payload_counter++] = b->obdh.data.sat_status[i];
+            }
             
             // IMU Data
-            memcpy(b->packet_payload.payload + OBDH_COM_IMU_LEN,
-                   b->obdh.data.imu,
-                   OBDH_COM_IMU_LEN*sizeof(uint8_t));
+            for(i=0; i<OBDH_COM_IMU_LEN; i++)
+            {
+                b->packet_payload.payload[pkt_payload_counter++] = b->obdh.data.imu[i];
+            }
             
             // System Time
-            memcpy(b->packet_payload.payload + OBDH_COM_SYSTEM_TIME_LEN,
-                   b->obdh.data.system_time,
-                   OBDH_COM_SYSTEM_TIME_LEN*sizeof(uint8_t));
+            for(i=0; i<OBDH_COM_SYSTEM_TIME_LEN; i++)
+            {
+                b->packet_payload.payload[pkt_payload_counter++] = b->obdh.data.system_time[i];
+            }
             
             // OBDH Reset Counter
-            memcpy(b->packet_payload.payload + OBDH_COM_RESET_COUNTER_LEN,
-                   b->obdh.data.reset_counter,
-                   OBDH_COM_RESET_COUNTER_LEN*sizeof(uint8_t));
-            
-            pkt_payload_counter += OBDH_COM_DATA_PKT_LEN;
+            for(i=0; i<OBDH_COM_RESET_COUNTER_LEN; i++)
+            {
+                b->packet_payload.payload[pkt_payload_counter++] = b->obdh.data.reset_counter[i];
+            }
 #endif // PAYLOAD_OBDH_DATA
     }
     else if (b->eps.crc_fails == 0)
@@ -356,46 +364,49 @@ void task_generate_packet_payload(Beacon *b)
     #endif // DEBUG_MODE
             
             // Battery 1 Voltage
-            memcpy(b->packet_payload.payload + EPS_COM_BAT1_VOLTAGE_LEN,
-                   b->eps.data.bat1_voltage,
-                   EPS_COM_BAT1_VOLTAGE_LEN*sizeof(uint8_t));
+            for(i=0; i<EPS_COM_BAT1_VOLTAGE_LEN; i++)
+            {
+                b->packet_payload.payload[pkt_payload_counter++] = b->eps.data.bat1_voltage[i];
+            }
             
             // Battery 2 Voltage
-            memcpy(b->packet_payload.payload + EPS_COM_BAT2_VOLTAGE_LEN,
-                   b->eps.data.bat2_voltage,
-                   EPS_COM_BAT2_VOLTAGE_LEN*sizeof(uint8_t));
+            for(i=0; i<EPS_COM_BAT2_VOLTAGE_LEN; i++)
+            {
+                b->packet_payload.payload[pkt_payload_counter++] = b->eps.data.bat2_voltage[i];
+            }
             
             // Battery 1 Temperature
-            memcpy(b->packet_payload.payload + EPS_COM_BAT1_TEMPERATURE_LEN,
-                   b->eps.data.bat1_temperature,
-                   EPS_COM_BAT1_TEMPERATURE_LEN*sizeof(uint8_t));
+            for(i=0; i<EPS_COM_BAT1_TEMPERATURE_LEN; i++)
+            {
+                b->packet_payload.payload[pkt_payload_counter++] = b->eps.data.bat1_temperature[i];
+            }
             
             // Battery 2 Temperature
-            memcpy(b->packet_payload.payload + EPS_COM_BAT2_TEMPERATURE_LEN,
-                   b->eps.data.bat2_temperature,
-                   EPS_COM_BAT2_TEMPERATURE_LEN*sizeof(uint8_t));
+            for(i=0; i<EPS_COM_BAT2_TEMPERATURE_LEN; i++)
+            {
+                b->packet_payload.payload[pkt_payload_counter++] = b->eps.data.bat2_temperature[i];
+            }
             
             // Total Charge of Batteries
-            memcpy(b->packet_payload.payload + EPS_COM_BAT_CHARGE_LEN,
-                   b->eps.data.bat_charge,
-                   EPS_COM_BAT_CHARGE_LEN*sizeof(uint8_t));
+            for(i=0; i<EPS_COM_BAT_CHARGE_LEN; i++)
+            {
+                b->packet_payload.payload[pkt_payload_counter++] = b->eps.data.bat_charge[i];
+            }
             
             // Solar Panels Currents
-            memcpy(b->packet_payload.payload + EPS_COM_SOLAR_PANELS_CURRENTS_LEN,
-                   b->eps.data.solar_panels_currents,
-                   EPS_COM_SOLAR_PANELS_CURRENTS_LEN*sizeof(uint8_t));
+            for(i=0; i<EPS_COM_SOLAR_PANELS_CURRENTS_LEN; i++)
+            {
+                b->packet_payload.payload[pkt_payload_counter++] = b->eps.data.solar_panels_currents[i];
+            }
             
             // Solar Panels Voltages
-            memcpy(b->packet_payload.payload + EPS_COM_SOLAR_PANELS_VOLTAGES_LEN,
-                   b->eps.data.solar_panels_voltages,
-                   EPS_COM_SOLAR_PANELS_VOLTAGES_LEN*sizeof(uint8_t));
+            for(i=0; i<EPS_COM_SOLAR_PANELS_VOLTAGES_LEN; i++)
+            {
+                b->packet_payload.payload[pkt_payload_counter++] = b->eps.data.solar_panels_voltages[i];
+            }
             
             // Satellite Energy Level
-            memcpy(b->packet_payload.payload + EPS_COM_ENERGY_LEVEL_LEN,
-                   &b->eps.data.energy_level,
-                   EPS_COM_ENERGY_LEVEL_LEN*sizeof(uint8_t));
-            
-            pkt_payload_counter += EPS_COM_DATA_PKT_LEN;
+            b->packet_payload.payload[pkt_payload_counter++] = b->eps.data.energy_level;
 #endif // PAYLOAD_EPS_DATA
     }
     else

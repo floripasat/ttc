@@ -60,7 +60,7 @@ uint8_t obdh_com_init(OBDH *obdh)
     // obdh_com initialization
     obdh->received_byte = OBDH_COM_DEFAULT_DATA_BYTE;
     obdh->byte_counter  = OBDH_COM_CMD_POSITION;
-    obdh->crc_fails     = 0;
+    obdh->crc_fails     = 0xFF;
     obdh->is_open       = false;
     
     obdh_com_clear_buffer(obdh);
@@ -157,7 +157,14 @@ static void obdh_com_receive_data(OBDH *obdh)
                 debug_print_msg("ERROR! INVALID!\n");
 #endif // DEBUG_MODE
                 obdh_com_clear_buffer(obdh);
-                obdh->crc_fails++;
+                if (obdh->crc_fails == 0xFF)
+                {
+                    obdh->crc_fails = 1;
+                }
+                else
+                {
+                    obdh->crc_fails++;
+                }
             }
             obdh->byte_counter = OBDH_COM_CMD_POSITION;
             break;
