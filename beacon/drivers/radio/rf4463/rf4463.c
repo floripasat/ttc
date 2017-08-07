@@ -68,7 +68,7 @@ uint8_t rf4463_init()
     rf4463_set_tx_power(127);
     
     // Check if the RF4463 is working
-    if (rf4463_check_device() == true)
+    if (rf4463_check_device())
     {
         return STATUS_SUCCESS;
     }
@@ -103,6 +103,11 @@ static void rf4463_reg_config()
     // Frequency adjust (Tested manually)
     buf[0] = 30;
     rf4463_set_properties(RF4463_PROPERTY_GLOBAL_XO_TUNE, buf, 1);
+    
+    // TX/RX shares 128 bytes FIFO
+    buf[0] = 0x10;
+    rf4463_set_properties(RF4463_PROPERTY_GLOBAL_CONFIG, buf, 1);
+    rf4463_fifo_reset();    // The TX/RX FIFO sharing configuration will only take effect after FIFO reset.
 }
 
 void rf4463_power_on_reset()
@@ -122,15 +127,18 @@ void rf4463_power_on_reset()
     delay_ms(200);
 }
 
-bool rf4463_tx_packet(uint8_t *send_buf, uint8_t send_len)
+bool rf4463_tx_packet(uint8_t *data, uint8_t len)
 {
+    // Setting packet size
+    rf4463_set_properties(RF4463_PROPERTY_PKT_FIELD_1_LENGTH_7_0, &len, 1);
+    
     rf4463_fifo_reset();        // Clear FIFO
-    rf4463_write_tx_fifo(send_buf, send_len);
-    rf4463_set_tx_interrupt();
+    rf4463_write_tx_fifo(data, len);
     rf4463_clear_interrupts();
-    rf4463_enter_tx_mode();
     
     uint16_t tx_timer = RF4463_TX_TIMEOUT;
+    
+    rf4463_enter_tx_mode();
     
     while(tx_timer--)
     {
@@ -139,9 +147,10 @@ bool rf4463_tx_packet(uint8_t *send_buf, uint8_t send_len)
             return true;
         }
         
-        delay_ms(1);
+        delay_us(100);
     }
     
+    // If the packet tranmission takes longer than expected, resets the radio.
     rf4463_init();
     
     return false;
@@ -149,51 +158,46 @@ bool rf4463_tx_packet(uint8_t *send_buf, uint8_t send_len)
 
 bool rf4463_tx_long_packet(uint8_t *packet, uint16_t len)
 {
-    if (len < RF4463_TX_FIFO_LEN)
+    if (len <= RF4463_TX_FIFO_LEN)
     {
         return rf4463_tx_packet(packet, (uint8_t)(len));
     }
     
-    rf4463_fifo_reset();        // Clear FIFO
+    // Setting packet size
+    uint8_t buf[2];
+    buf[0] = (uint8_t)(len);
+    buf[1] = (uint8_t)(len >> 8);
+    if (len > 255)
+    {
+        rf4463_set_properties(RF4463_PROPERTY_PKT_FIELD_1_LENGTH_12_8, &buf[1], 1);
+    }
+    rf4463_set_properties(RF4463_PROPERTY_PKT_FIELD_1_LENGTH_7_0, &buf[0], 1);
     
+    rf4463_fifo_reset();        // Clear FIFO
     rf4463_write_tx_fifo(packet, RF4463_TX_FIFO_LEN);
     uint16_t long_pkt_pos = RF4463_TX_FIFO_LEN;
     
-    rf4463_set_tx_interrupt();
     rf4463_clear_interrupts();
-    rf4463_enter_tx_mode();
     
-    uint8_t fifo_buffer[RF4463_TX_FIFO_ALMOST_EMPTY_THRESHOLD + 1];
+    uint8_t fifo_buffer[RF4463_TX_FIFO_ALMOST_EMPTY_THRESHOLD];
     uint16_t tx_timer = RF4463_TX_TIMEOUT;
     uint8_t i = 0;
+    
+    rf4463_enter_tx_mode();
     
     while(tx_timer--)
     {
         if (rf4463_wait_gpio1())
-        {
-            rf4463_clear_interrupts();
-            
-            for(i=0; i<RF4463_TX_FIFO_ALMOST_EMPTY_THRESHOLD; i++)
-            {
-                fifo_buffer[i] = packet[long_pkt_pos++];
-            }
-            
-            rf4463_write_tx_fifo(fifo_buffer, RF4463_TX_FIFO_ALMOST_EMPTY_THRESHOLD);
-            tx_timer = RF4463_TX_TIMEOUT;
-        }
-        else
-        {
+        {            
             uint8_t bytes_to_transfer = len - long_pkt_pos;
-            
-            if (bytes_to_transfer < RF4463_TX_FIFO_ALMOST_EMPTY_THRESHOLD)
+
+            if (bytes_to_transfer <= RF4463_TX_FIFO_ALMOST_EMPTY_THRESHOLD)
             {
-                rf4463_clear_interrupts();
-                
-                for(i=0; i<RF4463_TX_FIFO_ALMOST_EMPTY_THRESHOLD; i++)
+                for(i=0; i<bytes_to_transfer; i++)
                 {
                     fifo_buffer[i] = packet[long_pkt_pos++];
                 }
-                
+
                 rf4463_write_tx_fifo(fifo_buffer, bytes_to_transfer);
                 tx_timer = RF4463_TX_TIMEOUT;
                 
@@ -201,15 +205,26 @@ bool rf4463_tx_long_packet(uint8_t *packet, uint16_t len)
                 {
                     if (rf4463_wait_nIRQ())         // Wait packet sent interruption
                     {
-                        rf4463_clear_interrupts();
-                        
                         return true;
                     }
+
+                    delay_us(100);
                 }
+            }
+            else
+            {
+                for(i=0; i<RF4463_TX_FIFO_ALMOST_EMPTY_THRESHOLD; i++)
+                {
+                    fifo_buffer[i] = packet[long_pkt_pos++];
+                }
+
+                rf4463_write_tx_fifo(fifo_buffer, RF4463_TX_FIFO_ALMOST_EMPTY_THRESHOLD);
+                tx_timer = RF4463_TX_TIMEOUT;
             }
         }
     }
     
+    // If the packet tranmission takes longer than expected, resets the radio.
     rf4463_init();
     
     return false;
@@ -476,8 +491,7 @@ bool rf4463_clear_interrupts()
 
 void rf4463_write_tx_fifo(uint8_t *data, uint8_t len)
 {
-    rf4463_set_properties(RF4463_PROPERTY_PKT_FIELD_2_LENGTH_7_0, &len, 1);
-    uint8_t buffer[128];
+    uint8_t buffer[RF4463_TX_FIFO_LEN];
     memcpy(buffer, data, len);
     
     rf4463_set_cmd(RF4463_CMD_TX_FIFO_WRITE, buffer, len);

@@ -93,15 +93,15 @@ void rf4463_power_on_reset();
  * 
  * \brief Transmit a packet through RF.
  * 
- * \param send_buf is the data with the packet to send.
- * \param send_len is the length of the data to send.
+ * \param data is the data with the packet to send.
+ * \param len is the length of the data to send.
  * 
  * \return It can return:
  *              -\b true if the packet was sent.
  *              -\b false if the packet was not sent.
  *              .
  */
-bool rf4463_tx_packet(uint8_t *send_buf, uint8_t send_len);
+bool rf4463_tx_packet(uint8_t *data, uint8_t len);
 
 /**
  * \fn rf4463_tx_long_packet
