@@ -90,7 +90,7 @@ static void rf4463_gpio_init()
     GPIO_setAsInputPin(RF4463_GPIO1_PORT, RF4463_GPIO1_PIN);
     
     // Set SDN to low
-    GPIO_setOutputLowOnPin(RF4463_SDN_PORT, RF4463_SDN_PIN);
+    GPIO_setOutputHighOnPin(RF4463_SDN_PORT, RF4463_SDN_PIN);
 }
 
 static void rf4463_reg_config()
@@ -189,7 +189,7 @@ bool rf4463_tx_long_packet(uint8_t *packet, uint16_t len)
     {
         if (rf4463_wait_gpio1())
         {            
-            uint8_t bytes_to_transfer = len - long_pkt_pos;
+            uint16_t bytes_to_transfer = len - long_pkt_pos;
 
             if (bytes_to_transfer <= RF4463_TX_FIFO_ALMOST_EMPTY_THRESHOLD)
             {
