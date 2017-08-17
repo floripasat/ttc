@@ -1,4 +1,4 @@
-# FloripaSat TTC: Telemetry, Tracking and Command (TT&amp;C) module of the FloripaSat project
+# FloripaSat TT&amp;C: Telemetry, Tracking and Command Module of the FloripaSat Project
 
 ## Resources
 
