@@ -45,13 +45,16 @@
 
 EPS *eps_ptr;
 
-uint8_t eps_com_init(EPS *eps)
+Time *beacon_time_ptr;
+
+uint8_t eps_com_init(EPS *eps, Time *beacon_time)
 {
 #if BEACON_MODE == DEBUG_MODE
     debug_print_msg("EPS communication initialization... ");
 #endif // DEBUG_MODE
 
     eps_ptr = eps;
+    beacon_time_ptr = beacon_time;
 
     // EPS initialization
     eps->received_byte  = EPS_COM_DEFAULT_DATA_BYTE;
@@ -63,6 +66,8 @@ uint8_t eps_com_init(EPS *eps)
     
     // EPS data initialization
     eps_com_save_data_from_buffer(eps);
+
+    time_reset(&eps->time_last_valid_pkt);
 
     // UART pins init.
     GPIO_setAsPeripheralModuleFunctionInputPin(EPS_COM_UART_RX_PORT, EPS_COM_UART_RX_PIN);
@@ -109,7 +114,7 @@ uint8_t eps_com_init(EPS *eps)
     }
 }
 
-static void eps_com_receive_data(EPS *eps)
+static void eps_com_receive_data(EPS *eps, Time *beacon_time)
 {
     eps->received_byte = USCI_A_UART_receiveData(EPS_COM_UART_BASE_ADDRESS);
 
@@ -135,6 +140,7 @@ static void eps_com_receive_data(EPS *eps)
 #endif // DEBUG_MODE
                 eps_com_save_data_from_buffer(eps);
                 eps->crc_fails = 0;
+                time_copy(beacon_time, &eps->time_last_valid_pkt);     // Saves the time of a valid packet reception event
             }
             else
             {
@@ -237,7 +243,7 @@ void USCI_A0_ISR()
     {
         // Vector 2 - RXIFG
         case 2:
-            eps_com_receive_data(eps_ptr);
+            eps_com_receive_data(eps_ptr, beacon_time_ptr);
             break;
         default:
             break;

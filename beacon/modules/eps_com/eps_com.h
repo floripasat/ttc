@@ -43,6 +43,7 @@
 #include <stdbool.h>
 
 #include "eps_com_config.h"
+#include <modules/time/time.h>
 
 /**
  * \struct EPSData
@@ -74,6 +75,7 @@ typedef struct
     uint8_t crc_fails;                          /**< Number of CRC failures (Packets with errors). */
     bool is_open;                               /**< Flag to store the EPS communication state (true = Open; false = Closed). */
     EPSData data;                               /**< EPS data. */
+    Time time_last_valid_pkt;                   /**< Time when the last valid packet was received. */
 } EPS;
 
 /**
@@ -84,18 +86,26 @@ typedef struct
 extern EPS *eps_ptr;
 
 /**
+ * \var beacon_time_ptr
+ * 
+ * \brief 
+ */
+extern Time *beacon_time_ptr;
+
+/**
  * \fn eps_com_init
  * 
  * \brief Initialization of the EPS communication module.
  * 
  * \param eps is a pointer to an EPS object.
+ * \param beacon_time is a pointer to the sytem time struct.
  * 
  * \return Initialization status. It can be:
  *      - \b STATUS_SUCCESS
  *      - \b STATUS_FAIL
  *      .
  */
-uint8_t eps_com_init(EPS *eps);
+uint8_t eps_com_init(EPS *eps, Time *beacon_time);
 
 /**
  * \fn eps_com_receive_data
@@ -106,10 +116,11 @@ uint8_t eps_com_init(EPS *eps);
  * the EPS module.
  * 
  * \param eps is a pointer to an EPS object.
+ * \param beacon_time is a pointer to the system time struct.
  * 
  * \return None
  */
-static void eps_com_receive_data(EPS *eps);
+static void eps_com_receive_data(EPS *eps, Time *beacon_time);
 
 /**
  * \fn eps_com_save_data_from_buffer

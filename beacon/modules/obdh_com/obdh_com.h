@@ -43,6 +43,7 @@
 #include <stdbool.h>
 
 #include "obdh_com_config.h"
+#include <modules/time/time.h>
 
 /**
  * \struct OBDHData
@@ -77,6 +78,7 @@ typedef struct
     uint8_t crc_fails;                          /**< Number of CRC failures (Packets with errors). */
     bool is_open;                               /**< Flag to store the OBDH communication state (true = Open; false = Closed). */
     OBDHData data;                              /**< OBDH data. */
+    Time time_last_valid_pkt;                   /**< Time when the last valid packet was received. */
 } OBDH;
 
 /**
@@ -87,18 +89,26 @@ typedef struct
 extern OBDH *obdh_ptr;
 
 /**
+ * \var beacon_time_ptr is a pointer to system time struct.
+ * 
+ * \brief 
+ */
+extern Time *beacon_time_ptr;
+
+/**
  * \fn obdh_com_init
  * 
  * \brief Initialization of the OBDH communication.
  * 
- * \param o is a pointer to an OBDH object.
+ * \param obdh is a pointer to an OBDH object.
+ * \param beacon_time is a pointer to the system time struct.
  * 
  * \return Initialization status. It can be:
  *              -\b STATUS_SUCCESS
  *              -\b STATUS_FAIL
  *              .
  */
-uint8_t obdh_com_init(OBDH *o);
+uint8_t obdh_com_init(OBDH *obdh, Time *beacon_time);
 
 /**
  * \fn obdh_com_spi_init
@@ -117,9 +127,12 @@ static uint8_t obdh_com_spi_init();
  * 
  * \brief Receives data from the OBDH interruption.
  * 
+ * \param obdh is a pointer to the obdh struct.
+ * \param beacon_time is a pointer to the system time struct.
+ * 
  * \return None
  */
-static void obdh_com_receive_data();
+static void obdh_com_receive_data(OBDH *obdh, Time *beacon_time);
 
 /**
  * \fn obdh_com_receive_cmd

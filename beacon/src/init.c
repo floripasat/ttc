@@ -90,17 +90,17 @@ void init_antenna()
     }
 }
 
-void init_eps_com(EPS *eps)
-{
-    while(eps_com_init(eps) != STATUS_SUCCESS)
+void init_eps_com(Beacon *beacon)
+{    
+    while(eps_com_init(&beacon->eps, &beacon->time) != STATUS_SUCCESS)
     {
         
     }
 }
 
-void init_obdh_com(OBDH *obdh)
-{
-    while(obdh_com_init(obdh) != STATUS_SUCCESS)
+void init_obdh_com(Beacon *beacon)
+{    
+    while(obdh_com_init(&beacon->obdh, &beacon->time) != STATUS_SUCCESS)
     {
         
     }

@@ -68,9 +68,9 @@ void beacon_init()
     
     init_antenna();
     
-    init_eps_com(&beacon.eps);
+    init_eps_com(&beacon);
     
-    init_obdh_com(&beacon.obdh);
+    init_obdh_com(&beacon);
     
     init_radio();
     

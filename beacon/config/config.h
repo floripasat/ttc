@@ -138,6 +138,20 @@
 
 #define TIMER_BASE_ADDRESS                  TIMER_A1_BASE
 
+//########################################################
+//-- OBDH COMMUNICATION ----------------------------------
+//########################################################
+
+#define OBDH_COM_DEADLINE_SEC               60
+#define OBDH_COM_DEADLINE_MIN               1
+
+//########################################################
+//-- EPS COMMUNICATION -----------------------------------
+//########################################################
+
+#define EPS_COM_DEADLINE_SEC                60
+#define EPS_COM_DEADLINE_MIN                1
+
 #endif // CONFIG_H_
 
 //! \} End of config group

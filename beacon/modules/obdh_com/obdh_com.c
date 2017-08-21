@@ -49,13 +49,16 @@
 
 OBDH *obdh_ptr;
 
-uint8_t obdh_com_init(OBDH *obdh)
+Time *beacon_time_ptr;
+
+uint8_t obdh_com_init(OBDH *obdh, Time *beacon_time)
 {
 #if BEACON_MODE == DEBUG_MODE
     debug_print_msg("OBDH communication initialization... ");
 #endif // BEACON_MODE
     
     obdh_ptr = obdh;
+    beacon_time_ptr = beacon_time;
     
     // obdh_com initialization
     obdh->received_byte = OBDH_COM_DEFAULT_DATA_BYTE;
@@ -67,6 +70,8 @@ uint8_t obdh_com_init(OBDH *obdh)
     
     // obdh_data initialization
     obdh_com_save_data_from_buffer(obdh);
+    
+    time_reset(&obdh->time_last_valid_pkt);
     
     if (obdh_com_spi_init() == STATUS_FAIL)
     {
@@ -117,7 +122,7 @@ static uint8_t obdh_com_spi_init()
     }
 }
 
-static void obdh_com_receive_data(OBDH *obdh)
+static void obdh_com_receive_data(OBDH *obdh, Time *beacon_time)
 {
     obdh->received_byte = USCI_A_SPI_receiveData(OBDH_COM_SPI_BASE_ADDRESS);
     
@@ -150,6 +155,7 @@ static void obdh_com_receive_data(OBDH *obdh)
 #endif // DEBUG_MODE
                 obdh_com_save_data_from_buffer(obdh);
                 obdh->crc_fails = 0;
+                time_copy(beacon_time, &obdh->time_last_valid_pkt);     // Saves the time of a valid packet reception event
             }
             else
             {
@@ -335,7 +341,7 @@ void USCI_A2_ISR()
     {
         //Vector 2 - RXIFG
         case 2:
-            obdh_com_receive_data(obdh_ptr);
+            obdh_com_receive_data(obdh_ptr, beacon_time_ptr);
             break;
         default:
             break;

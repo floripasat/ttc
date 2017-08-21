@@ -40,6 +40,8 @@
 
 #include <modules/time/time.h>
 
+#include "beacon.h"
+
 /**
  * \fn init_debug
  * 
@@ -121,22 +123,22 @@ void init_antenna();
  * 
  * \brief EPS communication initialization routine.
  * 
- * \param eps is a pointer to an EPS object.
+ * \param beacon is a pointer to the beacon struct (object).
  * 
  * \return None
  */
-void init_eps_com(EPS *eps);
+void init_eps_com(Beacon *beacon);
 
 /**
  * \fn init_obdh_com
  * 
  * \brief OBDH communication initialization routine.
  * 
- * \param obdh is a pointer to an OBDH object.
+ * \param beacon is a pointer to the beacon struct (object).
  * 
  * \return None
  */
-void init_obdh_com(OBDH *obdh);
+void init_obdh_com(Beacon *beacon);
 
 /**
  * \fn init_radio
