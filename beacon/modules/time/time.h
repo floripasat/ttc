@@ -41,14 +41,18 @@
 
 #include <stdint.h>
 
-#define MILLISECONDS    0x00
-#define SECONDS         0x01
-#define MINUTES         0x02
-#define HOURS           0x03
-#define DAYS            0x04
-#define WEEKS           0x05
-#define MONTHS          0x06
-#define YEARS           0x07
+#define MILLISECONDS                0
+#define SECONDS                     1
+#define MINUTES                     2
+#define HOURS                       3
+#define DAYS                        4
+#define WEEKS                       5
+#define MONTHS                      6
+#define YEARS                       7
+
+#define TIME_REF_GREATER_THAN_CMP   1
+#define TIME_CMP_GREATER_THAN_REF   2
+#define TIME_CMP_EQUAL_REF          3
 
 /**
  * \struct Time
@@ -77,6 +81,49 @@ typedef struct
  * \return None
  */
 void time_reset(Time *time);
+
+/**
+ * \fn time_compare
+ * 
+ * \brief Compares two Times structures (Compares if a time measure is greater, lesser or equal than other).
+ * 
+ * \note For now, it only compares day, hour, minute and second.
+ * 
+ * \param time_ref is a pointer to the reference time structure.
+ * \param time_cmp is a pointer to the time structure to compare.
+ * 
+ * \return It returns:
+ *          -\b TIME_REF_GREATER_THAN_CMP
+ *          -\b TIME_CMP_GREATER_THAN_REF
+ *          -\b TIME_CMP_EQUAL_REF
+ *          .
+ */
+uint8_t time_compare(Time *time_ref, Time *time_cmp);
+
+/**
+ * \fn time_diff
+ * 
+ * \brief Calculates the time difference between two time structures.
+ * 
+ * \param time_a is the first time structure.
+ * \param time_b is the second time structure.
+ * \param result is the result (The difference between time_a and time_b).
+ * 
+ * \return None
+ */
+void time_diff(Time time_a, Time time_b, Time *result);
+
+/**
+ * \fn time_copy
+ * 
+ * \brief Copies a Time structure to another one.
+ * 
+ * \param time_a is a pointer to a Time structure to be copied.
+ * \param time_b is a pointer to a Time structure to receive the copy.
+ * 
+ * \return None
+ */
+void time_copy(Time *time_a, Time *time_b);
 
 #endif // TIME_H_
 
