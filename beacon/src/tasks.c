@@ -356,7 +356,7 @@ void task_generate_packet_payload(Beacon *b)
             }
 #endif // PAYLOAD_OBDH_DATA
     }
-    else if ((b->eps.crc_fails == 0) && ((task_check_elapsed_time(b->eps.time_last_valid_pkt.minute, b->time.minute, MINUTES) < EPS_COM_DEADLINE_MIN)))
+    else if (b->eps.is_dead == false)
     {
 #if BEACON_PACKET_PAYLOAD_CONTENT & PAYLOAD_EPS_DATA
     #if BEACON_MODE == DEBUG_MODE

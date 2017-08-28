@@ -45,16 +45,13 @@
 
 EPS *eps_ptr;
 
-Time *beacon_time_ptr;
-
-uint8_t eps_com_init(EPS *eps, Time *beacon_time)
+uint8_t eps_com_init(EPS *eps)
 {
 #if BEACON_MODE == DEBUG_MODE
     debug_print_msg("EPS communication initialization... ");
 #endif // DEBUG_MODE
 
     eps_ptr = eps;
-    beacon_time_ptr = beacon_time;
 
     // EPS initialization
     eps->received_byte  = EPS_COM_DEFAULT_DATA_BYTE;
@@ -66,8 +63,6 @@ uint8_t eps_com_init(EPS *eps, Time *beacon_time)
     
     // EPS data initialization
     eps_com_save_data_from_buffer(eps);
-
-    time_reset(&eps->time_last_valid_pkt);
 
     // UART pins init.
     GPIO_setAsPeripheralModuleFunctionInputPin(EPS_COM_UART_RX_PORT, EPS_COM_UART_RX_PIN);
@@ -88,6 +83,7 @@ uint8_t eps_com_init(EPS *eps, Time *beacon_time)
     if (USCI_A_UART_init(EPS_COM_UART_BASE_ADDRESS, &uart_params) == STATUS_FAIL)
     {
         eps->is_open = false;
+        eps->is_dead = true;
         
 #if BEACON_MODE == DEBUG_MODE
         debug_print_msg("FAIL!\n");
@@ -105,6 +101,9 @@ uint8_t eps_com_init(EPS *eps, Time *beacon_time)
         USCI_A_UART_enableInterrupt(EPS_COM_UART_BASE_ADDRESS, USCI_A_UART_RECEIVE_INTERRUPT);
 
         eps->is_open = true;
+        eps->is_dead = false;
+        
+        eps_com_timer_timeout_init();
 
 #if BEACON_MODE == DEBUG_MODE
         debug_print_msg("SUCCESS!\n");
@@ -114,7 +113,7 @@ uint8_t eps_com_init(EPS *eps, Time *beacon_time)
     }
 }
 
-static void eps_com_receive_data(EPS *eps, Time *beacon_time)
+static void eps_com_receive_data(EPS *eps)
 {
     eps->received_byte = USCI_A_UART_receiveData(EPS_COM_UART_BASE_ADDRESS);
 
@@ -140,7 +139,9 @@ static void eps_com_receive_data(EPS *eps, Time *beacon_time)
 #endif // DEBUG_MODE
                 eps_com_save_data_from_buffer(eps);
                 eps->crc_fails = 0;
-                time_copy(beacon_time, &eps->time_last_valid_pkt);     // Saves the time of a valid packet reception event
+                eps->is_dead = false;
+                
+                eps_com_timer_timeout_init();
             }
             else
             {
@@ -156,6 +157,7 @@ static void eps_com_receive_data(EPS *eps, Time *beacon_time)
                 {
                     eps->crc_fails++;
                 }
+                eps->is_dead = true;
             }
             eps->byte_counter = EPS_COM_PKT_SOD_POSITION;
             break;
@@ -222,6 +224,22 @@ static void eps_com_clear_buffer(EPS *eps)
     memset(eps->buffer, EPS_COM_DEFAULT_DATA_BYTE, EPS_COM_DATA_PKT_LEN*sizeof(uint8_t));
 }
 
+static void eps_com_timer_timeout_init()
+{
+    Timer_D_clearTimerInterrupt(TIMER_D0_BASE);
+    
+    Timer_D_initContinuousModeParam param = {0};
+    param.clockSource               = TIMER_D_CLOCKSOURCE_ACLK;
+    param.clockSourceDivider        = TIMER_D_CLOCKSOURCE_DIVIDER_16;   // ~= 64 s to overflow
+    param.clockingMode              = TIMER_D_CLOCKINGMODE_EXTERNAL_CLOCK;
+    param.timerInterruptEnable_TDIE = TIMER_D_TDIE_INTERRUPT_ENABLE;
+    param.timerClear                = TIMER_D_DO_CLEAR;
+    
+    Timer_D_initContinuousMode(TIMER_D0_BASE, &param);
+    
+    Timer_D_startCounter(TIMER_D0_BASE, TIMER_D_CONTINUOUS_MODE);
+}
+
 /**
  * \fn USCI_A0_ISR
  *
@@ -243,7 +261,64 @@ void USCI_A0_ISR()
     {
         // Vector 2 - RXIFG
         case 2:
-            eps_com_receive_data(eps_ptr, beacon_time_ptr);
+            eps_com_receive_data(eps_ptr);
+            break;
+        default:
+            break;
+    }
+}
+
+/**
+ * \fn TIMER0_D1_ISR
+ * 
+ * \brief Timer0_D1 Interrupt Vector (TDIV) handler.
+ * 
+ * \return None
+ */
+#if defined(__TI_COMPILER_VERSION__) || defined(__IAR_SYSTEMS_ICC__)
+#pragma vector=TIMER0_D1_VECTOR
+__interrupt
+#elif defined(__GNUC__)
+__attribute__((interrupt(TIMER0_D1_VECTOR)))
+#endif
+void TIMER0_D1_ISR()
+{
+    switch(__even_in_range(TD0IV, 30))
+    {
+        case 0:
+            break;
+        case 2:
+            break;
+        case 4:
+            break;
+        case 6:
+            break;
+        case 8:
+            break;
+        case 10:
+            break;
+        case 12:
+            break;
+        case 14:
+            break;
+        case 16:                // Overflow
+            eps_ptr->is_dead = true;
+            Timer_D_stop(TIMER_D0_BASE);
+            Timer_D_clear(TIMER_D0_BASE);
+            break;
+        case 18:
+            break;
+        case 20:
+            break;
+        case 22:
+            break;
+        case 24:
+            break;
+        case 26:
+            break;
+        case 28:
+            break;
+        case 30:
             break;
         default:
             break;

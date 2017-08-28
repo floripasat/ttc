@@ -90,9 +90,9 @@ void init_antenna()
     }
 }
 
-void init_eps_com(Beacon *beacon)
+void init_eps_com(EPS *eps)
 {    
-    while(eps_com_init(&beacon->eps, &beacon->time) != STATUS_SUCCESS)
+    while(eps_com_init(eps) != STATUS_SUCCESS)
     {
         
     }

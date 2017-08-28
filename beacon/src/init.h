@@ -123,11 +123,11 @@ void init_antenna();
  * 
  * \brief EPS communication initialization routine.
  * 
- * \param beacon is a pointer to the beacon struct (object).
+ * \param eps is a pointer to an eps struct (object).
  * 
  * \return None
  */
-void init_eps_com(Beacon *beacon);
+void init_eps_com(EPS *eps);
 
 /**
  * \fn init_obdh_com
