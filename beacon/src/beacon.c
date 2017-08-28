@@ -70,7 +70,7 @@ void beacon_init()
     
     init_eps_com(&beacon);
     
-    init_obdh_com(&beacon);
+    init_obdh_com(&beacon.obdh);
     
     init_radio();
     

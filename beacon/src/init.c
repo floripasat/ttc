@@ -98,9 +98,9 @@ void init_eps_com(Beacon *beacon)
     }
 }
 
-void init_obdh_com(Beacon *beacon)
+void init_obdh_com(OBDH *obdh)
 {    
-    while(obdh_com_init(&beacon->obdh, &beacon->time) != STATUS_SUCCESS)
+    while(obdh_com_init(obdh) != STATUS_SUCCESS)
     {
         
     }

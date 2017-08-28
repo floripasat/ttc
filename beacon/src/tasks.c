@@ -283,7 +283,7 @@ void task_generate_packet_payload(Beacon *b)
     }
 #endif // PAYLOAD_SAT_ID
     
-    if ((b->obdh.crc_fails == 0) && (task_check_elapsed_time(b->obdh.time_last_valid_pkt.minute, b->time.minute, MINUTES) < OBDH_COM_DEADLINE_MIN))
+    if (b->obdh.is_dead == false)
     {
 #if BEACON_PACKET_PAYLOAD_CONTENT & PAYLOAD_OBDH_DATA
     #if BEACON_MODE == DEBUG_MODE

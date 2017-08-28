@@ -134,11 +134,11 @@ void init_eps_com(Beacon *beacon);
  * 
  * \brief OBDH communication initialization routine.
  * 
- * \param beacon is a pointer to the beacon struct (object).
+ * \param obdh is a pointer to an obdh struct (object).
  * 
  * \return None
  */
-void init_obdh_com(Beacon *beacon);
+void init_obdh_com(OBDH *obdh);
 
 /**
  * \fn init_radio

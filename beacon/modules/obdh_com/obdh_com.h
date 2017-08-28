@@ -43,7 +43,6 @@
 #include <stdbool.h>
 
 #include "obdh_com_config.h"
-#include <modules/time/time.h>
 
 /**
  * \struct OBDHData
@@ -77,8 +76,8 @@ typedef struct
     uint8_t buffer[OBDH_COM_DATA_PKT_LEN + 1];  /**< Packet buffer. */
     uint8_t crc_fails;                          /**< Number of CRC failures (Packets with errors). */
     bool is_open;                               /**< Flag to store the OBDH communication state (true = Open; false = Closed). */
+    bool is_dead;                               /**< If true, the OBDH module is not sending data, so it is possibly not working. */
     OBDHData data;                              /**< OBDH data. */
-    Time time_last_valid_pkt;                   /**< Time when the last valid packet was received. */
 } OBDH;
 
 /**
@@ -89,26 +88,18 @@ typedef struct
 extern OBDH *obdh_ptr;
 
 /**
- * \var beacon_time_ptr is a pointer to system time struct.
- * 
- * \brief 
- */
-extern Time *beacon_time_ptr;
-
-/**
  * \fn obdh_com_init
  * 
  * \brief Initialization of the OBDH communication.
  * 
  * \param obdh is a pointer to an OBDH object.
- * \param beacon_time is a pointer to the system time struct.
  * 
  * \return Initialization status. It can be:
  *              -\b STATUS_SUCCESS
  *              -\b STATUS_FAIL
  *              .
  */
-uint8_t obdh_com_init(OBDH *obdh, Time *beacon_time);
+uint8_t obdh_com_init(OBDH *obdh);
 
 /**
  * \fn obdh_com_spi_init
@@ -128,11 +119,10 @@ static uint8_t obdh_com_spi_init();
  * \brief Receives data from the OBDH interruption.
  * 
  * \param obdh is a pointer to the obdh struct.
- * \param beacon_time is a pointer to the system time struct.
  * 
  * \return None
  */
-static void obdh_com_receive_data(OBDH *obdh, Time *beacon_time);
+static void obdh_com_receive_data(OBDH *obdh);
 
 /**
  * \fn obdh_com_receive_cmd
@@ -190,6 +180,15 @@ static void obdh_com_save_data_from_buffer(OBDH *obdh);
  * \return None
  */
 static void obdh_com_clear_buffer(OBDH *obdh);
+
+/**
+ * \fn obdh_com_timer_timeout_init
+ * 
+ * \brief Initialization of the OBDH Com timeout timer.
+ * 
+ * \return None
+ */
+static void obdh_com_timer_timeout_init();
 
 #endif // OBDH_COM_H_
 
