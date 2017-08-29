@@ -53,6 +53,34 @@
 void task_transmit_packet();
 
 /**
+ * \fn task_receive_packet
+ * 
+ * \brief Receives a incoming packet.
+ * 
+ * This function decodes a packet (with the NGHam protocol) and executes its command.
+ * 
+ * \param pkt is an array with the received raw packet.
+ * \param len is the lenght of the received packet.
+ * 
+ * \return None
+ */
+void task_receive_packet(uint8_t *pkt, uint8_t len);
+
+/**
+ * \fn task_process_received_packet_data
+ * 
+ * \brief Process an incoming packet payload.
+ * 
+ * Verifies if the received data is a valid command, and executes it.
+ * 
+ * \param data is the packet payload to process.
+ * \param len is the lenght of the packet payload to process.
+ * 
+ * \return None
+ */
+void task_process_received_packet_data(uint8_t *data, uint8_t len);
+
+/**
  * \fn task_generate_packets()
  * 
  * \brief Generates the payload and the packets to transmit.
@@ -183,6 +211,24 @@ uint8_t task_get_tx_period();
  * \return None
  */
 void task_generate_packet_payload(Beacon *b);
+
+/**
+ * \fn task_enable_rx
+ * 
+ * \brief If available, enables the reception in the radio module.
+ * 
+ * \return None
+ */
+void task_enable_rx();
+
+/**
+ * \fn task_disable_rx
+ * 
+ * \brief Disables the RX of the radio (If available, enables the standby mode).
+ * 
+ * \return None
+ */
+void task_disable_rx();
 
 #endif // TASKS_H_
 

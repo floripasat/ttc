@@ -101,6 +101,24 @@ void radio_sleep();
  */
 void radio_wake_up();
 
+/**
+ * \fn radio_init_rx_isr
+ * 
+ * \brief Configures the ISR on a pin of the radio module (If available).
+ * 
+ * \return None
+ */
+void radio_init_rx_isr();
+
+/**
+ * \fn radio_enable_rx
+ * 
+ * \brief Enables the RX on the radio module.
+ * 
+ * \return None
+ */
+void radio_enable_rx();
+
 #endif // RADIO_H_
 
 //! \} End of radio group

@@ -157,7 +157,6 @@ static void eps_com_receive_data(EPS *eps)
                 {
                     eps->crc_fails++;
                 }
-                eps->is_dead = true;
             }
             eps->byte_counter = EPS_COM_PKT_SOD_POSITION;
             break;

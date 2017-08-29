@@ -36,6 +36,7 @@
  */
 
 #include <config/config.h>
+#include <src/tasks.h>
 
 #if BEACON_RADIO == CC1175 || BEACON_RADIO == CC1125
     #include <drivers/radio/cc11x5/cc11xx.h>
@@ -127,6 +128,7 @@ void radio_sleep()
 #elif BEACON_RADIO == SI4063
     
 #elif BEACON_RADIO == RF4463F30
+    GPIO_disableInterrupt(RADIO_GPIO_nIRQ_PORT, RADIO_GPIO_nIRQ_PIN);
     rf4463_enter_standby_mode();
 #elif BEACON_RADIO == UART_SIM
     return;
@@ -145,5 +147,64 @@ void radio_wake_up()
     return;
 #endif // BEACON_RADIO
 }
+
+void radio_init_rx_isr()
+{
+#if BEACON_RADIO == CC1175 || BEACON_RADIO == CC1125
+    return;
+#elif BEACON_RADIO == SI4063
+    return;
+#elif BEACON_RADIO == RF4463F30
+    // Enables interrupt
+    GPIO_enableInterrupt(RADIO_GPIO_nIRQ_PORT, RADIO_GPIO_nIRQ_PIN);
+
+    // Sets Hi/Lo edge
+    GPIO_selectInterruptEdge(RADIO_GPIO_nIRQ_PORT, RADIO_GPIO_nIRQ_PIN, GPIO_HIGH_TO_LOW_TRANSITION);
+
+    // Clears IFG
+    GPIO_clearInterrupt(RADIO_GPIO_nIRQ_PORT, RADIO_GPIO_nIRQ_PIN);
+#elif BEACON_RADIO == UART_SIM
+    return;
+#endif // BEACON_RADIO
+}
+
+void radio_enable_rx()
+{
+#if BEACON_RADIO == CC1175 || BEACON_RADIO == CC1125
+    return;
+#elif BEACON_RADIO == SI4063
+    return;
+#elif BEACON_RADIO == RF4463F30
+    rf4463_enter_rx_mode();
+#elif BEACON_RADIO == UART_SIM
+    return;
+#endif // BEACON_RADIO
+}
+
+#if BEACON_RADIO == RF4463F30
+/**
+ * \fn Port_3
+ * 
+ * \brief This is the PORT3_VECTOR interrupt vector service routine.
+ * 
+ * \return None
+ */
+#if defined(__TI_COMPILER_VERSION__) || defined(__IAR_SYSTEMS_ICC__)
+#pragma vector=PORT3_VECTOR
+__interrupt
+#elif defined(__GNUC__)
+__attribute__((interrupt(PORT3_VECTOR)))
+#endif
+void Port_3()
+{
+    uint8_t pkt[100];
+    uint8_t pkt_len = rf4463_rx_packet(pkt);
+    
+    task_receive_packet(pkt, pkt_len);
+    
+    // P3.1 IFG cleared
+    GPIO_clearInterrupt(RADIO_GPIO_nIRQ_PORT, RADIO_GPIO_nIRQ_PIN);
+}
+#endif // BEACON_RADIO
 
 //! \} End of radio group

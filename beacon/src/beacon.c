@@ -113,6 +113,12 @@ void beacon_run()
             if (beacon.flags.can_transmit == true)
             {
                 task_transmit_packet(&beacon);
+                
+                if (beacon.obdh.is_dead == true)
+                {
+                    task_enable_rx();
+                }
+                
                 task_set_energy_level(&beacon);
             }
         }

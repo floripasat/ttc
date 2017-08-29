@@ -172,7 +172,6 @@ static void obdh_com_receive_data(OBDH *obdh)
                 {
                     obdh->crc_fails++;
                 }
-                obdh->is_dead = true;
             }
             obdh->byte_counter = OBDH_COM_CMD_POSITION;
             break;

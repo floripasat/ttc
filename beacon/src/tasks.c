@@ -109,6 +109,124 @@ void task_transmit_packet(Beacon *beacon_ptr)
     beacon_ptr->flags.transmitting = false;
 }
 
+void task_receive_packet(uint8_t *pkt, uint8_t len)
+{
+    uint8_t pkt_payload[100];
+    uint8_t pkt_payload_len;
+    
+    uint8_t i = 0;
+    for(i=0; i<len; i++)
+    {
+        uint8_t decoder_state = ngham_Decode(pkt[i], pkt_payload, pkt_payload_len);
+        if (decoder_state == PKT_CONDITION_OK)
+        {
+            task_process_received_packet_data(pkt_payload, pkt_payload_len);
+            break;
+        }
+        else if (decoder_state == PKT_CONDITION_PREFAIL)
+        {
+            continue;
+        }
+        else if (decoder_state == PKT_CONDITION_FAIL)
+        {
+            break;
+        }
+    }
+    
+    
+}
+
+void task_process_received_packet_data(uint8_t *data, uint8_t len)
+{
+    if (beacon.flags.hibernation == false)
+    {
+        if ((data[6] == 's') && (data[7] == 'd'))
+        {
+#if BEACON_MODE == DEBUG_MODE
+            debug_print_msg("Shutdown command received from ");
+            debug_print_byte(data[0]);
+            debug_print_byte(data[1]);
+            debug_print_byte(data[2]);
+            debug_print_byte(data[3]);
+            debug_print_byte(data[4]);
+            debug_print_byte(data[5]);
+            debug_print_msg("!\n");
+#endif // DEBUG_MODE
+            
+            uint8_t ngham_pkt_str[100];
+            uint8_t ngham_pkt_str_len;
+            
+            uint8_t pkt_payload_len = 0;
+            uint8_t pkt_payload[60];
+            
+            pkt_payload[pkt_payload_len++] = 'S';
+            pkt_payload[pkt_payload_len++] = 'h';
+            pkt_payload[pkt_payload_len++] = 'u';
+            pkt_payload[pkt_payload_len++] = 't';
+            pkt_payload[pkt_payload_len++] = 'd';
+            pkt_payload[pkt_payload_len++] = 'o';
+            pkt_payload[pkt_payload_len++] = 'w';
+            pkt_payload[pkt_payload_len++] = 'n';
+            pkt_payload[pkt_payload_len++] = ' ';
+            pkt_payload[pkt_payload_len++] = 'r';
+            pkt_payload[pkt_payload_len++] = 'e';
+            pkt_payload[pkt_payload_len++] = 'c';
+            pkt_payload[pkt_payload_len++] = 'e';
+            pkt_payload[pkt_payload_len++] = 'i';
+            pkt_payload[pkt_payload_len++] = 'v';
+            pkt_payload[pkt_payload_len++] = 'e';
+            pkt_payload[pkt_payload_len++] = 'd';
+            pkt_payload[pkt_payload_len++] = ' ';
+            pkt_payload[pkt_payload_len++] = 'f';
+            pkt_payload[pkt_payload_len++] = 'r';
+            pkt_payload[pkt_payload_len++] = 'o';
+            pkt_payload[pkt_payload_len++] = 'm';
+            pkt_payload[pkt_payload_len++] = ' ';
+            pkt_payload[pkt_payload_len++] = data[0];
+            pkt_payload[pkt_payload_len++] = data[1];
+            pkt_payload[pkt_payload_len++] = data[2];
+            pkt_payload[pkt_payload_len++] = data[3];
+            pkt_payload[pkt_payload_len++] = data[4];
+            pkt_payload[pkt_payload_len++] = data[5];
+            pkt_payload[pkt_payload_len++] = '.';
+            pkt_payload[pkt_payload_len++] = ' ';
+            pkt_payload[pkt_payload_len++] = 'W';
+            pkt_payload[pkt_payload_len++] = 'a';
+            pkt_payload[pkt_payload_len++] = 'k';
+            pkt_payload[pkt_payload_len++] = 'e';
+            pkt_payload[pkt_payload_len++] = ' ';
+            pkt_payload[pkt_payload_len++] = 'u';
+            pkt_payload[pkt_payload_len++] = 'p';
+            pkt_payload[pkt_payload_len++] = ' ';
+            pkt_payload[pkt_payload_len++] = 't';
+            pkt_payload[pkt_payload_len++] = 'i';
+            pkt_payload[pkt_payload_len++] = 'm';
+            pkt_payload[pkt_payload_len++] = 'e';
+            pkt_payload[pkt_payload_len++] = ' ';
+            pkt_payload[pkt_payload_len++] = 'i';
+            pkt_payload[pkt_payload_len++] = 'n';
+            pkt_payload[pkt_payload_len++] = ' ';
+            pkt_payload[pkt_payload_len++] = '2';
+            pkt_payload[pkt_payload_len++] = '4';
+            pkt_payload[pkt_payload_len++] = ' ';
+            pkt_payload[pkt_payload_len++] = 'h';
+            pkt_payload[pkt_payload_len++] = 'o';
+            pkt_payload[pkt_payload_len++] = 'u';
+            pkt_payload[pkt_payload_len++] = 'r';
+            pkt_payload[pkt_payload_len++] = 's';
+            pkt_payload[pkt_payload_len++] = '.';
+            
+            NGHam_TX_Packet ngham_packet;
+            ngham_TxPktGen(&ngham_packet, pkt_payload, pkt_payload_len);
+            ngham_Encode(&ngham_packet, ngham_pkt_str, ngham_pkt_str_len);
+            
+            radio_write_data(ngham_pkt_str, ngham_pkt_str_len);
+            
+            task_enter_hibernation();
+        }
+    }
+}
+
 void task_generate_packets(uint8_t *ngham_pkt_str, uint16_t *ngham_pkt_str_len, uint8_t *ax25_pkt_str, uint16_t *ax25_pkt_str_len)
 {    
     task_generate_packet_payload(&beacon);
@@ -283,7 +401,7 @@ void task_generate_packet_payload(Beacon *b)
     }
 #endif // PAYLOAD_SAT_ID
     
-    if (b->obdh.is_dead == false)
+    if ((b->obdh.crc_fails == 0) && (b->obdh.is_dead == false))
     {
 #if BEACON_PACKET_PAYLOAD_CONTENT & PAYLOAD_OBDH_DATA
     #if BEACON_MODE == DEBUG_MODE
@@ -356,7 +474,7 @@ void task_generate_packet_payload(Beacon *b)
             }
 #endif // PAYLOAD_OBDH_DATA
     }
-    else if (b->eps.is_dead == false)
+    else if ((b->eps.crc_fails == 0) && (b->eps.is_dead == false))
     {
 #if BEACON_PACKET_PAYLOAD_CONTENT & PAYLOAD_EPS_DATA
     #if BEACON_MODE == DEBUG_MODE
@@ -421,6 +539,17 @@ void task_generate_packet_payload(Beacon *b)
 #if BEACON_MODE == DEBUG_MODE
     debug_print_msg("DONE!\n");
 #endif // DEBUG_MODE
+}
+
+void task_enable_rx()
+{
+    radio_init_rx_isr();
+    radio_enable_rx();
+}
+
+void task_disable_rx()
+{
+    radio_sleep();
 }
 
 //! \} End of tasks group
