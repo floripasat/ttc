@@ -182,9 +182,9 @@ void ngham_Encode(NGHam_TX_Packet *p, uint8_t *pkt, uint16_t *pkt_len);
  * \param *msg
  * \param *msg_len
  * 
- * \return None
+ * \return The decodification state.
  */
-void ngham_Decode(uint8_t d, uint8_t *msg, uint8_t *msg_len);
+uint8_t ngham_Decode(uint8_t d, uint8_t *msg, uint8_t *msg_len);
 
 #endif // NGHAM_H_
 
