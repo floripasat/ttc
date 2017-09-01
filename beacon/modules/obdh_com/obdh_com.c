@@ -329,7 +329,7 @@ static void obdh_com_timer_timeout_init()
     
     Timer_B_initContinuousModeParam param = {0};
     param.clockSource               = TIMER_B_CLOCKSOURCE_ACLK;
-    param.clockSourceDivider        = TIMER_B_CLOCKSOURCE_DIVIDER_16;   // ~= 64 s to overflow
+    param.clockSourceDivider        = TIMER_B_CLOCKSOURCE_DIVIDER_32;   // ~= 64 s to overflow
     param.timerInterruptEnable_TBIE = TIMER_B_TBIE_INTERRUPT_ENABLE;
     param.timerClear                = TIMER_B_DO_CLEAR;
     param.startTimer                = false;
