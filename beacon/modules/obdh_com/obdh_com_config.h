@@ -38,6 +38,9 @@
 #ifndef OBDH_COM_CONFIG_H_
 #define OBDH_COM_CONFIG_H_
 
+// Timeout timer base address
+#define OBDH_COM_TIMEOUT_TIMER_BASE         TIMER_B0_BASE
+
 // Default byte of the data
 #define OBDH_COM_DEFAULT_DATA_BYTE          0xFF
 

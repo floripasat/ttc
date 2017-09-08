@@ -325,7 +325,7 @@ static void obdh_com_clear_buffer(OBDH *obdh)
 
 static void obdh_com_timer_timeout_init()
 {
-    Timer_B_clearTimerInterrupt(TIMER_B0_BASE);
+    Timer_B_clearTimerInterrupt(OBDH_COM_TIMEOUT_TIMER_BASE);
     
     Timer_B_initContinuousModeParam param = {0};
     param.clockSource               = TIMER_B_CLOCKSOURCE_ACLK;
@@ -334,9 +334,9 @@ static void obdh_com_timer_timeout_init()
     param.timerClear                = TIMER_B_DO_CLEAR;
     param.startTimer                = false;
     
-    Timer_B_initContinuousMode(TIMER_B0_BASE, &param);
+    Timer_B_initContinuousMode(OBDH_COM_TIMEOUT_TIMER_BASE, &param);
     
-    Timer_B_startCounter(TIMER_B0_BASE, TIMER_B_CONTINUOUS_MODE);
+    Timer_B_startCounter(OBDH_COM_TIMEOUT_TIMER_BASE, TIMER_B_CONTINUOUS_MODE);
 }
 
 /**
@@ -368,7 +368,7 @@ void USCI_A2_ISR()
 /**
  * \fn TIMERB1_ISR
  * 
- * \brief Timer_B7 Interrupt Vector (TBIV) handler.
+ * \brief Timer_B0 Interrupt Vector (TBIV) handler.
  * 
  * \return None
  */
@@ -392,8 +392,8 @@ void TIMERB1_ISR()
         case 12: break;
         case 14:            // Overflow
             obdh_ptr->is_dead = true;
-            Timer_B_stop(TIMER_B0_BASE);
-            Timer_B_clear(TIMER_B0_BASE);
+            Timer_B_stop(OBDH_COM_TIMEOUT_TIMER_BASE);
+            Timer_B_clear(OBDH_COM_TIMEOUT_TIMER_BASE);
         break;
         default: break;
     }

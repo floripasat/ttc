@@ -38,6 +38,9 @@
 #ifndef EPS_COM_CONFIG_H_
 #define EPS_COM_CONFIG_H_
 
+// Timeout timer base address
+#define EPS_COM_TIMEOUT_TIMER_BASE          TIMER_A0_BASE
+
 // Default byte of the data
 #define EPS_COM_DEFAULT_DATA_BYTE           0xFF
 

@@ -224,19 +224,19 @@ static void eps_com_clear_buffer(EPS *eps)
 }
 
 static void eps_com_timer_timeout_init()
-{
-    Timer_D_clearTimerInterrupt(TIMER_D0_BASE);
+{    
+    Timer_A_clearTimerInterrupt(EPS_COM_TIMEOUT_TIMER_BASE);
     
-    Timer_D_initContinuousModeParam param = {0};
-    param.clockSource               = TIMER_D_CLOCKSOURCE_ACLK;
-    param.clockSourceDivider        = TIMER_D_CLOCKSOURCE_DIVIDER_16;   // ~= 64 s to overflow
-    param.clockingMode              = TIMER_D_CLOCKINGMODE_EXTERNAL_CLOCK;
-    param.timerInterruptEnable_TDIE = TIMER_D_TDIE_INTERRUPT_ENABLE;
-    param.timerClear                = TIMER_D_DO_CLEAR;
+    Timer_A_initContinuousModeParam param = {0};
+    param.clockSource               = TIMER_A_CLOCKSOURCE_ACLK;
+    param.clockSourceDivider        = TIMER_A_CLOCKSOURCE_DIVIDER_32;   // ~= 64 s to overflow
+    param.timerInterruptEnable_TAIE = TIMER_A_TAIE_INTERRUPT_ENABLE;
+    param.timerClear                = TIMER_A_DO_CLEAR;
+    param.startTimer                = false;
     
-    Timer_D_initContinuousMode(TIMER_D0_BASE, &param);
+    Timer_A_initContinuousMode(EPS_COM_TIMEOUT_TIMER_BASE, &param);
     
-    Timer_D_startCounter(TIMER_D0_BASE, TIMER_D_CONTINUOUS_MODE);
+    Timer_A_startCounter(EPS_COM_TIMEOUT_TIMER_BASE, TIMER_A_CONTINUOUS_MODE);
 }
 
 /**
@@ -268,21 +268,22 @@ void USCI_A0_ISR()
 }
 
 /**
- * \fn TIMER0_D1_ISR
+ * \fn TIMER0_A1_ISR
  * 
- * \brief Timer0_D1 Interrupt Vector (TDIV) handler.
+ * \brief TIMER0_A1 interrupt vector service routine.
  * 
  * \return None
  */
 #if defined(__TI_COMPILER_VERSION__) || defined(__IAR_SYSTEMS_ICC__)
-#pragma vector=TIMER0_D1_VECTOR
+#pragma vector=TIMER0_A1_VECTOR
 __interrupt
 #elif defined(__GNUC__)
-__attribute__((interrupt(TIMER0_D1_VECTOR)))
+__attribute__((interrupt(TIMER0_A1_VECTOR)))
 #endif
-void TIMER0_D1_ISR()
+void TIMER0_A1_ISR()
 {
-    switch(__even_in_range(TD0IV, 30))
+    // Any access, read or write, of the TAIV register automatically resets the highest "pending" interrupt flag
+    switch(__even_in_range(TA0IV, 14))
     {
         case 0:
             break;
@@ -298,26 +299,10 @@ void TIMER0_D1_ISR()
             break;
         case 12:
             break;
-        case 14:
-            break;
-        case 16:                // Overflow
+        case 14:                // Overflow
             eps_ptr->is_dead = true;
-            Timer_D_stop(TIMER_D0_BASE);
-            Timer_D_clear(TIMER_D0_BASE);
-            break;
-        case 18:
-            break;
-        case 20:
-            break;
-        case 22:
-            break;
-        case 24:
-            break;
-        case 26:
-            break;
-        case 28:
-            break;
-        case 30:
+            Timer_A_stop(EPS_COM_TIMEOUT_TIMER_BASE);
+            Timer_A_clear(EPS_COM_TIMEOUT_TIMER_BASE);
             break;
         default:
             break;
