@@ -226,14 +226,14 @@ void ax25_bit_stuffing(uint8_t *pkt, uint16_t pkt_len, uint8_t *new_pkt, uint16_
     }
 }
 
-void ax25_encode(AX25_Packet *ax25_pkt, uint8_t *pkt, uint16_t pkt_len)
+void ax25_encode(AX25_Packet *ax25_pkt, uint8_t *pkt, uint16_t *pkt_len)
 {
     uint8_t pkt_str[256+21];
     uint16_t pkt_str_len;
     
     ax25_pkt_2_str(ax25_pkt, pkt_str, &pkt_str_len);
     
-    ax25_bit_stuffing(pkt_str, pkt_str_len, pkt, &pkt_len);
+    ax25_bit_stuffing(pkt_str, pkt_str_len, pkt, pkt_len);
 }
 
 //! \} End of ax25 implementation group

@@ -183,7 +183,7 @@ void ax25_bit_stuffing(uint8_t *pkt, uint16_t pkt_len, uint8_t *new_pkt, uint16_
  * 
  * \return None
  */
-void ax25_encode(AX25_Packet *ax25_pkt, uint8_t *pkt, uint16_t pkt_len);
+void ax25_encode(AX25_Packet *ax25_pkt, uint8_t *pkt, uint16_t *pkt_len);
 
 #endif // AX25_H_
 

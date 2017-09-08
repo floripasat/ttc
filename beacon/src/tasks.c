@@ -117,7 +117,7 @@ void task_receive_packet(uint8_t *pkt, uint8_t len)
     uint8_t i = 0;
     for(i=0; i<len; i++)
     {
-        uint8_t decoder_state = ngham_Decode(pkt[i], pkt_payload, pkt_payload_len);
+        uint8_t decoder_state = ngham_Decode(pkt[i], pkt_payload, &pkt_payload_len);
         if (decoder_state == PKT_CONDITION_OK)
         {
             task_process_received_packet_data(pkt_payload, pkt_payload_len);
@@ -154,7 +154,7 @@ void task_process_received_packet_data(uint8_t *data, uint8_t len)
 #endif // DEBUG_MODE
             
             uint8_t ngham_pkt_str[100];
-            uint8_t ngham_pkt_str_len;
+            uint16_t ngham_pkt_str_len;
             
             uint8_t pkt_payload_len = 0;
             uint8_t pkt_payload[60];
@@ -218,7 +218,7 @@ void task_process_received_packet_data(uint8_t *data, uint8_t len)
             
             NGHam_TX_Packet ngham_packet;
             ngham_TxPktGen(&ngham_packet, pkt_payload, pkt_payload_len);
-            ngham_Encode(&ngham_packet, ngham_pkt_str, ngham_pkt_str_len);
+            ngham_Encode(&ngham_packet, ngham_pkt_str, &ngham_pkt_str_len);
             
             radio_write_data(ngham_pkt_str, ngham_pkt_str_len);
             
