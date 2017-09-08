@@ -194,6 +194,17 @@ typedef struct
 } AX25_Transfer_Frame_Header;
 
 /**
+ * \struct AX25_Pkt_Payload
+ * 
+ * \brief The struct with the packet payload data and length (in bytes).
+ */
+typedef struct
+{
+    uint8_t data[256];
+    uint8_t len;
+} AX25_Pkt_Payload;
+
+/**
  * \struct AX25_Packet
  * 
  * \brief The struct with all the AX25 fields.
@@ -205,10 +216,22 @@ typedef struct
     AX25_Transfer_Frame_Header src_adr;
     uint8_t control_bits;
     uint8_t protocol_id;
-    uint8_t data[256];
+    AX25_Pkt_Payload payload;
     uint16_t fcs;
     uint8_t end_flag;
 } AX25_Packet;
+
+/**
+ * \struct bit
+ * 
+ * \brief A struct to hold a bit variable.
+ * 
+ * This struct is used during the bit stuffing process.
+ */
+typedef struct
+{
+    uint8_t val:1;      /**< The bit value (0 or 1). */
+} bit;
 
 /**
  * \fn ax25_BeaconPacketGen
@@ -255,12 +278,46 @@ void ax25_UpdateDataFromPacket(AX25_Packet *ax25_packet, uint8_t *new_data, uint
  * \brief Converts a packet in a struct, to an array (string) of bytes.
  * 
  * \param ax25_packet is the packet to be converted.
- * \param str_packet is the array containing the converted packet.
- * \param data_size is the size of the data field of the packet.
+ * \param str_pkt is the array containing the converted packet.
+ * \param str_pkt_len is the size of the data field of the packet.
  * 
  * \return None
  */
-void ax25_Packet2String(AX25_Packet *ax25_packet, uint8_t *str_packet, uint16_t data_size);
+void ax25_Packet2String(AX25_Packet *ax25_packet, uint8_t *str_pkt, uint16_t *str_pkt_len);
+
+/**
+ * \fn ax25_bit_stuffing
+ * 
+ * \brief Applies bit stuffing to an AX25 packet.
+ * 
+ * In order to ensure that the flag bit sequence mentioned above does not appear
+ * accidentally anywhere else in a frame, the sending station monitors the bit sequence
+ * for a group of five or more contiguous "1" bits. Any time five contiguous "1" bits are
+ * sent, the sending station inserts a "0" bit after the fifth "1" bit. During frame reception,
+ * any time five contiguous "1" bits are received, a "0" bit immediately following five "1"
+ * bits is discarded.
+ * 
+ * \param pkt is the packet to apply the bit stuffing.
+ * \param pkt_len is the length of the packet (in bytes).
+ * \param new_pkt is an array to store the new packet (with the bit suttfing applied).
+ * \param new_pkt_len is the length if the new_pkt (in bytes).
+ * 
+ * \return None
+ */
+void ax25_bit_stuffing(uint8_t *pkt, uint16_t pkt_len, uint8_t *new_pkt, uint16_t *new_pkt_len);
+
+/**
+ * \fn ax25_encode
+ * 
+ * \brief Encodes a pre-generated AX25 packet to a ready-to-transmit format.
+ * 
+ * \param ax25_pkt is a AX25_Packet struct containing a pre-generated AX25 packet.
+ * \param pkt is the resulting AX25 packet ready to transmit (in an array of bytes format).
+ * \param pkt_len is the length of the pkt (in bytes).
+ * 
+ * \return None
+ */
+void ax25_encode(AX25_Packet *ax25_pkt, uint8_t *pkt, uint16_t pkt_len);
 
 #endif // AX25_H_
 
