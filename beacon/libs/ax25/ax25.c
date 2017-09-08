@@ -1,22 +1,22 @@
 /*
  * ax25.c
  * 
- * Copyright (C) 2016, Universidade Federal de Santa Catarina
+ * Copyright (C) 2016, Federal University of Santa Catarina.
  * 
- * This file is part of FloripaSat-TTC.
+ * This file is part of FloripaSat-Beacon.
  * 
- * FloripaSat-TTC is free software: you can redistribute it and/or modify
+ * FloripaSat-Beacon is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
  * 
- * FloripaSat-TTC is distributed in the hope that it will be useful,
+ * FloripaSat-Beacon is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
  * 
  * You should have received a copy of the GNU General Public License
- * along with FloripaSat-TTC.  If not, see <http://www.gnu.org/licenses/>.
+ * along with FloripaSat-Beacon. If not, see <http://www.gnu.org/licenses/>.
  * 
  */
 
@@ -44,7 +44,7 @@
 
 #include "ax25.h"
 
-void ax25_BeaconPacketGen(AX25_Packet *ax25_packet, uint8_t *data, uint16_t data_size)
+void ax25_beacon_pkt_gen(AX25_Packet *ax25_packet, uint8_t *data, uint16_t data_size)
 {
 #if BEACON_MODE == DEBUG_MODE
     debug_print_msg("Generating AX25 packet... ");
@@ -87,7 +87,7 @@ void ax25_BeaconPacketGen(AX25_Packet *ax25_packet, uint8_t *data, uint16_t data
 #endif // DEBUG_MODE
 }
 
-void ax25_UpdateDataFromPacket(AX25_Packet *ax25_packet, uint8_t *new_data, uint16_t new_data_size)
+void ax25_update_data_from_pkt(AX25_Packet *ax25_packet, uint8_t *new_data, uint16_t new_data_size)
 {
 #if BEACON_MODE == DEBUG_MODE
     debug_print_msg("Updating an existing AX25 packet... ");
@@ -112,7 +112,7 @@ void ax25_UpdateDataFromPacket(AX25_Packet *ax25_packet, uint8_t *new_data, uint
 #endif // DEBUG_MODE
 }
 
-void ax25_Packet2String(AX25_Packet *ax25_packet, uint8_t *str_pkt, uint16_t *str_pkt_len)
+void ax25_pkt_2_str(AX25_Packet *ax25_packet, uint8_t *str_pkt, uint16_t *str_pkt_len)
 {
     *str_pkt_len = 0;
     
@@ -231,7 +231,7 @@ void ax25_encode(AX25_Packet *ax25_pkt, uint8_t *pkt, uint16_t pkt_len)
     uint8_t pkt_str[256+21];
     uint16_t pkt_str_len;
     
-    ax25_Packet2String(ax25_pkt, pkt_str, &pkt_str_len);
+    ax25_pkt_2_str(ax25_pkt, pkt_str, &pkt_str_len);
     
     ax25_bit_stuffing(pkt_str, pkt_str_len, pkt, &pkt_len);
 }

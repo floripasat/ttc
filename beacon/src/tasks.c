@@ -240,7 +240,7 @@ void task_generate_packets(uint8_t *ngham_pkt_str, uint16_t *ngham_pkt_str_len, 
 #if BEACON_PACKET_PROTOCOL & PACKET_AX25
     AX25_Packet ax25_packet;
     
-    ax25_BeaconPacketGen(&ax25_packet, beacon.packet_payload.payload, beacon.packet_payload.length);
+    ax25_beacon_pkt_gen(&ax25_packet, beacon.packet_payload.payload, beacon.packet_payload.length);
     ax25_encode(&ax25_packet, ax25_pkt_str, ax25_pkt_str_len);
 #endif // PACKET_AX25
 }
