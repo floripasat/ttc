@@ -129,7 +129,7 @@ void init_pa()
 
 void init_protocols()
 {
-    ngham_Init();
+    ngham_init();
 }
 
 //! \} End of init group

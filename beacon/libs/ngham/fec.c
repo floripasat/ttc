@@ -92,9 +92,12 @@ int16_t decode_rs_char(RS *rs_ptr, uint8_t *data, int16_t *eras_pos, int16_t no_
     int16_t deg_lambda, el, deg_omega;
     int16_t i, j, r, k;
     uint8_t u, q, tmp, num1, num2, den, discr_r;
-    uint8_t lambda[rs_ptr->nroots + 1], s[rs_ptr->nroots];      // Err+Eras Locator poly and syndrome poly
-    uint8_t b[rs_ptr->nroots + 1], t[rs_ptr->nroots + 1], omega[rs_ptr->nroots + 1];
-    uint8_t root[rs_ptr->nroots], reg[rs_ptr->nroots + 1], loc[rs_ptr->nroots];
+    //uint8_t lambda[rs_ptr->nroots + 1], s[rs_ptr->nroots];      // Err+Eras Locator poly and syndrome poly
+    //uint8_t b[rs_ptr->nroots + 1], t[rs_ptr->nroots + 1], omega[rs_ptr->nroots + 1];
+    //uint8_t root[rs_ptr->nroots], reg[rs_ptr->nroots + 1], loc[rs_ptr->nroots];
+    uint8_t lambda[10], s[10];              // Err+Eras Locator poly and syndrome poly
+    uint8_t b[10], t[10], omega[10];
+    uint8_t root[10], reg[10], loc[10];
     int16_t syn_error, count;
 
     // form the syndromes; i.e., evaluate data(x) at roots of g(x)

@@ -144,7 +144,7 @@ typedef struct ATTRIBUTE_PACKED
 } ngh_spphdr_t;
 
 /**
- * \fn ngham_RxPktInit
+ * \fn ngham_rx_pkt_init
  * 
  * \brief RX packet initialization.
  * 
@@ -152,10 +152,10 @@ typedef struct ATTRIBUTE_PACKED
  * 
  * \return None
  */
-void ngham_RxPktInit(NGHam_RX_Packet *p);
+void ngham_rx_pkt_init(NGHam_RX_Packet *p);
 
 /**
- * \fn ngham_TxPktInit
+ * \fn ngham_tx_pkt_init
  * 
  * \brief TX packet initialization.
  * 
@@ -163,10 +163,10 @@ void ngham_RxPktInit(NGHam_RX_Packet *p);
  * 
  * \return None
  */
-void ngham_TxPktInit(NGHam_TX_Packet *p);
+void ngham_tx_pkt_init(NGHam_TX_Packet *p);
 
 /**
- * \fn ngham_TxPktGen
+ * \fn ngham_tx_pkt_gen
  * 
  * \brief Generates a TX packet with a given payload.
  * 
@@ -176,7 +176,7 @@ void ngham_TxPktInit(NGHam_TX_Packet *p);
  * 
  * \return None
  */
-void ngham_TxPktGen(NGHam_TX_Packet *p, uint8_t *pl, uint8_t pl_len);
+void ngham_tx_pkt_gen(NGHam_TX_Packet *p, uint8_t *pl, uint8_t pl_len);
 
 #endif // NGHAM_PACKETS_H_
 

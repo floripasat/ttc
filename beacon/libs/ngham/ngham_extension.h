@@ -161,7 +161,7 @@ typedef struct ATTRIBUTE_PACKED
 } ngham_dest_t;
 
 /**
- * \fn ngham_ExtAllocatePkt
+ * \fn ngham_ext_allocate_pkt
  * 
  * \brief 
  * 
@@ -174,10 +174,10 @@ typedef struct ATTRIBUTE_PACKED
  * 
  * \return 
  */
-uint8_t* ngham_ExtAllocatePkt(NGHam_TX_Packet *p, uint8_t pkt_type, uint16_t data_len);
+uint8_t* ngham_ext_allocate_pkt(NGHam_TX_Packet *p, uint8_t pkt_type, uint16_t data_len);
 
 /**
- * \fn ngham_ExtAppendPkt
+ * \fn ngham_ext_append_pkt
  * 
  * \brief Append extension packet with given data, type and size to tx_pkt.
  * 
@@ -188,10 +188,10 @@ uint8_t* ngham_ExtAllocatePkt(NGHam_TX_Packet *p, uint8_t pkt_type, uint16_t dat
  * 
  * \return None
  */
-void ngham_ExtAppendPkt(NGHam_TX_Packet *p, uint8_t type, uint8_t *data, uint16_t size);
+void ngham_ext_append_pkt(NGHam_TX_Packet *p, uint8_t type, uint8_t *data, uint16_t size);
 
 /**
- * \fn ngham_ExtNumPkts
+ * \fn ngham_ext_num_pkts
  * 
  * \brief 
  * 
@@ -200,10 +200,10 @@ void ngham_ExtAppendPkt(NGHam_TX_Packet *p, uint8_t type, uint8_t *data, uint16_
  * 
  * \return Returns number of sub packets and verifies them.
  */
-uint16_t ngham_ExtNumPkts(uint8_t *d, uint16_t d_len);
+uint16_t ngham_ext_num_pkts(uint8_t *d, uint16_t d_len);
 
 /**
- * \fn ngham_ExtEncodeCallsign
+ * \fn ngham_ext_encode_callsign
  * 
  * \brief 
  * 
@@ -212,10 +212,10 @@ uint16_t ngham_ExtNumPkts(uint8_t *d, uint16_t d_len);
  * 
  * \return 
  */
-uint8_t ngham_ExtEncodeCallsign(uint8_t *enc_callsign, int8_t *callsign);
+uint8_t ngham_ext_encode_callsign(uint8_t *enc_callsign, int8_t *callsign);
 
 /**
- * \fn ngham_ExtDecodeCallsign
+ * \fn ngham_ext_decode_callsign
  * 
  * \brief 
  * 
@@ -227,7 +227,7 @@ uint8_t ngham_ExtEncodeCallsign(uint8_t *enc_callsign, int8_t *callsign);
  * 
  * \return None
  */
-void ngham_ExtDecodeCallsign(int8_t *callsign, uint8_t *enc_callsign);
+void ngham_ext_decode_callsign(int8_t *callsign, uint8_t *enc_callsign);
 
 #endif // NGHAM_EXTENSIONS_H_
 

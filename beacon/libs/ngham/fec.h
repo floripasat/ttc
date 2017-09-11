@@ -45,11 +45,11 @@
 #define	MIN(a, b)   ((a) < (b) ? (a) : (b))
 
 /**
- * \struct rs
+ * \struct RS
  * 
  * \brief Reed-Solomon codec control block.
  */
-typedef struct rs
+typedef struct
 {
     uint16_t mm;            // Bits per symbol
     uint16_t nn;            // Symbols per block (= (1 << mm)-1)

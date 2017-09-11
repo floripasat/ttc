@@ -71,14 +71,14 @@ const uint8_t NGH_SYNC_FOUR_LEVEL[]     = {0x77, 0xf7, 0xfd, 0x7d, 0x5d, 0xdd, 0
 // Reed Solomon control blocks for the different NGHAM sizes
 RS rs_cb[NGH_SIZES];
 
-void ngham_Init()
+void ngham_init()
 {
     decoder_state = NGH_STATE_SIZE_TAG;
     
-    ngham_InitArrays();
+    ngham_init_arrays();
 }
 
-void ngham_InitArrays()
+void ngham_init_arrays()
 {
     uint8_t i;
     for(i=0;i<NGH_SIZES;i++)
@@ -96,7 +96,7 @@ void ngham_InitArrays()
     }
 }
 
-void ngham_DeinitArrays()
+void ngham_deinit_arrays()
 {
     free_rs_char(&rs_cb[0]);    // Free memory for nroots = 16
     free_rs_char(&rs_cb[3]);    // Free memory for nroots = 32
@@ -119,7 +119,7 @@ void ngham_DeinitArrays()
  *          -\b NGH_HAMMING_DISTANCE_SMALLER if true
  *          .
  */
-static uint8_t ngham_TagCheck(uint32_t x, uint32_t y)
+static uint8_t ngham_tag_check(uint32_t x, uint32_t y)
 {
     uint8_t j, distance;
     uint32_t diff;
@@ -146,7 +146,7 @@ static uint8_t ngham_TagCheck(uint32_t x, uint32_t y)
     return NGH_HAMMING_DISTANCE_SMALLER;
 }
 
-void ngham_Encode(NGHam_TX_Packet *p, uint8_t *pkt, uint16_t *pkt_len)
+void ngham_encode(NGHam_TX_Packet *p, uint8_t *pkt, uint16_t *pkt_len)
 {
     uint16_t j;
     uint16_t crc;
@@ -220,10 +220,10 @@ void ngham_Encode(NGHam_TX_Packet *p, uint8_t *pkt, uint16_t *pkt_len)
         d[codeword_start+j] ^= ccsds_poly[j];
     }
 
-    ngham_ActionSendData(d, d_len, p->priority, pkt, pkt_len);
+    ngham_action_send_data(d, d_len, p->priority, pkt, pkt_len);
 }
 
-uint8_t ngham_Decode(uint8_t d, uint8_t *msg, uint8_t *msg_len)
+uint8_t ngham_decode(uint8_t d, uint8_t *msg, uint8_t *msg_len)
 {
     static uint8_t size_nr;
     static uint32_t size_tag;
@@ -235,7 +235,7 @@ uint8_t ngham_Decode(uint8_t d, uint8_t *msg, uint8_t *msg_len)
     {
         case NGH_STATE_SIZE_TAG:
             size_tag = 0;
-            ngham_ActionReceptionStarted();
+            ngham_action_reception_started();
             
         case NGH_STATE_SIZE_TAG_2:
             size_tag <<= 8;
@@ -247,23 +247,23 @@ uint8_t ngham_Decode(uint8_t d, uint8_t *msg, uint8_t *msg_len)
             size_tag <<= 8;
             size_tag |= d;
             {
-                for (size_nr=0; size_nr<NGH_SIZES; size_nr++)
+                for(size_nr=0; size_nr<NGH_SIZES; size_nr++)
                 {
                     // If tag is intact, set known size
-                    if (ngham_TagCheck(size_tag, NGH_SIZE_TAG[size_nr]))
+                    if (ngham_tag_check(size_tag, NGH_SIZE_TAG[size_nr]))
                     {
                         decoder_state = NGH_STATE_SIZE_KNOWN;
                         length = 0;
 
                         // Set new packet size as soon as possible
-                        ngham_ActionSetPacketSize(NGH_PL_PAR_SIZE[size_nr] + NGH_SIZE_TAG_SIZE);
+                        ngham_action_set_packet_size(NGH_PL_PAR_SIZE[size_nr] + NGH_SIZE_TAG_SIZE);
                         break;
                     }
                 }
                 // If size tag is not found, every size can theoretically be attempted
                 if (decoder_state != NGH_STATE_SIZE_KNOWN)
                 {
-                    ngham_ActionHandlePacket(PKT_CONDITION_PREFAIL, NULL, NULL, NULL);
+                    ngham_action_handle_packet(PKT_CONDITION_PREFAIL, NULL, NULL, NULL);
                     decoder_state = NGH_STATE_SIZE_TAG;
                 }
             }
@@ -277,7 +277,7 @@ uint8_t ngham_Decode(uint8_t d, uint8_t *msg, uint8_t *msg_len)
             // Do whatever is necessary in this action
             if (length == NGHAM_BYTES_TILL_ACTION_HALFWAY)
             {
-                ngham_ActionReceptionHalfway();
+                ngham_action_reception_halfway();
             }
 
             if (length == NGH_PL_PAR_SIZE[size_nr])
@@ -285,7 +285,7 @@ uint8_t ngham_Decode(uint8_t d, uint8_t *msg, uint8_t *msg_len)
                 int8_t errors;
 
                 // Set packet size back to a large value
-                ngham_ActionSetPacketSize(255);
+                ngham_action_set_packet_size(255);
                 decoder_state = NGH_STATE_SIZE_TAG;
 
                 // Run Reed Solomon decoding, calculate packet length
@@ -293,21 +293,21 @@ uint8_t ngham_Decode(uint8_t d, uint8_t *msg, uint8_t *msg_len)
                 rx_pkt.pl_len = NGH_PL_SIZE[size_nr] - (buf[0] & NGH_PADDING_bm);
 
                 // Check if the packet is decodeable and then if CRC is OK
-                if ((errors != -1) && (ngham_CRC_CCITT(buf, rx_pkt.pl_len+1) == ((buf[rx_pkt.pl_len+1]<<8) | buf[rx_pkt.pl_len+2])) )
+                if ((errors != -1) && (ngham_CRC_CCITT(buf, rx_pkt.pl_len + 1) == ((buf[rx_pkt.pl_len + 1] << 8) | buf[rx_pkt.pl_len + 2])) )
                 {
 
                     // Copy remaining fields and pass on
                     rx_pkt.errors = errors;
                     rx_pkt.ngham_flags = (buf[0] & NGH_FLAGS_bm) >> NGH_FLAGS_bp;
-                    rx_pkt.noise = ngham_ActionGetNoiseFloor();
-                    rx_pkt.rssi = ngham_ActionGetRSSI();
-                    ngham_ActionHandlePacket(PKT_CONDITION_OK, &rx_pkt, msg, msg_len);
+                    rx_pkt.noise = ngham_action_get_noise_floor();
+                    rx_pkt.rssi = ngham_action_get_rssi();
+                    ngham_action_handle_packet(PKT_CONDITION_OK, &rx_pkt, msg, msg_len);
                     return PKT_CONDITION_OK;
                 }
                 // If packet decoding not was successful, count this as an error
                 else
                 {
-                    ngham_ActionHandlePacket(PKT_CONDITION_FAIL, NULL, NULL, NULL);
+                    ngham_action_handle_packet(PKT_CONDITION_FAIL, NULL, NULL, NULL);
                     return PKT_CONDITION_FAIL;
                 }
             }
@@ -317,4 +317,4 @@ uint8_t ngham_Decode(uint8_t d, uint8_t *msg, uint8_t *msg_len)
     return PKT_CONDITION_PREFAIL;
 }
 
-//! \} End of NGHam implementation group
+//! \} End of ngham group

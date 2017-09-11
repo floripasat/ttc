@@ -38,7 +38,7 @@
 
 #include "ngham_packets.h"
 
-void ngham_RxPktInit(NGHam_RX_Packet *p)
+void ngham_rx_pkt_init(NGHam_RX_Packet *p)
 {
     p->pl_len           = 0;
     p->ngham_flags      = 0;
@@ -48,14 +48,14 @@ void ngham_RxPktInit(NGHam_RX_Packet *p)
     p->timestamp_toh_us = TIMESTAMP_NA;
 }
 
-void ngham_TxPktInit(NGHam_TX_Packet *p)
+void ngham_tx_pkt_init(NGHam_TX_Packet *p)
 {
     p->pl_len       = 0;
     p->ngham_flags  = 0;
     p->priority     = PKT_PRIORITY_NORMAL;
 }
 
-void ngham_TxPktGen(NGHam_TX_Packet *p, uint8_t *pl, uint8_t pl_len)
+void ngham_tx_pkt_gen(NGHam_TX_Packet *p, uint8_t *pl, uint8_t pl_len)
 {
     p->pl_len         = pl_len;
     p->ngham_flags    = 0;
@@ -74,4 +74,4 @@ void ngham_TxPktGen(NGHam_TX_Packet *p, uint8_t *pl, uint8_t pl_len)
     }
 }
 
-//! \} End of ngham_packets implementation group
+//! \} End of ngham_packets group

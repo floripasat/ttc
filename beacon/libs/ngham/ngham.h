@@ -127,16 +127,16 @@ extern RS rs_cb[NGH_SIZES];
 //! \}
 
 /**
- * \fn ngham_Init
+ * \fn ngham_init
  * 
  * \brief NGHam initialization.
  * 
  * \return None
  */
-void ngham_Init();
+void ngham_init();
 
 /**
- * \fn ngham_InitArrays
+ * \fn ngham_init_arrays
  * 
  * \brief Generates Reed Solomon tables.
  * 
@@ -145,19 +145,19 @@ void ngham_Init();
  * 
  * \return None
  */
-void ngham_InitArrays();
+void ngham_init_arrays();
 
 /**
- * \fn ngham_DeinitArrays
+ * \fn ngham_deinit_arrays
  * 
  * \brief Free Reed Solomon tables.
  * 
  * \return None
  */
-void ngham_DeinitArrays();
+void ngham_deinit_arrays();
 
 /**
- * \fn ngham_Encode
+ * \fn ngham_encode
  * 
  * \brief Packet encoding.
  * 
@@ -169,10 +169,10 @@ void ngham_DeinitArrays();
  * 
  * \return None
  */
-void ngham_Encode(NGHam_TX_Packet *p, uint8_t *pkt, uint16_t *pkt_len);
+void ngham_encode(NGHam_TX_Packet *p, uint8_t *pkt, uint16_t *pkt_len);
 
 /**
- * \fn ngham_Decode
+ * \fn ngham_decode
  * 
  * \brief Packet decoding.
  * 
@@ -184,7 +184,7 @@ void ngham_Encode(NGHam_TX_Packet *p, uint8_t *pkt, uint16_t *pkt_len);
  * 
  * \return The decodification state.
  */
-uint8_t ngham_Decode(uint8_t d, uint8_t *msg, uint8_t *msg_len);
+uint8_t ngham_decode(uint8_t d, uint8_t *msg, uint8_t *msg_len);
 
 #endif // NGHAM_H_
 

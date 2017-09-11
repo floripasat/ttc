@@ -49,22 +49,22 @@ uint16_t rx_buf_len;
 NGHam_RX_Packet rx_pkt;
 uint8_t decoder_state;
 
-uint8_t ngham_ActionGetRSSI()
+uint8_t ngham_action_get_rssi()
 {
     return RSSI_NA;
 }
 
-uint8_t ngham_ActionGetNoiseFloor()
+uint8_t ngham_action_get_noise_floor()
 {
     return RSSI_NA;
 }
 
-void ngham_ActionSetPacketSize(uint8_t size)
+void ngham_action_set_packet_size(uint8_t size)
 {
     
 }
 
-void ngham_ActionSendData(uint8_t *d, uint16_t d_len, uint8_t priority, uint8_t *pkt, uint16_t *pkt_len)
+void ngham_action_send_data(uint8_t *d, uint16_t d_len, uint8_t priority, uint8_t *pkt, uint16_t *pkt_len)
 {
     int16_t i = 0;
     switch (priority)
@@ -81,7 +81,7 @@ void ngham_ActionSendData(uint8_t *d, uint16_t d_len, uint8_t priority, uint8_t 
     }
 }
 
-void ngham_ActionHandlePacket(uint8_t condition, NGHam_RX_Packet *p, uint8_t *msg, uint8_t *msg_len)
+void ngham_action_handle_packet(uint8_t condition, NGHam_RX_Packet *p, uint8_t *msg, uint8_t *msg_len)
 {
     uint8_t i = 0;
     switch (condition)
@@ -104,17 +104,17 @@ void ngham_ActionHandlePacket(uint8_t condition, NGHam_RX_Packet *p, uint8_t *ms
     }
 
     // Reset RX packet content
-    ngham_RxPktInit(&rx_pkt);
+    ngham_rx_pkt_init(&rx_pkt);
 }
 
-void ngham_ActionReceptionStarted()
+void ngham_action_reception_started()
 {
     // rx_pkt.timestamp = ;
 }
 
-void ngham_ActionReceptionHalfway()
+void ngham_action_reception_halfway()
 {
     
 }
 
-//! \} End of platform implementation group
+//! \} End of platform group

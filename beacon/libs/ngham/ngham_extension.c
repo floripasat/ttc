@@ -68,7 +68,7 @@ const uint16_t PKT_TYPE_SIZES[] = {
     1
 };		
 
-uint8_t* ngham_ExtAllocatePkt(NGHam_TX_Packet *p, uint8_t pkt_type, uint16_t data_len)
+uint8_t* ngham_ext_allocate_pkt(NGHam_TX_Packet *p, uint8_t pkt_type, uint16_t data_len)
 {
     if ((p->pl_len + 2 + data_len) > NGHAM_PL_MAX)
     {
@@ -82,7 +82,7 @@ uint8_t* ngham_ExtAllocatePkt(NGHam_TX_Packet *p, uint8_t pkt_type, uint16_t dat
     return p->pl+p->pl_len-data_len;
 }
 
-void ngh_ExtAppendPkt(NGHam_TX_Packet *p, uint8_t type, uint8_t *data, uint16_t size)
+void ngh_ext_append_pkt(NGHam_TX_Packet *p, uint8_t type, uint8_t *data, uint16_t size)
 {
 	if ((p->pl_len + 2 + size) > NGHAM_PL_MAX)
     {
@@ -95,7 +95,7 @@ void ngh_ExtAppendPkt(NGHam_TX_Packet *p, uint8_t type, uint8_t *data, uint16_t 
 	p->pl_len += 2 + size;
 }
 
-uint16_t ngham_ExtNumPkts(uint8_t *d, uint16_t d_len)
+uint16_t ngham_ext_num_pkts(uint8_t *d, uint16_t d_len)
 {
 	// Go through all sub packets
 	uint16_t start, packets;
@@ -116,7 +116,7 @@ uint16_t ngham_ExtNumPkts(uint8_t *d, uint16_t d_len)
 	return packets;
 }
 
-uint8_t ngham_ExtEncodeCallsign(uint8_t *enc_callsign, int8_t *callsign)
+uint8_t ngham_ext_encode_callsign(uint8_t *enc_callsign, int8_t *callsign)
 {
 	uint32_t temp;
 	uint8_t j, copy[7], ssid = 0;
@@ -175,7 +175,7 @@ uint8_t ngham_ExtEncodeCallsign(uint8_t *enc_callsign, int8_t *callsign)
 	return 1;
 }
 
-void ngham_ExtDecodeCallsign(int8_t *callsign, uint8_t *enc_callsign)
+void ngham_ext_decode_callsign(int8_t *callsign, uint8_t *enc_callsign)
 {
     uint32_t temp;
     uint8_t j, ssid;
@@ -213,4 +213,4 @@ void ngham_ExtDecodeCallsign(int8_t *callsign, uint8_t *enc_callsign)
     }
 }
 
-//! \} End of ngham_extension implementation group
+//! \} End of ngham_extension group
