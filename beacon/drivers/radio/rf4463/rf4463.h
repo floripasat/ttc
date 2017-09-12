@@ -124,9 +124,12 @@ bool rf4463_tx_long_packet(uint8_t *packet, uint16_t len);
  * 
  * \param rx_buf
  * 
- * \return 
+ * \return It can return:
+ *              -\b true 
+ *              -\b false 
+ *              .
  */
-uint8_t rf4463_rx_packet(uint8_t *rx_buf);
+bool rf4463_rx_packet(uint8_t *rx_buf, uint8_t len);
 
 /**
  * \fn rf4463_rx_init
@@ -348,10 +351,14 @@ void rf4463_write_tx_fifo(uint8_t *data, uint8_t len);
  * \brief 
  * 
  * \param data
+ * \param len
  * 
- * \return 
+ * \return It can return:
+ *              -\b true 
+ *              -\b false 
+ *              .
  */
-uint8_t rf4463_read_rx_fifo(uint8_t *data);
+bool rf4463_read_rx_fifo(uint8_t *data, uint8_t len);
 
 /**
  * \fn rf4463_fifo_reset

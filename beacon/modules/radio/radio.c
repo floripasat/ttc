@@ -115,7 +115,7 @@ void radio_read_data(uint8_t *buffer, uint8_t *len)
 #elif BEACON_RADIO == SI4063
     
 #elif BEACON_RADIO == RF4463F30
-    *len = rf4463_rx_packet(buffer);
+    rf4463_rx_packet(buffer, *len);
 #elif BEACON_RADIO == UART_SIM
     return;
 #endif // BEACON_RADIO
@@ -197,10 +197,10 @@ __attribute__((interrupt(PORT3_VECTOR)))
 #endif
 void Port_3()
 {
-    uint8_t pkt[100];
-    uint8_t pkt_len = rf4463_rx_packet(pkt);
+    uint8_t pkt[60];
+    rf4463_rx_packet(pkt, 50);
     
-    task_receive_packet(pkt, pkt_len);
+    task_receive_packet(pkt, 50);
     
     // P3.1 IFG cleared
     GPIO_clearInterrupt(RADIO_GPIO_nIRQ_PORT, RADIO_GPIO_nIRQ_PIN);

@@ -128,7 +128,7 @@ void beacon_run()
             {
                 if (task_check_elapsed_time(beacon.time.minute, beacon.hibernation_mode_initial_time.minute, MINUTES) >= BEACON_HIBERNATION_PERIOD_MINUTES)
                 {
-                    if (task_check_elapsed_time(beacon.time.second, beacon.hibernation_mode_initial_time.minute, SECONDS) >= BEACON_HIBERNATION_PERIOD_SECONDS)
+                    if (task_check_elapsed_time(beacon.time.second, beacon.hibernation_mode_initial_time.second, SECONDS) >= BEACON_HIBERNATION_PERIOD_SECONDS)
                     {
                         task_leave_hibernation();
                     }
