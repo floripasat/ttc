@@ -112,7 +112,19 @@ void beacon_run()
         {
             if (beacon.flags.can_transmit == true)
             {
-                task_transmit_packet(&beacon);
+            #if BEACON_PACKET_PROTOCOL & PACKET_NGHAM
+                task_transmit_ngham_packet(&beacon);
+            #endif // PACKET_NGHAM
+            
+            #if BEACON_PACKET_PROTOCOL & PACKET_NGHAM & PACKET_AX25
+                watchdog_reset_timer();
+                
+                task_enter_low_power_mode(&beacon);     // Wait one cycle (1 second)
+            #endif // BEACON_PACKET_PROTOCOL
+            
+            #if BEACON_PACKET_PROTOCOL & PACKET_AX25    
+                task_transmit_ax25_packet(&beacon);
+            #endif // PACKET_AX25
                 
                 if (beacon.obdh.is_dead == true)
                 {

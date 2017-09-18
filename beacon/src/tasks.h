@@ -44,13 +44,26 @@
 #include "beacon.h"
 
 /**
- * \fn task_transmit_packet
+ * \fn task_transmit_ngham_packet
  * 
- * \brief Transmit a beacon packet
+ * \brief Transmit a beacon packet using the NGHam protocol.
+ * 
+ * \param beacon_ptr is a pointer to a Beacon object.
  * 
  * \return None
  */
-void task_transmit_packet();
+void task_transmit_ngham_packet(Beacon *beacon_ptr);
+
+/**
+ * \fn task_transmit_ax25_packet
+ * 
+ * \brief Transmit a beacon packet using the AX.25 protocol.
+ * 
+ * \param beacon_ptr is a pointer to a Beacon object.
+ * 
+ * \return None
+ */
+void task_transmit_ax25_packet(Beacon *beacon_ptr);
 
 /**
  * \fn task_receive_packet
@@ -81,7 +94,7 @@ void task_receive_packet(uint8_t *pkt, uint8_t len);
 void task_process_received_packet_data(uint8_t *data, uint8_t len);
 
 /**
- * \fn task_generate_packets()
+ * \fn task_generate_packets
  * 
  * \brief Generates the payload and the packets to transmit.
  * 
@@ -93,6 +106,30 @@ void task_process_received_packet_data(uint8_t *data, uint8_t len);
  * \return None
  */
 void task_generate_packets(uint8_t *ngham_pkt_str, uint16_t *ngham_pkt_str_len, uint8_t *ax25_pkt_str, uint16_t *ax25_pkt_str_len);
+
+/**
+ * \fn task_generate_ngham_packet
+ * 
+ * \brief Generates a payload and a NGHam packets to transmit.
+ * 
+ * \param ngham_pkt_str is a pointer to an array to store the NGHam packet.
+ * \param ngham_pkt_str_len is a pointer to a byte to store the lenght of the NGHam packet.
+ * 
+ * \return None
+ */
+void task_generate_ngham_packet(uint8_t *ngham_pkt_str, uint16_t *ngham_pkt_str_len);
+
+/**
+ * \fn task_generate_ax25_packet
+ * 
+ * \brief Generates a payload and an AX.25 packet to transmit.
+ * 
+ * \param ax25_pkt_str is a pointer to an array to store the AX.25 packet.
+ * \param ax25_pkt_str_lens is a pointer to a byte to store the lenght of the AX.25 packet.
+ * 
+ * \return None
+ */
+void task_generate_ax25_packet(uint8_t *ax25_pkt_str, uint16_t *ax25_pkt_str_len);
 
 /**
  * \fn task_enter_low_power_mode

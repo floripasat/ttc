@@ -45,67 +45,63 @@
 #include "beacon.h"
 #include "flags.h"
 
-void task_transmit_packet(Beacon *beacon_ptr)
+void task_transmit_ngham_packet(Beacon *beacon_ptr)
 {
     beacon_ptr->flags.transmitting = true;
     
     uint8_t ngham_pkt_str[256];
     uint16_t ngham_pkt_str_len;
+    
+    task_generate_ngham_packet(ngham_pkt_str, &ngham_pkt_str_len);
+    
+#if BEACON_RF_SWITCH != HW_NONE
+    rf_switch_enable_beacon();
+#endif // BEACON_RF_SWITCH
+
+#if BEACON_PA != HW_NONE
+    pa_enable();
+#endif // BEACON_PA
+        
+    radio_write_data(ngham_pkt_str+8, ngham_pkt_str_len-8);    // 8: Removing preamble and sync word from the NGHam packet
+
+#if BEACON_PA != HW_NONE
+    pa_disable();
+#endif // BEACON_PA
+
+#if BEACON_RF_SWITCH != HW_NONE
+    rf_switch_disable_beacon();
+#endif // BEACON_RF_SWITCH
+
+    beacon_ptr->flags.transmitting = false;
+}
+
+void task_transmit_ax25_packet(Beacon *beacon_ptr)
+{
+    beacon_ptr->flags.transmitting = true;
+    
     uint8_t ax25_pkt_str[256];
     uint16_t ax25_pkt_str_len;
     
-    task_generate_packets(ngham_pkt_str, &ngham_pkt_str_len, ax25_pkt_str, &ax25_pkt_str_len);
+    task_generate_ax25_packet(ax25_pkt_str, &ax25_pkt_str_len);
     
-#if BEACON_PACKET_PROTOCOL & PACKET_NGHAM
-    #if BEACON_RF_SWITCH != HW_NONE
-        rf_switch_enable_beacon();
-    #endif // BEACON_RF_SWITCH
+#if BEACON_RF_SWITCH != HW_NONE
+    rf_switch_enable_beacon();
+#endif // BEACON_RF_SWITCH
 
-    #if BEACON_PA != HW_NONE
-        pa_enable();
-    #endif // BEACON_PA
-        
-        uint8_t buffer[128];
-        uint8_t i = 0;
-        for(i=0; i<ngham_pkt_str_len-8; i++)
-        {
-            buffer[i] = ngham_pkt_str[i+8];     // Removing preamble and sync word from the NGHam packet
-        }
-        
-        //radio_write_data(ngham_pkt_str, ngham_pkt_str_len);
-        radio_write_data(buffer, ngham_pkt_str_len-8);
+#if BEACON_PA != HW_NONE
+    pa_enable();
+#endif // BEACON_PA
+    
+    radio_write_data(ax25_pkt_str, ax25_pkt_str_len);
+    
+#if BEACON_PA != HW_NONE
+    pa_disable();
+#endif // BEACON_PA
 
-    #if BEACON_PA != HW_NONE
-        pa_disable();
-    #endif // BEACON_PA
-
-    #if BEACON_RF_SWITCH != HW_NONE
-        rf_switch_disable_beacon();
-    #endif // BEACON_RF_SWITCH
-#endif // PACKET_NGHAM
-
-#if BEACON_PACKET_PROTOCOL & PACKET_AX25
-    #if BEACON_RF_SWITCH != HW_NONE
-        rf_switch_enable_beacon();
-    #endif // BEACON_RF_SWITCH
-
-    #if BEACON_PA != HW_NONE
-        pa_enable();
-    #endif // BEACON_PA
-
-    #if BEACON_PACKET_PROTOCOL & PACKET_AX25    
-        radio_write_data(ax25_pkt_str, ax25_pkt_str_len);
-    #endif // PACKET_AX25
-
-    #if BEACON_PA != HW_NONE
-        pa_disable();
-    #endif // BEACON_PA
-
-    #if BEACON_RF_SWITCH != HW_NONE
-        rf_switch_disable_beacon();
-    #endif // BEACON_RF_SWITCH
-#endif // PACKET_AX25
-
+#if BEACON_RF_SWITCH != HW_NONE
+    rf_switch_disable_beacon();
+#endif // BEACON_RF_SWITCH
+    
     beacon_ptr->flags.transmitting = false;
 }
 
@@ -159,68 +155,38 @@ void task_process_received_packet_data(uint8_t *data, uint8_t len)
             uint8_t pkt_payload_len = 0;
             uint8_t pkt_payload[60];
             
-            pkt_payload[pkt_payload_len++] = 'S';
-            pkt_payload[pkt_payload_len++] = 'h';
-            pkt_payload[pkt_payload_len++] = 'u';
-            pkt_payload[pkt_payload_len++] = 't';
-            pkt_payload[pkt_payload_len++] = 'd';
-            pkt_payload[pkt_payload_len++] = 'o';
-            pkt_payload[pkt_payload_len++] = 'w';
-            pkt_payload[pkt_payload_len++] = 'n';
-            pkt_payload[pkt_payload_len++] = ' ';
-            pkt_payload[pkt_payload_len++] = 'r';
-            pkt_payload[pkt_payload_len++] = 'e';
-            pkt_payload[pkt_payload_len++] = 'c';
-            pkt_payload[pkt_payload_len++] = 'e';
-            pkt_payload[pkt_payload_len++] = 'i';
-            pkt_payload[pkt_payload_len++] = 'v';
-            pkt_payload[pkt_payload_len++] = 'e';
-            pkt_payload[pkt_payload_len++] = 'd';
-            pkt_payload[pkt_payload_len++] = ' ';
-            pkt_payload[pkt_payload_len++] = 'f';
-            pkt_payload[pkt_payload_len++] = 'r';
-            pkt_payload[pkt_payload_len++] = 'o';
-            pkt_payload[pkt_payload_len++] = 'm';
-            pkt_payload[pkt_payload_len++] = ' ';
+            uint8_t shutdown_ack_start[] = "Shutdown received from ";
+            uint8_t i = 0;
+            for(i=0; i<sizeof(shutdown_ack_start); i++)
+            {
+                pkt_payload[pkt_payload_len++] = shutdown_ack_start[i];
+            }
+            
             pkt_payload[pkt_payload_len++] = data[0];
             pkt_payload[pkt_payload_len++] = data[1];
             pkt_payload[pkt_payload_len++] = data[2];
             pkt_payload[pkt_payload_len++] = data[3];
             pkt_payload[pkt_payload_len++] = data[4];
             pkt_payload[pkt_payload_len++] = data[5];
-            pkt_payload[pkt_payload_len++] = '.';
-            pkt_payload[pkt_payload_len++] = ' ';
-            pkt_payload[pkt_payload_len++] = 'W';
-            pkt_payload[pkt_payload_len++] = 'a';
-            pkt_payload[pkt_payload_len++] = 'k';
-            pkt_payload[pkt_payload_len++] = 'e';
-            pkt_payload[pkt_payload_len++] = ' ';
-            pkt_payload[pkt_payload_len++] = 'u';
-            pkt_payload[pkt_payload_len++] = 'p';
-            pkt_payload[pkt_payload_len++] = ' ';
-            pkt_payload[pkt_payload_len++] = 't';
-            pkt_payload[pkt_payload_len++] = 'i';
-            pkt_payload[pkt_payload_len++] = 'm';
-            pkt_payload[pkt_payload_len++] = 'e';
-            pkt_payload[pkt_payload_len++] = ' ';
-            pkt_payload[pkt_payload_len++] = 'i';
-            pkt_payload[pkt_payload_len++] = 'n';
-            pkt_payload[pkt_payload_len++] = ' ';
-            pkt_payload[pkt_payload_len++] = '2';
-            pkt_payload[pkt_payload_len++] = '4';
-            pkt_payload[pkt_payload_len++] = ' ';
-            pkt_payload[pkt_payload_len++] = 'h';
-            pkt_payload[pkt_payload_len++] = 'o';
-            pkt_payload[pkt_payload_len++] = 'u';
-            pkt_payload[pkt_payload_len++] = 'r';
-            pkt_payload[pkt_payload_len++] = 's';
-            pkt_payload[pkt_payload_len++] = '.';
+            
+            uint8_t shutdown_ack_end[] = ". Wake up time in 24 hours.";
+            for(i=0; i<sizeof(shutdown_ack_end); i++)
+            {
+                pkt_payload[pkt_payload_len++] = shutdown_ack_end[i];
+            }
             
             NGHam_TX_Packet ngham_packet;
             ngham_tx_pkt_gen(&ngham_packet, pkt_payload, pkt_payload_len);
             ngham_encode(&ngham_packet, ngham_pkt_str, &ngham_pkt_str_len);
             
-            radio_write_data(ngham_pkt_str, ngham_pkt_str_len);
+            uint16_t tx_timeout = 20000;
+            while(beacon.flags.can_transmit != true)
+            {
+                if (beacon.flags.can_transmit == true)
+                {
+                    radio_write_data(ngham_pkt_str, ngham_pkt_str_len);
+                }
+            }
             
             task_enter_hibernation();
         }
@@ -231,18 +197,33 @@ void task_generate_packets(uint8_t *ngham_pkt_str, uint16_t *ngham_pkt_str_len, 
 {    
     task_generate_packet_payload(&beacon);
     
-#if BEACON_PACKET_PROTOCOL & PACKET_NGHAM
     NGHam_TX_Packet ngham_packet;
     ngham_tx_pkt_gen(&ngham_packet, beacon.packet_payload.payload, beacon.packet_payload.length);
     ngham_encode(&ngham_packet, ngham_pkt_str, ngham_pkt_str_len);
-#endif // PACKET_NGHAM
 
-#if BEACON_PACKET_PROTOCOL & PACKET_AX25
+    AX25_Packet ax25_packet;    
+    ax25_beacon_pkt_gen(&ax25_packet, beacon.packet_payload.payload, beacon.packet_payload.length);
+    ax25_encode(&ax25_packet, ax25_pkt_str, ax25_pkt_str_len);
+}
+
+void task_generate_ngham_packet(uint8_t *ngham_pkt_str, uint16_t *ngham_pkt_str_len)
+{
+    task_generate_packet_payload(&beacon);
+    
+    NGHam_TX_Packet ngham_packet;
+    
+    ngham_tx_pkt_gen(&ngham_packet, beacon.packet_payload.payload, beacon.packet_payload.length);
+    ngham_encode(&ngham_packet, ngham_pkt_str, ngham_pkt_str_len);
+}
+
+void task_generate_ax25_packet(uint8_t *ax25_pkt_str, uint16_t *ax25_pkt_str_len)
+{
+    task_generate_packet_payload(&beacon);
+    
     AX25_Packet ax25_packet;
     
     ax25_beacon_pkt_gen(&ax25_packet, beacon.packet_payload.payload, beacon.packet_payload.length);
     ax25_encode(&ax25_packet, ax25_pkt_str, ax25_pkt_str_len);
-#endif // PACKET_AX25
 }
 
 void task_enter_low_power_mode()
