@@ -38,7 +38,9 @@
 #ifndef INIT_H_
 #define INIT_H_
 
-#include <modules/time/time.h>
+#include <stdint.h>
+#include <modules/eps_com/eps_com.h>
+#include <modules/obdh_com/obdh_com.h>
 
 #include "beacon.h"
 
@@ -92,22 +94,11 @@ void init_status_led();
  * 
  * \brief Time control initialization routine.
  * 
- * \param t is a pointer to a Time object.
+ * \param sec is a pointer to the second counter variable.
  * 
  * \return None
  */
-void init_time(Time *t);
-
-/**
- * \fn init_timer
- * 
- * \brief Main timer initialization routine.
- * 
- * \param t is a pointer to a Time object.
- * 
- * \return None
- */
-void init_timer(Time *t);
+void init_time(uint32_t *sec);
 
 /**
  * \fn init_antenna

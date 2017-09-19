@@ -62,9 +62,7 @@ void beacon_init()
     init_status_led();
 #endif // FLIGHT_MODE
 
-    init_time(&beacon.time);
-    
-    init_timer(&beacon.time);
+    init_time(&beacon.second_counter);
     
     init_antenna();
     
@@ -83,9 +81,6 @@ void beacon_init()
 #endif // BEACON_PA
     
     init_protocols();
-    
-    // Starts the time control timer
-    timer_start();
     
     beacon.flags.hibernation    = false;
     beacon.flags.can_transmit   = true;
@@ -136,22 +131,18 @@ void beacon_run()
         }
         else
         {
-            if (task_check_elapsed_time(beacon.time.hour, beacon.hibernation_mode_initial_time.hour, HOURS) >= BEACON_HIBERNATION_PERIOD_HOURS)
+            if ((beacon.second_counter - beacon.hibernation_mode_initial_time) >= BEACON_HIBERNATION_PERIOD_SECONDS)
             {
-                if (task_check_elapsed_time(beacon.time.minute, beacon.hibernation_mode_initial_time.minute, MINUTES) >= BEACON_HIBERNATION_PERIOD_MINUTES)
-                {
-                    if (task_check_elapsed_time(beacon.time.second, beacon.hibernation_mode_initial_time.second, SECONDS) >= BEACON_HIBERNATION_PERIOD_SECONDS)
-                    {
-                        task_leave_hibernation();
-                    }
-                }
+                task_leave_hibernation();
             }
         }
         
-        uint8_t second_marker = beacon.time.second;
-        while(task_check_elapsed_time(second_marker, beacon.time.second, SECONDS) < task_get_tx_period())
+        uint32_t time_marker = beacon.second_counter;
+        while((beacon.second_counter - time_marker) < task_get_tx_period(&beacon))
         {
+        #if BEACON_MODE != DEBUG_MODE
             watchdog_reset_timer();
+        #endif // BEACON_MODE
             
             task_enter_low_power_mode();
         }

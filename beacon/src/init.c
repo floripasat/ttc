@@ -37,8 +37,7 @@
 
 #include <config/config.h>
 #include <modules/modules.h>
-#include <libs/ax25/ax25.h>
-#include <libs/ngham/ngham.h>
+#include <libs/libs.h>
 
 #include "init.h"
 
@@ -72,14 +71,12 @@ void init_status_led()
     status_led_init();
 }
 
-void init_time(Time *t)
+void init_time(uint32_t *sec)
 {
-    time_reset(t);
-}
-
-void init_timer(Time *t)
-{
-    timer_init(t);
+    time_init(sec);
+    
+    // Starts the time control timer
+    time_timer_start();
 }
 
 void init_antenna()

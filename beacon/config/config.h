@@ -69,11 +69,11 @@
 #define BEACON_TX_PERIOD_SEC_L4             30
 #define BEACON_TX_PERIOD_SEC_L5             30
 
-#define BEACON_HIBERNATION_PERIOD_SECONDS   0
-#define BEACON_HIBERNATION_PERIOD_MINUTES   0
+#define BEACON_HIBERNATION_PERIOD_SECONDS   (24*60*60*1L)
+#define BEACON_HIBERNATION_PERIOD_MINUTES   (24*60)
 #define BEACON_HIBERNATION_PERIOD_HOURS     24
 
-#define BEACON_ANTENNA_DEPLOY_SLEEP_SEC     0
+#define BEACON_ANTENNA_DEPLOY_SLEEP_SEC     (45*60)
 #define BEACON_ANTENNA_DEPLOY_SLEEP_MIN     45
 #define BEACON_ANTENNA_DEPLOY_SLEEP_HOUR    0
 
@@ -133,10 +133,11 @@
 #define WATCHDOG_CLK_DIVIDER                WDT_A_CLOCKDIVIDER_512K  // 16 seconds WDT
 
 //########################################################
-//-- TIMER -----------------------------------------------
+//-- TIME ------------------------------------------------
 //########################################################
 
-#define TIMER_BASE_ADDRESS                  TIMER_A1_BASE
+#define TIME_TIMER_BASE_ADDRESS             TIMER_A1_BASE
+#define TIME_TIMER_COMP_VAL_DIVIDER         64
 
 //########################################################
 //-- OBDH COMMUNICATION ----------------------------------

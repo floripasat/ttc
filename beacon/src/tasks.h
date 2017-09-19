@@ -150,19 +150,6 @@ void task_enter_low_power_mode();
 void task_leave_low_power_mode();
 
 /**
- * \fn task_check_elapsed_time
- * 
- * \brief Returns the elapsed time between a interval in a specified time unit.
- * 
- * \param initial_time is the initial time.
- * \param final_time is the final time.
- * \param time_unit is the time unit to calc. the elased time.
- * 
- * \return The elapsed time between the initial and final time in specified time unit.
- */
-uint16_t task_check_elapsed_time(uint16_t initial_time, uint16_t final_time, uint8_t time_unit);
-
-/**
  * \fn task_enter_hibernation
  * 
  * \brief Makes the beacon enter in hibernation.
@@ -232,9 +219,11 @@ void task_set_energy_level(Beacon *beacon_ptr);
  * 
  * \brief Returns the TX period of the beacon (This value is dependent of the satellite energy level).
  * 
+ * \param beacon_ptr is a pointer to a Beacon struct.
+ * 
  * \return The TX period of the beacon.
  */
-uint8_t task_get_tx_period();
+uint8_t task_get_tx_period(Beacon *beacon_ptr);
 
 /**
  * \fn task_generate_packet_payload
@@ -243,11 +232,11 @@ uint8_t task_get_tx_period();
  * 
  * If the last OBDH data is not valid, the last valid EPS data is used to generate the packet payload.
  * 
- * \param b is a pointer to a Beacon struct.
+ * \param beacon_ptr is a pointer to a Beacon struct.
  * 
  * \return None
  */
-void task_generate_packet_payload(Beacon *b);
+void task_generate_packet_payload(Beacon *beacon_ptr);
 
 /**
  * \fn task_enable_rx

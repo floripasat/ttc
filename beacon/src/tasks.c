@@ -128,8 +128,6 @@ void task_receive_packet(uint8_t *pkt, uint8_t len)
             break;
         }
     }
-    
-    
 }
 
 void task_process_received_packet_data(uint8_t *data, uint8_t len)
@@ -179,7 +177,6 @@ void task_process_received_packet_data(uint8_t *data, uint8_t len)
             ngham_tx_pkt_gen(&ngham_packet, pkt_payload, pkt_payload_len);
             ngham_encode(&ngham_packet, ngham_pkt_str, &ngham_pkt_str_len);
             
-            uint16_t tx_timeout = 20000;
             while(beacon.flags.can_transmit != true)
             {
                 if (beacon.flags.can_transmit == true)
@@ -236,48 +233,17 @@ void task_leave_low_power_mode()
     //_BIC_SR(LPM1_EXIT);
 }
 
-uint16_t task_check_elapsed_time(uint16_t initial_time, uint16_t final_time, uint8_t time_unit)
-{
-    switch(time_unit)
-    {
-        case MILLISECONDS:
-            return (uint16_t)((final_time - initial_time) % 1000);
-        case SECONDS:
-            return (uint16_t)((final_time - initial_time) % 60);
-        case MINUTES:
-            return (uint16_t)((final_time - initial_time) % 60);
-        case HOURS:
-            return (uint16_t)((final_time - initial_time) % 24);
-        case DAYS:
-            return (uint16_t)((final_time - initial_time) % 7);
-        case WEEKS:
-            return (uint16_t)((final_time - initial_time) % 4);
-        case MONTHS:
-            return (uint16_t)((final_time - initial_time) % 12);
-        case YEARS:
-            return final_time - initial_time;
-        default:
-            return 0x00;
-    }
-}
-
 void task_enter_hibernation()
 {
 #if BEACON_MODE == DEBUG_MODE
     debug_print_msg("Entering in hibernation mode... ");
 #endif // DEBUG_MODE
+    
     radio_sleep();
     
     beacon.flags.hibernation = true;
     
-    beacon.hibernation_mode_initial_time.millisecond    = beacon.time.millisecond;
-    beacon.hibernation_mode_initial_time.second         = beacon.time.second;
-    beacon.hibernation_mode_initial_time.minute         = beacon.time.minute;
-    beacon.hibernation_mode_initial_time.hour           = beacon.time.hour;
-    beacon.hibernation_mode_initial_time.day            = beacon.time.day;
-    beacon.hibernation_mode_initial_time.week           = beacon.time.week;
-    beacon.hibernation_mode_initial_time.month          = beacon.time.month;
-    beacon.hibernation_mode_initial_time.year           = beacon.time.year;
+    beacon.hibernation_mode_initial_time = beacon.second_counter;
     
 #if BEACON_MODE == DEBUG_MODE
     debug_print_msg("DONE!\n");
@@ -289,9 +255,11 @@ void task_leave_hibernation()
 #if BEACON_MODE == DEBUG_MODE
     debug_print_msg("Leaving hibernation mode... ");
 #endif // DEBUG_MODE
+    
     radio_wake_up();
     
     beacon.flags.hibernation = false;
+    
 #if BEACON_MODE == DEBUG_MODE
     debug_print_msg("DONE!\n");
 #endif // DEBUG_MODE
@@ -314,9 +282,9 @@ void task_reset_system()
 
 void task_antenna_deployment()
 {
-    uint8_t minute_marker = beacon.time.minute;
+    uint8_t time_marker = beacon.second_counter;
     
-    while(task_check_elapsed_time(minute_marker, beacon.time.minute, MINUTES) <= BEACON_ANTENNA_DEPLOY_SLEEP_MIN)
+    while((beacon.second_counter - time_marker) <= BEACON_ANTENNA_DEPLOY_SLEEP_SEC)
     {
 #if BEACON_MODE != DEBUG_MODE
         watchdog_reset_timer();
@@ -333,11 +301,11 @@ void task_antenna_deployment()
 
 void task_set_energy_level(Beacon *beacon_ptr)
 {
-    if (beacon_ptr->obdh.crc_fails == 0)
+    if ((beacon_ptr->obdh.crc_fails) == 0 && (beacon_ptr->obdh.is_dead == false))
     {
         beacon_ptr->energy_level = beacon_ptr->obdh.data.sat_status[0];
     }
-    else if (beacon_ptr->eps.crc_fails == 0)
+    else if ((beacon_ptr->eps.crc_fails == 0) && (beacon_ptr->eps.is_dead == false))
     {
         beacon_ptr->energy_level = beacon_ptr->eps.data.energy_level;
     }
@@ -347,9 +315,9 @@ void task_set_energy_level(Beacon *beacon_ptr)
     }
 }
 
-uint8_t task_get_tx_period()
+uint8_t task_get_tx_period(Beacon *beacon_ptr)
 {
-    switch(beacon.energy_level)
+    switch(beacon_ptr->energy_level)
     {
         case SATELLITE_ENERGY_LEVEL_1:
             return BEACON_TX_PERIOD_SEC_L1;
@@ -366,7 +334,7 @@ uint8_t task_get_tx_period()
     }
 }
 
-void task_generate_packet_payload(Beacon *b)
+void task_generate_packet_payload(Beacon *beacon_ptr)
 {
 #if BEACON_MODE == DEBUG_MODE
     debug_print_msg("Generating packet payload from ");
@@ -378,134 +346,133 @@ void task_generate_packet_payload(Beacon *b)
     uint8_t i = 0;
     for(i=0; i<sizeof(PKT_PAYLOAD_SAT_ID)-1; i++)
     {
-        b->packet_payload.payload[pkt_payload_counter++] = PKT_PAYLOAD_SAT_ID[i];
+        beacon_ptr->packet_payload.payload[pkt_payload_counter++] = PKT_PAYLOAD_SAT_ID[i];
     }
 #endif // PAYLOAD_SAT_ID
     
-    if ((b->obdh.crc_fails == 0) && (b->obdh.is_dead == false))
+    if ((beacon_ptr->obdh.crc_fails == 0) && (beacon_ptr->obdh.is_dead == false))
     {
 #if BEACON_PACKET_PAYLOAD_CONTENT & PAYLOAD_OBDH_DATA
     #if BEACON_MODE == DEBUG_MODE
-            debug_print_msg("OBDH data... ");
+        debug_print_msg("OBDH data... ");
     #endif // DEBUG_MODE
-            // Battery 1 Voltage
-            for(i=0; i<OBDH_COM_BAT1_VOLTAGE_LEN; i++)
-            {
-                b->packet_payload.payload[pkt_payload_counter++] = b->obdh.data.bat1_voltage[i];
-            }
-            
-            // Battery 2 Voltage
-            for(i=0; i<OBDH_COM_BAT2_VOLTAGE_LEN; i++)
-            {
-                b->packet_payload.payload[pkt_payload_counter++] = b->obdh.data.bat2_voltage[i];
-            }
-            
-            // Battery 1 Temperature
-            for(i=0; i<OBDH_COM_BAT1_TEMPERATURE_LEN; i++)
-            {
-                b->packet_payload.payload[pkt_payload_counter++] = b->obdh.data.bat1_temperature[i];
-            }
-            
-            // Battery 2 Temperature
-            for(i=0; i<OBDH_COM_BAT2_TEMPERATURE_LEN; i++)
-            {
-                b->packet_payload.payload[pkt_payload_counter++] = b->obdh.data.bat2_temperature[i];
-            }
-            
-            // Total Charge of Batteries
-            for(i=0; i<OBDH_COM_BAT_CHARGE_LEN; i++)
-            {
-                b->packet_payload.payload[pkt_payload_counter++] = b->obdh.data.bat_charge[i];
-            }
-            
-            // Solar Panels Currents
-            for(i=0; i<OBDH_COM_SOLAR_PANELS_CURRENTS_LEN; i++)
-            {
-                b->packet_payload.payload[pkt_payload_counter++] = b->obdh.data.solar_panels_currents[i];
-            }
-            
-            // Solar Panels Voltages
-            for(i=0; i<OBDH_COM_SOLAR_PANELS_VOLTAGES_LEN; i++)
-            {
-                b->packet_payload.payload[pkt_payload_counter++] = b->obdh.data.solar_panels_voltages[i];
-            }
-            
-            // Satellite Status
-            for(i=0; i<OBDH_COM_SAT_STATUS_LEN; i++)
-            {
-                b->packet_payload.payload[pkt_payload_counter++] = b->obdh.data.sat_status[i];
-            }
-            
-            // IMU Data
-            for(i=0; i<OBDH_COM_IMU_LEN; i++)
-            {
-                b->packet_payload.payload[pkt_payload_counter++] = b->obdh.data.imu[i];
-            }
-            
-            // System Time
-            for(i=0; i<OBDH_COM_SYSTEM_TIME_LEN; i++)
-            {
-                b->packet_payload.payload[pkt_payload_counter++] = b->obdh.data.system_time[i];
-            }
-            
-            // OBDH Reset Counter
-            for(i=0; i<OBDH_COM_RESET_COUNTER_LEN; i++)
-            {
-                b->packet_payload.payload[pkt_payload_counter++] = b->obdh.data.reset_counter[i];
-            }
+        // Battery 1 Voltage
+        for(i=0; i<OBDH_COM_BAT1_VOLTAGE_LEN; i++)
+        {
+            beacon_ptr->packet_payload.payload[pkt_payload_counter++] = beacon_ptr->obdh.data.bat1_voltage[i];
+        }
+        
+        // Battery 2 Voltage
+        for(i=0; i<OBDH_COM_BAT2_VOLTAGE_LEN; i++)
+        {
+            beacon_ptr->packet_payload.payload[pkt_payload_counter++] = beacon_ptr->obdh.data.bat2_voltage[i];
+        }
+        
+        // Battery 1 Temperature
+        for(i=0; i<OBDH_COM_BAT1_TEMPERATURE_LEN; i++)
+        {
+            beacon_ptr->packet_payload.payload[pkt_payload_counter++] = beacon_ptr->obdh.data.bat1_temperature[i];
+        }
+        
+        // Battery 2 Temperature
+        for(i=0; i<OBDH_COM_BAT2_TEMPERATURE_LEN; i++)
+        {
+            beacon_ptr->packet_payload.payload[pkt_payload_counter++] = beacon_ptr->obdh.data.bat2_temperature[i];
+        }
+        
+        // Total Charge of Batteries
+        for(i=0; i<OBDH_COM_BAT_CHARGE_LEN; i++)
+        {
+            beacon_ptr->packet_payload.payload[pkt_payload_counter++] = beacon_ptr->obdh.data.bat_charge[i];
+        }
+        
+        // Solar Panels Currents
+        for(i=0; i<OBDH_COM_SOLAR_PANELS_CURRENTS_LEN; i++)
+        {
+            beacon_ptr->packet_payload.payload[pkt_payload_counter++] = beacon_ptr->obdh.data.solar_panels_currents[i];
+        }
+        
+        // Solar Panels Voltages
+        for(i=0; i<OBDH_COM_SOLAR_PANELS_VOLTAGES_LEN; i++)
+        {
+            beacon_ptr->packet_payload.payload[pkt_payload_counter++] = beacon_ptr->obdh.data.solar_panels_voltages[i];
+        }
+        
+        // Satellite Status
+        for(i=0; i<OBDH_COM_SAT_STATUS_LEN; i++)
+        {
+            beacon_ptr->packet_payload.payload[pkt_payload_counter++] = beacon_ptr->obdh.data.sat_status[i];
+        }
+        
+        // IMU Data
+        for(i=0; i<OBDH_COM_IMU_LEN; i++)
+        {
+            beacon_ptr->packet_payload.payload[pkt_payload_counter++] = beacon_ptr->obdh.data.imu[i];
+        }
+        
+        // System Time
+        for(i=0; i<OBDH_COM_SYSTEM_TIME_LEN; i++)
+        {
+            beacon_ptr->packet_payload.payload[pkt_payload_counter++] = beacon_ptr->obdh.data.system_time[i];
+        }
+        
+        // OBDH Reset Counter
+        for(i=0; i<OBDH_COM_RESET_COUNTER_LEN; i++)
+        {
+            beacon_ptr->packet_payload.payload[pkt_payload_counter++] = beacon_ptr->obdh.data.reset_counter[i];
+        }
 #endif // PAYLOAD_OBDH_DATA
     }
-    else if ((b->eps.crc_fails == 0) && (b->eps.is_dead == false))
+    else if ((beacon_ptr->eps.crc_fails == 0) && (beacon_ptr->eps.is_dead == false))
     {
 #if BEACON_PACKET_PAYLOAD_CONTENT & PAYLOAD_EPS_DATA
     #if BEACON_MODE == DEBUG_MODE
-            debug_print_msg("EPS data... ");
+        debug_print_msg("EPS data... ");
     #endif // DEBUG_MODE
-            
-            // Battery 1 Voltage
-            for(i=0; i<EPS_COM_BAT1_VOLTAGE_LEN; i++)
-            {
-                b->packet_payload.payload[pkt_payload_counter++] = b->eps.data.bat1_voltage[i];
-            }
-            
-            // Battery 2 Voltage
-            for(i=0; i<EPS_COM_BAT2_VOLTAGE_LEN; i++)
-            {
-                b->packet_payload.payload[pkt_payload_counter++] = b->eps.data.bat2_voltage[i];
-            }
-            
-            // Battery 1 Temperature
-            for(i=0; i<EPS_COM_BAT1_TEMPERATURE_LEN; i++)
-            {
-                b->packet_payload.payload[pkt_payload_counter++] = b->eps.data.bat1_temperature[i];
-            }
-            
-            // Battery 2 Temperature
-            for(i=0; i<EPS_COM_BAT2_TEMPERATURE_LEN; i++)
-            {
-                b->packet_payload.payload[pkt_payload_counter++] = b->eps.data.bat2_temperature[i];
-            }
-            
-            // Total Charge of Batteries
-            for(i=0; i<EPS_COM_BAT_CHARGE_LEN; i++)
-            {
-                b->packet_payload.payload[pkt_payload_counter++] = b->eps.data.bat_charge[i];
-            }
-            
-            // Solar Panels Currents
-            for(i=0; i<EPS_COM_SOLAR_PANELS_CURRENTS_LEN; i++)
-            {
-                b->packet_payload.payload[pkt_payload_counter++] = b->eps.data.solar_panels_currents[i];
-            }
-            
-            // Solar Panels Voltages
-            for(i=0; i<EPS_COM_SOLAR_PANELS_VOLTAGES_LEN; i++)
-            {
-                b->packet_payload.payload[pkt_payload_counter++] = b->eps.data.solar_panels_voltages[i];
-            }
-            
-            // Satellite Energy Level
-            b->packet_payload.payload[pkt_payload_counter++] = b->eps.data.energy_level;
+        // Battery 1 Voltage
+        for(i=0; i<EPS_COM_BAT1_VOLTAGE_LEN; i++)
+        {
+            beacon_ptr->packet_payload.payload[pkt_payload_counter++] = beacon_ptr->eps.data.bat1_voltage[i];
+        }
+        
+        // Battery 2 Voltage
+        for(i=0; i<EPS_COM_BAT2_VOLTAGE_LEN; i++)
+        {
+            beacon_ptr->packet_payload.payload[pkt_payload_counter++] = beacon_ptr->eps.data.bat2_voltage[i];
+        }
+        
+        // Battery 1 Temperature
+        for(i=0; i<EPS_COM_BAT1_TEMPERATURE_LEN; i++)
+        {
+            beacon_ptr->packet_payload.payload[pkt_payload_counter++] = beacon_ptr->eps.data.bat1_temperature[i];
+        }
+        
+        // Battery 2 Temperature
+        for(i=0; i<EPS_COM_BAT2_TEMPERATURE_LEN; i++)
+        {
+            beacon_ptr->packet_payload.payload[pkt_payload_counter++] = beacon_ptr->eps.data.bat2_temperature[i];
+        }
+        
+        // Total Charge of Batteries
+        for(i=0; i<EPS_COM_BAT_CHARGE_LEN; i++)
+        {
+            beacon_ptr->packet_payload.payload[pkt_payload_counter++] = beacon_ptr->eps.data.bat_charge[i];
+        }
+        
+        // Solar Panels Currents
+        for(i=0; i<EPS_COM_SOLAR_PANELS_CURRENTS_LEN; i++)
+        {
+            beacon_ptr->packet_payload.payload[pkt_payload_counter++] = beacon_ptr->eps.data.solar_panels_currents[i];
+        }
+        
+        // Solar Panels Voltages
+        for(i=0; i<EPS_COM_SOLAR_PANELS_VOLTAGES_LEN; i++)
+        {
+            beacon_ptr->packet_payload.payload[pkt_payload_counter++] = beacon_ptr->eps.data.solar_panels_voltages[i];
+        }
+        
+        // Satellite Energy Level
+        beacon_ptr->packet_payload.payload[pkt_payload_counter++] = beacon_ptr->eps.data.energy_level;
 #endif // PAYLOAD_EPS_DATA
     }
     else
@@ -515,7 +482,7 @@ void task_generate_packet_payload(Beacon *b)
 #endif // DEBUG_MODE
     }
     
-    b->packet_payload.length = pkt_payload_counter;
+    beacon_ptr->packet_payload.length = pkt_payload_counter;
     
 #if BEACON_MODE == DEBUG_MODE
     debug_print_msg("DONE!\n");

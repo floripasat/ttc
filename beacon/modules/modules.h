@@ -44,7 +44,6 @@
 #include "eps_com/eps_com.h"
 #include "mcu/cpu.h"
 #include "mcu/flash.h"
-#include "mcu/timers.h"
 #include "mcu/watchdog.h"
 #include "obdh_com/obdh_com.h"
 #include "pa/pa.h"
