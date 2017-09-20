@@ -48,7 +48,7 @@
 
 #include "time.h"
 
-uint32_t *second = 0;
+uint32_t *second;
 
 void time_init(uint32_t *second_ptr)
 {
@@ -122,7 +122,7 @@ void time_timer_isr()
     uint16_t comp_val = Timer_A_getCaptureCompareCount(TIME_TIMER_BASE_ADDRESS, TIMER_A_CAPTURECOMPARE_REGISTER_0)
                         + (uint16_t)(UCS_getSMCLK()/TIME_TIMER_COMP_VAL_DIVIDER);
     
-    *second++;
+    (*second)++;
     
 #if BEACON_MODE != FLIGHT_MODE
     // Heartbeat
