@@ -108,17 +108,21 @@ void beacon_run()
             if (beacon.flags.can_transmit == true)
             {
             #if BEACON_PACKET_PROTOCOL & PACKET_NGHAM
+                __disable_interrupt();                  // Disabling interrupts during packet transmission
                 task_transmit_ngham_packet(&beacon);
+                __enable_interrupt();
             #endif // PACKET_NGHAM
             
             #if BEACON_PACKET_PROTOCOL & (PACKET_NGHAM | PACKET_AX25)
                 watchdog_reset_timer();
                 
-                task_enter_low_power_mode();    // Wait one cycle (1 second)
+                task_enter_low_power_mode();            // Wait one cycle (1 second)
             #endif // PACKET_NGHAM | PACKET_AX25
             
             #if BEACON_PACKET_PROTOCOL & PACKET_AX25    
+                __disable_interrupt();                  // Disabling interrupts during packet transmission
                 task_transmit_ax25_packet(&beacon);
+                __enable_interrupt();
             #endif // PACKET_AX25
                 
                 if (beacon.obdh.is_dead == true)
