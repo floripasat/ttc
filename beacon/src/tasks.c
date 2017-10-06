@@ -293,10 +293,7 @@ void task_antenna_deployment()
         task_enter_low_power_mode();
     }
     
-    while(antenna_deploy() != STATUS_SUCCESS)
-    {
-        
-    }
+    antenna_deploy();
 }
 
 void task_set_energy_level(Beacon *beacon_ptr)
@@ -498,6 +495,17 @@ void task_enable_rx()
 void task_disable_rx()
 {
     radio_sleep();
+}
+
+
+void task_reset_radio(Beacon *beacon_ptr)
+{
+    if ((beacon_ptr->second_counter - beacon_ptr->last_radio_reset_time) >= BEACON_RADIO_RESET_PERIOD_SEC)
+    {
+        radio_reset();
+        
+        beacon_ptr->last_radio_reset_time = beacon_ptr->second_counter;
+    }
 }
 
 //! \} End of tasks group

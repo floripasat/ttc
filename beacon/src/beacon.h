@@ -55,6 +55,7 @@ typedef struct
     Flags           flags;                          /**< General flags. */
     uint8_t         energy_level;                   /**< Energy level of the satellite. */
     uint32_t        second_counter;                 /**< Seconds since boot. */
+    uint32_t        last_radio_reset_time;          /**< Seconds since the last radio reset. */
     uint32_t        hibernation_mode_initial_time;  /**< Seconds since boot before the hibernations. */
     OBDH            obdh;                           /**< . */
     EPS             eps;                            /**< . */

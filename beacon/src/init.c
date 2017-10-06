@@ -81,7 +81,7 @@ void init_time(uint32_t *sec)
 
 void init_antenna()
 {
-    while(antenna_init() != STATUS_SUCCESS)
+    while(!antenna_init())
     {
         
     }

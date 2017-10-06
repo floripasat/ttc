@@ -82,10 +82,11 @@ void beacon_init()
     
     init_protocols();
     
-    beacon.flags.hibernation    = false;
-    beacon.flags.can_transmit   = true;
-    beacon.flags.transmitting   = false;
-    beacon.energy_level         = SATELLITE_ENERGY_LEVEL_5;
+    beacon.last_radio_reset_time    = 0;
+    beacon.flags.hibernation        = false;
+    beacon.flags.can_transmit       = true;
+    beacon.flags.transmitting       = false;
+    beacon.energy_level             = SATELLITE_ENERGY_LEVEL_5;
 }
 
 void beacon_run()
@@ -150,6 +151,8 @@ void beacon_run()
             
             task_enter_low_power_mode();
         }
+        
+        task_reset_radio(&beacon);                      // Resest the radio periodically (Period = BEACON_RADIO_RESET_PERIOD_SEC seconds)
     }
 }
 

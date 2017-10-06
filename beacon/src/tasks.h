@@ -256,6 +256,17 @@ void task_enable_rx();
  */
 void task_disable_rx();
 
+/**
+ * \fn task_reset_radio
+ * 
+ * \brief Resets the radio periodically.
+ * 
+ * \param beacon_ptr is the beacon struct.
+ * 
+ * \return None
+ */
+void task_reset_radio(Beacon *beacon_ptr);
+
 #endif // TASKS_H_
 
 //! \} End of tasks group

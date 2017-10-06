@@ -77,6 +77,9 @@
 #define BEACON_ANTENNA_DEPLOY_SLEEP_MIN     45
 #define BEACON_ANTENNA_DEPLOY_SLEEP_HOUR    0
 
+#define BEACON_RADIO_RESET_PERIOD_MIN       10
+#define BEACON_RADIO_RESET_PERIOD_SEC       (BEACON_RADIO_RESET_PERIOD_MIN*60)
+
 //########################################################
 //-- BEACON PACKETS --------------------------------------
 //########################################################
