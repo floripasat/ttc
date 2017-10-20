@@ -275,9 +275,16 @@ void task_load_time()
     
 }
 
-void task_reset_system()
+void task_reset_system(Beacon *beacon_ptr)
 {
-    
+    if ((beacon_ptr->second_counter - beacon_ptr->last_system_reset_time) >= BEACON_SYSTEM_RESET_PERIOD_SEC)
+    {
+        task_save_time();
+        
+        //WTDCTL = 0xDEAD;                // Reset system by writing to the WDT register without using the proper password
+        
+        PMMCTL0 = PMMPW | PMMSWBOR;     // Triggers a software BOR
+    }
 }
 
 void task_antenna_deployment()

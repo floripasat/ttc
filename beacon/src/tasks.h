@@ -190,9 +190,11 @@ void task_load_time();
  * 
  * \brief Resets (Reinitializes) the system.
  * 
+ * \param beacon_ptr is a pointer to a beacon object.
+ * 
  * \return None
  */
-void task_reset_system();
+void task_reset_system(Beacon *beacon_ptr);
 
 /**
  * \fn task_antenna_deployment

@@ -80,6 +80,10 @@
 #define BEACON_RADIO_RESET_PERIOD_MIN       10
 #define BEACON_RADIO_RESET_PERIOD_SEC       (BEACON_RADIO_RESET_PERIOD_MIN*60)
 
+#define BEACON_SYSTEM_RESET_PERIOD_HOURS    12
+#define BEACON_SYSTEM_RESET_PERIOD_MIN      (BEACON_SYSTEM_RESET_PERIOD_HOURS*60)
+#define BEACON_SYSTEM_RESET_PERIOD_SEC      (BEACON_SYSTEM_RESET_PERIOD_MIN*60)
+
 //########################################################
 //-- BEACON PACKETS --------------------------------------
 //########################################################

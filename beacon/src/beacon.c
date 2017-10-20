@@ -83,6 +83,7 @@ void beacon_init()
     init_protocols();
     
     beacon.last_radio_reset_time    = 0;
+    beacon.last_system_reset_time   = 0;
     beacon.flags.hibernation        = false;
     beacon.flags.can_transmit       = true;
     beacon.flags.transmitting       = false;
@@ -152,7 +153,9 @@ void beacon_run()
             task_enter_low_power_mode();
         }
         
-        task_reset_radio(&beacon);                      // Resest the radio periodically (Period = BEACON_RADIO_RESET_PERIOD_SEC seconds)
+        task_reset_radio(&beacon);                      // Resets the radio periodically (Period = BEACON_RADIO_RESET_PERIOD_SEC seconds)
+        
+        task_reset_system(&beacon);                     // Resets the system periodically (Period = BEACON_SYSTEM_RESET_PERIOD_SEC seconds)
     }
 }
 
