@@ -269,6 +269,17 @@ void task_disable_rx();
  */
 void task_reset_radio(Beacon *beacon_ptr);
 
+/**
+ * \fn task_check_devices_status
+ * 
+ * \brief Checks if the system devices or modules (OBDH, EPS, antenna, radio, etc.) are working or not.
+ * 
+ * \param beacon_ptr is a pointer to the beacon struct.
+ * 
+ * \return None
+ */
+void task_check_devices_status(Beacon *beacon_ptr);
+
 #endif // TASKS_H_
 
 //! \} End of tasks group

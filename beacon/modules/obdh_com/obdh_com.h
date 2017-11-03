@@ -74,6 +74,8 @@ typedef struct
     uint8_t received_byte;                      /**< Byte buffer. */
     uint8_t byte_counter;                       /**< Received packet byte counter. */
     uint8_t buffer[OBDH_COM_DATA_PKT_LEN + 1];  /**< Packet buffer. */
+    uint32_t *system_time;                      /**< Pointer to the system time counter. */
+    uint32_t time_last_valid_pkt;               /**< Time stamp of the last valid received packet. */
     uint8_t crc_fails;                          /**< Number of CRC failures (Packets with errors). */
     bool is_open;                               /**< Flag to store the OBDH communication state (true = Open; false = Closed). */
     bool is_dead;                               /**< If true, the OBDH module is not sending data, so it is possibly not working. */
@@ -180,15 +182,6 @@ static void obdh_com_save_data_from_buffer(OBDH *obdh);
  * \return None
  */
 static void obdh_com_clear_buffer(OBDH *obdh);
-
-/**
- * \fn obdh_com_timer_timeout_init
- * 
- * \brief Initialization of the OBDH Com timeout timer.
- * 
- * \return None
- */
-static void obdh_com_timer_timeout_init();
 
 #endif // OBDH_COM_H_
 

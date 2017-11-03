@@ -54,10 +54,11 @@ uint8_t eps_com_init(EPS *eps)
     eps_ptr = eps;
 
     // EPS initialization
-    eps->received_byte  = EPS_COM_DEFAULT_DATA_BYTE;
-    eps->byte_counter   = EPS_COM_PKT_SOD_POSITION;
-    eps->crc_fails      = 0xFF;
-    eps->is_open        = false;
+    eps->received_byte          = EPS_COM_DEFAULT_DATA_BYTE;
+    eps->byte_counter           = EPS_COM_PKT_SOD_POSITION;
+    eps->time_last_valid_pkt    = 0xFFFFFFFF;
+    eps->crc_fails              = 0xFF;
+    eps->is_open                = false;
     
     eps_com_clear_buffer(eps);
     
@@ -102,8 +103,6 @@ uint8_t eps_com_init(EPS *eps)
 
         eps->is_open = true;
         eps->is_dead = false;
-        
-        eps_com_timer_timeout_init();
 
 #if BEACON_MODE == DEBUG_MODE
         debug_print_msg("SUCCESS!\n");
@@ -138,10 +137,9 @@ static void eps_com_receive_data(EPS *eps)
                 debug_print_msg("Data was received from the EPS module!\n");
 #endif // DEBUG_MODE
                 eps_com_save_data_from_buffer(eps);
+                eps->time_last_valid_pkt = *eps->system_time;
                 eps->crc_fails = 0;
                 eps->is_dead = false;
-                
-                eps_com_timer_timeout_init();
             }
             else
             {
@@ -223,22 +221,6 @@ static void eps_com_clear_buffer(EPS *eps)
     memset(eps->buffer, EPS_COM_DEFAULT_DATA_BYTE, EPS_COM_DATA_PKT_LEN*sizeof(uint8_t));
 }
 
-static void eps_com_timer_timeout_init()
-{    
-    Timer_A_clearTimerInterrupt(EPS_COM_TIMEOUT_TIMER_BASE);
-    
-    Timer_A_initContinuousModeParam param = {0};
-    param.clockSource               = TIMER_A_CLOCKSOURCE_ACLK;
-    param.clockSourceDivider        = TIMER_A_CLOCKSOURCE_DIVIDER_32;   // ~= 64 s to overflow
-    param.timerInterruptEnable_TAIE = TIMER_A_TAIE_INTERRUPT_ENABLE;
-    param.timerClear                = TIMER_A_DO_CLEAR;
-    param.startTimer                = false;
-    
-    Timer_A_initContinuousMode(EPS_COM_TIMEOUT_TIMER_BASE, &param);
-    
-    Timer_A_startCounter(EPS_COM_TIMEOUT_TIMER_BASE, TIMER_A_CONTINUOUS_MODE);
-}
-
 /**
  * \fn USCI_A0_ISR
  *
@@ -261,48 +243,6 @@ void USCI_A0_ISR()
         // Vector 2 - RXIFG
         case 2:
             eps_com_receive_data(eps_ptr);
-            break;
-        default:
-            break;
-    }
-}
-
-/**
- * \fn TIMER0_A1_ISR
- * 
- * \brief TIMER0_A1 interrupt vector service routine.
- * 
- * \return None
- */
-#if defined(__TI_COMPILER_VERSION__) || defined(__IAR_SYSTEMS_ICC__)
-#pragma vector=TIMER0_A1_VECTOR
-__interrupt
-#elif defined(__GNUC__)
-__attribute__((interrupt(TIMER0_A1_VECTOR)))
-#endif
-void TIMER0_A1_ISR()
-{
-    // Any access, read or write, of the TAIV register automatically resets the highest "pending" interrupt flag
-    switch(__even_in_range(TA0IV, 14))
-    {
-        case 0:
-            break;
-        case 2:
-            break;
-        case 4:
-            break;
-        case 6:
-            break;
-        case 8:
-            break;
-        case 10:
-            break;
-        case 12:
-            break;
-        case 14:                // Overflow
-            eps_ptr->is_dead = true;
-            Timer_A_stop(EPS_COM_TIMEOUT_TIMER_BASE);
-            Timer_A_clear(EPS_COM_TIMEOUT_TIMER_BASE);
             break;
         default:
             break;

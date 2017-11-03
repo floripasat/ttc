@@ -66,9 +66,9 @@ void beacon_init()
     
     init_antenna();
     
-    init_eps_com(&beacon.eps);
+    init_eps_com(&beacon.eps, &beacon.second_counter);
     
-    init_obdh_com(&beacon.obdh);
+    init_obdh_com(&beacon.obdh, &beacon.second_counter);
     
     init_radio();
     
@@ -105,6 +105,8 @@ void beacon_run()
     
     while(1)
     {
+        task_check_devices_status(&beacon);
+        
         if (beacon.flags.hibernation == false)
         {
             if (beacon.flags.can_transmit == true)

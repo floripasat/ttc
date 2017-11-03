@@ -87,16 +87,20 @@ void init_antenna()
     }
 }
 
-void init_eps_com(EPS *eps)
-{    
+void init_eps_com(EPS *eps, uint32_t *system_time)
+{
+    eps->system_time = system_time;
+    
     while(eps_com_init(eps) != STATUS_SUCCESS)
     {
         
     }
 }
 
-void init_obdh_com(OBDH *obdh)
-{    
+void init_obdh_com(OBDH *obdh, uint32_t *system_time)
+{
+    obdh->system_time = system_time;
+    
     while(obdh_com_init(obdh) != STATUS_SUCCESS)
     {
         

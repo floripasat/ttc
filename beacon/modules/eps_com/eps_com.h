@@ -71,6 +71,8 @@ typedef struct
     uint8_t received_byte;                      /**< Byte buffer. */
     uint8_t byte_counter;                       /**< Received packet byte counter. */
     uint8_t buffer[EPS_COM_DATA_PKT_LEN + 1];   /**< Packet buffer. */
+    uint32_t *system_time;                      /**< Pointer to the system time counter. */
+    uint32_t time_last_valid_pkt;               /**< Time stamp of the last received packet. */
     uint8_t crc_fails;                          /**< Number of CRC failures (Packets with errors). */
     bool is_open;                               /**< Flag to store the EPS communication state (true = Open; false = Closed). */
     bool is_dead;                               /**< If true, the EPS module is not sending data, so it is possibly not working. */
@@ -133,15 +135,6 @@ static void eps_com_save_data_from_buffer(EPS *eps);
  * \return None
  */
 static void eps_com_clear_buffer(EPS *eps);
-
-/**
- * \fn eps_com_timer_timeout_init
- * 
- * \brief EPS Com timeout timer initialization.
- * 
- * \return None
- */
-static void eps_com_timer_timeout_init();
 
 #endif // EPS_COM_H_
 

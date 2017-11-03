@@ -115,10 +115,11 @@ void init_antenna();
  * \brief EPS communication initialization routine.
  * 
  * \param eps is a pointer to an eps struct (object).
+ * \param system_time is a pointer to the system time counter.
  * 
  * \return None
  */
-void init_eps_com(EPS *eps);
+void init_eps_com(EPS *eps, uint32_t *system_time);
 
 /**
  * \fn init_obdh_com
@@ -126,10 +127,11 @@ void init_eps_com(EPS *eps);
  * \brief OBDH communication initialization routine.
  * 
  * \param obdh is a pointer to an obdh struct (object).
+ * \param system_time is a pointer to the system time counter.
  * 
  * \return None
  */
-void init_obdh_com(OBDH *obdh);
+void init_obdh_com(OBDH *obdh, uint32_t *system_time);
 
 /**
  * \fn init_radio

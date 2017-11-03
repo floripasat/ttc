@@ -57,10 +57,11 @@ uint8_t obdh_com_init(OBDH *obdh)
     obdh_ptr = obdh;
     
     // obdh_com initialization
-    obdh->received_byte = OBDH_COM_DEFAULT_DATA_BYTE;
-    obdh->byte_counter  = OBDH_COM_CMD_POSITION;
-    obdh->crc_fails     = 0xFF;
-    obdh->is_open       = false;
+    obdh->received_byte         = OBDH_COM_DEFAULT_DATA_BYTE;
+    obdh->byte_counter          = OBDH_COM_CMD_POSITION;
+    obdh->time_last_valid_pkt   = 0xFFFFFFFF;
+    obdh->crc_fails             = 0xFF;
+    obdh->is_open               = false;
     
     obdh_com_clear_buffer(obdh);
     
@@ -82,8 +83,6 @@ uint8_t obdh_com_init(OBDH *obdh)
     {
         obdh->is_open = true;
         obdh->is_dead = false;
-        
-        obdh_com_timer_timeout_init();
         
 #if BEACON_MODE == DEBUG_MODE
         debug_print_msg("SUCCESS!\n");
@@ -153,10 +152,9 @@ static void obdh_com_receive_data(OBDH *obdh)
 #endif // DEBUG_MODE
                 obdh_com_save_data_from_buffer(obdh);
                 
+                obdh->time_last_valid_pkt = *obdh->system_time;
                 obdh->crc_fails = 0;
                 obdh->is_dead = false;
-                
-                obdh_com_timer_timeout_init();
             }
             else
             {
@@ -323,22 +321,6 @@ static void obdh_com_clear_buffer(OBDH *obdh)
     memset(obdh->buffer, OBDH_COM_DEFAULT_DATA_BYTE, OBDH_COM_DATA_PKT_LEN*sizeof(uint8_t));
 }
 
-static void obdh_com_timer_timeout_init()
-{
-    Timer_B_clearTimerInterrupt(OBDH_COM_TIMEOUT_TIMER_BASE);
-    
-    Timer_B_initContinuousModeParam param = {0};
-    param.clockSource               = TIMER_B_CLOCKSOURCE_ACLK;
-    param.clockSourceDivider        = TIMER_B_CLOCKSOURCE_DIVIDER_32;   // ~= 64 s to overflow
-    param.timerInterruptEnable_TBIE = TIMER_B_TBIE_INTERRUPT_ENABLE;
-    param.timerClear                = TIMER_B_DO_CLEAR;
-    param.startTimer                = false;
-    
-    Timer_B_initContinuousMode(OBDH_COM_TIMEOUT_TIMER_BASE, &param);
-    
-    Timer_B_startCounter(OBDH_COM_TIMEOUT_TIMER_BASE, TIMER_B_CONTINUOUS_MODE);
-}
-
 /**
  * \fn USCI_A2_IST
  * 
@@ -362,40 +344,6 @@ void USCI_A2_ISR()
             break;
         default:
             break;
-    }
-}
-
-/**
- * \fn TIMERB1_ISR
- * 
- * \brief Timer_B0 Interrupt Vector (TBIV) handler.
- * 
- * \return None
- */
-#if defined(__TI_COMPILER_VERSION__) || defined(__IAR_SYSTEMS_ICC__)
-#pragma vector=TIMER0_B1_VECTOR
-__interrupt
-#elif defined(__GNUC__)
-__attribute__((interrupt(TIMER0_B1_VECTOR)))
-#endif
-void TIMERB1_ISR()
-{
-    // Any access, read or write, of the TBIV register automatically resets the highest "pending" interrupt flag.
-    switch(__even_in_range(TBIV,14))
-    {
-        case  0: break;
-        case  2: break;
-        case  4: break;
-        case  6: break;
-        case  8: break;
-        case 10: break;
-        case 12: break;
-        case 14:            // Overflow
-            obdh_ptr->is_dead = true;
-            Timer_B_stop(OBDH_COM_TIMEOUT_TIMER_BASE);
-            Timer_B_clear(OBDH_COM_TIMEOUT_TIMER_BASE);
-        break;
-        default: break;
     }
 }
 

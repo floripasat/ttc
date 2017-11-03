@@ -515,4 +515,28 @@ void task_reset_radio(Beacon *beacon_ptr)
     }
 }
 
+void task_check_devices_status(Beacon *beacon_ptr)
+{
+    if ((beacon_ptr->second_counter - beacon_ptr->obdh.time_last_valid_pkt) <= OBDH_COM_DEADLINE_SEC)
+    {
+        beacon_ptr->obdh.is_dead = false;
+    }
+    else
+    {
+        beacon_ptr->obdh.is_dead = true;
+    }
+    
+    if ((beacon_ptr->second_counter - beacon_ptr->eps.time_last_valid_pkt) <= EPS_COM_DEADLINE_SEC)
+    {
+        beacon_ptr->eps.is_dead = false;
+    }
+    else
+    {
+        beacon_ptr->eps.is_dead = true;
+    }
+    
+    // Antenna connection status
+    // Radio status
+}
+
 //! \} End of tasks group
