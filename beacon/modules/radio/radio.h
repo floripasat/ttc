@@ -119,6 +119,15 @@ void radio_init_rx_isr();
  */
 void radio_enable_rx();
 
+/**
+ * \fn radio_disable_rx
+ * 
+ * \brief Disables the RX of the radio (If available, enables the standby mode).
+ * 
+ * \return None
+ */
+void radio_disable_rx();
+
 #endif // RADIO_H_
 
 //! \} End of radio group

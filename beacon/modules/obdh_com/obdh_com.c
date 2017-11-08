@@ -42,7 +42,7 @@
 #include <modules/modules.h>
 #include <libs/driverlib/driverlib.h>
 #include <libs/crc/crc.h>
-#include <src/tasks.h>
+#include <src/beacon.h>
 
 #include "obdh_com.h"
 
@@ -62,6 +62,7 @@ uint8_t obdh_com_init(OBDH *obdh)
     obdh->time_last_valid_pkt   = 0xFFFFFFFF;
     obdh->crc_fails             = 0xFF;
     obdh->is_open               = false;
+    obdh->enter_hibernation     = false;
     
     obdh_com_clear_buffer(obdh);
     
@@ -198,10 +199,9 @@ static void obdh_com_receive_cmd(OBDH *obdh)
             debug_print_msg("Shutdown command received!\n");
 #endif // DEBUG_MODE
             obdh_com_send_data(OBDH_COM_SHUTDOWN_ACK);
-            if (beacon.flags.hibernation == false)
-            {
-                task_enter_hibernation();
-            }
+            
+            obdh->enter_hibernation = true;
+            
             break;
         case OBDH_COM_CMD_RF_MUTEX:
 #if BEACON_MODE == DEBUG_MODE

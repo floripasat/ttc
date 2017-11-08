@@ -175,10 +175,16 @@ void radio_enable_rx()
 #elif BEACON_RADIO == SI4063
     return;
 #elif BEACON_RADIO == RF4463F30
+    radio_init_rx_isr();
     rf4463_enter_rx_mode();
 #elif BEACON_RADIO == UART_SIM
     return;
 #endif // BEACON_RADIO
+}
+
+void radio_disable_rx()
+{
+    radio_sleep();
 }
 
 #if BEACON_RADIO == RF4463F30
@@ -200,7 +206,7 @@ void Port_3()
     uint8_t pkt[60];
     rf4463_rx_packet(pkt, 50);
     
-    task_receive_packet(pkt, 50);
+    beacon_receive_packet(pkt, 50);
     
     // P3.1 IFG cleared
     GPIO_clearInterrupt(RADIO_GPIO_nIRQ_PORT, RADIO_GPIO_nIRQ_PIN);

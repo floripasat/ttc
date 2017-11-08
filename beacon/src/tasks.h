@@ -23,7 +23,7 @@
 /**
  * \file tasks.h
  * 
- * \brief Beacon tasks.
+ * \brief Tasks handler functions.
  * 
  * \author Gabriel Mariano Marcelino <gabriel.mm8@gmail.com>
  * 
@@ -40,245 +40,96 @@
 #define TASKS_H_
 
 #include <stdint.h>
-
-#include "beacon.h"
+#include <stdbool.h>
 
 /**
- * \fn task_transmit_ngham_packet
+ * \typedef task_ptr
  * 
- * \brief Transmit a beacon packet using the NGHam protocol.
+ * \brief A pointer to a void function without input parameters.
+ */
+typedef void (*task_ptr)();
+
+/**
+ * \fn task_periodic
  * 
- * \param beacon_ptr is a pointer to a Beacon object.
+ * \brief Runs a task periodically.
+ * 
+ * \param task is a pointer to a task (function) without input parameters (void).
+ * \param period_s is period of the task in seconds.
+ * \param last_execution_s is a pointer to the last time, in seconds, of the task execution.
+ * \param current_time is the current system time in seconds.
  * 
  * \return None
  */
-void task_transmit_ngham_packet(Beacon *beacon_ptr);
+void task_periodic(task_ptr task, uint32_t period_s, uint32_t *last_execution_s, uint32_t current_time_s);
 
 /**
- * \fn task_transmit_ax25_packet
+ * \fn task_periodic_no_preemption
  * 
- * \brief Transmit a beacon packet using the AX.25 protocol.
+ * \brief Runs a task periodically without preemption during the task execution.
  * 
- * \param beacon_ptr is a pointer to a Beacon object.
+ * Before the execution of the task, all the interruptions are disabled. After the task execution, all the
+ * interruptions are enabled again.
+ * 
+ * \param task is a pointer to a task (function) without input parameters (void).
+ * \param period_s is period of the task in seconds.
+ * \param last_execution_s is a pointer to the last time, in seconds, of the task execution.
+ * \param current_time is the current system time in seconds.
  * 
  * \return None
  */
-void task_transmit_ax25_packet(Beacon *beacon_ptr);
+void task_periodic_no_preemption(task_ptr task, uint32_t period_s, uint32_t *last_execution_s, uint32_t current_time_s);
 
 /**
- * \fn task_receive_packet
+ * \fn task_aperiodic
  * 
- * \brief Receives a incoming packet.
+ * \brief Executes an aperiodic task, in agreement of a condition.
  * 
- * This function decodes a packet (with the NGHam protocol) and executes its command.
+ * For the condition of execution, an unary operator can be used.
  * 
- * \param pkt is an array with the received raw packet.
- * \param len is the lenght of the received packet.
+ * \param task is a pointer to a task (function) without input parameters (void).
+ * \param condition is the condition to executer the task (if true, executes, if false, not).
  * 
  * \return None
  */
-void task_receive_packet(uint8_t *pkt, uint8_t len);
+void task_aperiodic(task_ptr task, bool condition);
 
 /**
- * \fn task_process_received_packet_data
+ * \fn task_scheduled
  * 
- * \brief Process an incoming packet payload.
+ * \brief Executes an scheduled task, in agreement of a condition.
  * 
- * Verifies if the received data is a valid command, and executes it.
+ * For the condition of execution, an unary operator can be used.
  * 
- * \param data is the packet payload to process.
- * \param len is the lenght of the packet payload to process.
+ * \param task is a pointer to a task (function) without input parameters (void).
+ * \param time_to_run_s is the time scheduled to run the task (in seconds).
+ * \param current_time is the current system time in seconds.
+ * \param timeout_s is the timeout, in seconds, to run the task.
+ * \param condition is the condition to executer the task (if true, executes, if false, not).
  * 
  * \return None
  */
-void task_process_received_packet_data(uint8_t *data, uint8_t len);
+void task_scheduled(task_ptr task, uint32_t time_to_run_s, uint32_t current_time_s, uint16_t timeout_s, bool condition);
 
 /**
- * \fn task_generate_packets
+ * \fn task_scheduled_no_preemption
  * 
- * \brief Generates the payload and the packets to transmit.
+ * \brief Executes an scheduled task without preemption, in agreement of a condition.
  * 
- * \param ngham_pkt_str is a pointer to an array to store the NGHam packet.
- * \param ngham_pkt_str_len is a pointer to a byte to store the lenght of the NGHam packet.
- * \param ax25_pkt_str is a pointer to an array to store the AX.25 packet.
- * \param ax25_pkt_str_lens is a pointer to a byte to store the lenght of the AX.25 packet.
+ * For the condition of execution, an unary operator can be used.
+ * 
+ * Before the execution of the task, all the interruptions are disabled. After the task execution, all the
+ * interruptions are enabled again.
+ * 
+ * \param task is a pointer to a task (function) without input parameters (void).
+ * \param time_to_run_s is the time scheduled to run the task (in seconds).
+ * \param current_time is the current system time in seconds.
+ * \param timeout_s is the timeout, in seconds, to run the task.
+ * \param condition is the condition to executer the task (if true, executes, if false, not).
  * 
  * \return None
  */
-void task_generate_packets(uint8_t *ngham_pkt_str, uint16_t *ngham_pkt_str_len, uint8_t *ax25_pkt_str, uint16_t *ax25_pkt_str_len);
-
-/**
- * \fn task_generate_ngham_packet
- * 
- * \brief Generates a payload and a NGHam packets to transmit.
- * 
- * \param ngham_pkt_str is a pointer to an array to store the NGHam packet.
- * \param ngham_pkt_str_len is a pointer to a byte to store the lenght of the NGHam packet.
- * 
- * \return None
- */
-void task_generate_ngham_packet(uint8_t *ngham_pkt_str, uint16_t *ngham_pkt_str_len);
-
-/**
- * \fn task_generate_ax25_packet
- * 
- * \brief Generates a payload and an AX.25 packet to transmit.
- * 
- * \param ax25_pkt_str is a pointer to an array to store the AX.25 packet.
- * \param ax25_pkt_str_lens is a pointer to a byte to store the lenght of the AX.25 packet.
- * 
- * \return None
- */
-void task_generate_ax25_packet(uint8_t *ax25_pkt_str, uint16_t *ax25_pkt_str_len);
-
-/**
- * \fn task_enter_low_power_mode
- * 
- * \brief Makes the MCU enter in low-power mode.
- * 
- * \return None
- */
-void task_enter_low_power_mode();
-
-/**
- * \fn tasl_leave_low_power_mode
- * 
- * \brief Makes the MCU leave low-power mode.
- * 
- * \return None
- */
-void task_leave_low_power_mode();
-
-/**
- * \fn task_enter_hibernation
- * 
- * \brief Makes the beacon enter in hibernation.
- * 
- * \return None
- */
-void task_enter_hibernation();
-
-/**
- * \fn task_leave_hibernation
- * 
- * \brief Makes the beacon leave the hibernation.
- * 
- * \return None
- */
-void task_leave_hibernation();
-
-/**
- * \fn task_save_time
- * 
- * \brief Saves the actual time in the flash memory.
- * 
- * \return None
- */
-void task_save_time();
-
-/**
- * \fn task_load_time
- * 
- * \brief Loads the saved time from the flash memory.
- * 
- * \return None
- */
-void task_load_time();
-
-/**
- * \fn task_reset_system
- * 
- * \brief Resets (Reinitializes) the system.
- * 
- * \param beacon_ptr is a pointer to a beacon object.
- * 
- * \return None
- */
-void task_reset_system(Beacon *beacon_ptr);
-
-/**
- * \fn task_antenna_deployment
- * 
- * \brief Antenna deployment procedure.
- * 
- * \return None
- */
-void task_antenna_deployment();
-
-/**
- * \fn task_set_energy_level
- * 
- * \brief Sets the beacon energy level (From the data received from the OBDH or EPS modules).
- * 
- * \param beacon_prt is a pointer to a beacon object.
- * 
- * \return None
- */
-void task_set_energy_level(Beacon *beacon_ptr);
-
-/**
- * \fn task_get_tx_period
- * 
- * \brief Returns the TX period of the beacon (This value is dependent of the satellite energy level).
- * 
- * \param beacon_ptr is a pointer to a Beacon struct.
- * 
- * \return The TX period of the beacon.
- */
-uint8_t task_get_tx_period(Beacon *beacon_ptr);
-
-/**
- * \fn task_generate_packet_payload
- * 
- * \brief Generates a packet payload from the OBDH or EPS data.
- * 
- * If the last OBDH data is not valid, the last valid EPS data is used to generate the packet payload.
- * 
- * \param beacon_ptr is a pointer to a Beacon struct.
- * 
- * \return None
- */
-void task_generate_packet_payload(Beacon *beacon_ptr);
-
-/**
- * \fn task_enable_rx
- * 
- * \brief If available, enables the reception in the radio module.
- * 
- * \return None
- */
-void task_enable_rx();
-
-/**
- * \fn task_disable_rx
- * 
- * \brief Disables the RX of the radio (If available, enables the standby mode).
- * 
- * \return None
- */
-void task_disable_rx();
-
-/**
- * \fn task_reset_radio
- * 
- * \brief Resets the radio periodically.
- * 
- * \param beacon_ptr is the beacon struct.
- * 
- * \return None
- */
-void task_reset_radio(Beacon *beacon_ptr);
-
-/**
- * \fn task_check_devices_status
- * 
- * \brief Checks if the system devices or modules (OBDH, EPS, antenna, radio, etc.) are working or not.
- * 
- * \param beacon_ptr is a pointer to the beacon struct.
- * 
- * \return None
- */
-void task_check_devices_status(Beacon *beacon_ptr);
+void task_scheduled_no_preemption(task_ptr task, uint32_t time_to_run_s, uint32_t current_time_s, uint16_t timeout_s, bool condition);
 
 #endif // TASKS_H_
 

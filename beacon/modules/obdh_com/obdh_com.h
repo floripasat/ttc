@@ -79,6 +79,7 @@ typedef struct
     uint8_t crc_fails;                          /**< Number of CRC failures (Packets with errors). */
     bool is_open;                               /**< Flag to store the OBDH communication state (true = Open; false = Closed). */
     bool is_dead;                               /**< If true, the OBDH module is not sending data, so it is possibly not working. */
+    bool enter_hibernation;                     /**< Set it to true to enter in hibernation mode. */
     OBDHData data;                              /**< OBDH data. */
 } OBDH;
 
