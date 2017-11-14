@@ -32,7 +32,6 @@
  * \date 09/06/2017
  * 
  * \defgroup drivers Drivers
- * \ingroup beacon
  * \{
  */
 
@@ -42,7 +41,6 @@
 #include "antenna/isis_antenna.h"
 #include "pa/rf6886.h"
 #include "radio/cc11x5/cc11xx.h"
-#include "radio/si446x/si446x.h"
 #include "radio/rf4463/rf4463.h"
 #include "radio/uart_radio_sim/uart_radio_sim.h"
 #include "rf_switch/sky13345_368lf.h"

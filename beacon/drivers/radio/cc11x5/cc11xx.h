@@ -41,7 +41,7 @@
 
 #include <stdint.h>
 #include <config/config.h>
-#include <libs/driverlib/driverlib.h>
+#include <drivers/driverlib/driverlib.h>
 
 #include "cc11xx_pins.h"
 #include "cc11xx_registers.h"

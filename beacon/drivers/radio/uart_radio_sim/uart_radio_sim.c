@@ -35,7 +35,7 @@
  * \{
  */
 
-#include <libs/driverlib/driverlib.h>
+#include <drivers/driverlib/driverlib.h>
 
 #include "uart_radio_sim.h"
 
@@ -50,17 +50,17 @@ uint8_t uart_radio_sim_init(uint8_t init_mode)
     }
     else
     {    
-        // Config UART (1200 bps, no parity, 1 stop bit, LSB first)
+        // Config UART
         USCI_A_UART_initParam uart_params = {0};
-        uart_params.selectClockSource   = USCI_A_UART_CLOCKSOURCE_SMCLK;
-        uart_params.clockPrescalar      = 208;		// Clock = 4 MHz, Baudrate = 1200 bps ([1] http://software-dl.ti.com/msp430/msp430_public_sw/mcu/msp430/MSP430BaudRateConverter/index.html)
-        uart_params.firstModReg         = 5;		// Clock = 4 MHz, Baudrate = 1200 bps (See [1])
-        uart_params.secondModReg        = 0;		// Clock = 4 MHz, Baudrate = 1200 bps (See [1])
-        uart_params.parity              = USCI_A_UART_NO_PARITY;
-        uart_params.msborLsbFirst       = USCI_A_UART_LSB_FIRST;
-        uart_params.numberofStopBits    = USCI_A_UART_ONE_STOP_BIT;
-        uart_params.uartMode            = USCI_A_UART_MODE;
-        uart_params.overSampling        = USCI_A_UART_OVERSAMPLING_BAUDRATE_GENERATION;    // Clock = 1 MHz, Baudrate = 1200 bps (See [1])
+        uart_params.selectClockSource   = UART_RADIO_SIM_UART_CLOCK_SOURCE;
+        uart_params.clockPrescalar      = UART_RADIO_SIM_UART_CLOCK_PRESCALAR;
+        uart_params.firstModReg         = UART_RADIO_SIM_UART_FIRST_MOD_REG;
+        uart_params.secondModReg        = UART_RADIO_SIM_UART_SECOND_MOD_REG;
+        uart_params.parity              = UART_RADIO_SIM_UART_PARITY;
+        uart_params.msborLsbFirst       = UART_RADIO_SIM_UART_ENDIENESS;
+        uart_params.numberofStopBits    = UART_RADIO_SIM_UART_STOP_BITS;
+        uart_params.uartMode            = UART_RADIO_SIM_UART_MODE;
+        uart_params.overSampling        = UART_RADIO_SIM_UART_OVERSAMPLING;
         
         // UART initialization
         if (USCI_A_UART_init(UART_RADIO_SIM_UART_BASE_ADDRESS, &uart_params) == STATUS_SUCCESS)

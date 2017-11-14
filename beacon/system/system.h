@@ -1,5 +1,5 @@
 /*
- * sky13345_368lf.c
+ * system.h
  * 
  * Copyright (C) 2017, Federal University of Santa Catarina.
  * 
@@ -21,40 +21,29 @@
  */
 
 /**
- * \file sky13345_368lf.c
+ * \file system.h
  * 
- * \brief SKY13345-368LF driver implementation.
+ * \brief System include file.
  * 
  * \author Gabriel Mariano Marcelino <gabriel.mm8@gmail.com>
  * 
  * \version 1.0-dev
  * 
- * \date 11/06/2017
+ * \date 11/11/2017
  * 
- * \addtogroup sky13345_368lf
+ * \defgroup system System
  * \{
  */
 
-#include <drivers/driverlib/driverlib.h>
+#ifndef SYSTEM_H_
+#define SYSTEM_H_
 
-#include "sky13345_368lf.h"
-#include "sky13345_368lf_pinmap.h"
+#include "buffer/buffer.h"
+#include "debug/debug.h"
+#include "queue/queue.h"
+#include "tasks/tasks.h"
+#include "time/time.h"
 
-void sky13345_368lf_init()
-{
-    GPIO_setAsOutputPin(SKY13345_368LF_GPIO_CTRL_PORT, SKY13345_368LF_GPIO_CTRL_PIN);
-    
-    sky13345_368lf_disable();
-}
+#endif // SYSTEM_H_
 
-void sky13345_368lf_enable()
-{
-    GPIO_setOutputHighOnPin(SKY13345_368LF_GPIO_CTRL_PORT, SKY13345_368LF_GPIO_CTRL_PIN);
-}
-
-void sky13345_368lf_disable()
-{
-    GPIO_setOutputLowOnPin(SKY13345_368LF_GPIO_CTRL_PORT, SKY13345_368LF_GPIO_CTRL_PIN);
-}
-
-//! \} End of sky13345_368lf group
+//! \} End of system group

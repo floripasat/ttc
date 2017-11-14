@@ -1,5 +1,5 @@
 /*
- * sky13345_368lf.c
+ * hal.h
  * 
  * Copyright (C) 2017, Federal University of Santa Catarina.
  * 
@@ -21,40 +21,34 @@
  */
 
 /**
- * \file sky13345_368lf.c
+ * \file hal.h
  * 
- * \brief SKY13345-368LF driver implementation.
+ * \brief HAL include file.
  * 
  * \author Gabriel Mariano Marcelino <gabriel.mm8@gmail.com>
  * 
  * \version 1.0-dev
  * 
- * \date 11/06/2017
+ * \date 08/11/2017
  * 
- * \addtogroup sky13345_368lf
+ * \defgroup hal HAL
  * \{
  */
 
-#include <drivers/driverlib/driverlib.h>
+#ifndef HAL_H_
+#define HAL_H_
 
-#include "sky13345_368lf.h"
-#include "sky13345_368lf_pinmap.h"
+#include "antenna/antenna.h"
+#include "eps/eps_hal.h"
+#include "mcu/cpu.h"
+#include "mcu/flash.h"
+#include "mcu/watchdog.h"
+#include "obdh/obdh_hal.h"
+#include "pa/pa.h"
+#include "radio/radio_hal.h"
+#include "rf_switch/rf_switch.h"
+#include "status_led/status_led.h"
 
-void sky13345_368lf_init()
-{
-    GPIO_setAsOutputPin(SKY13345_368LF_GPIO_CTRL_PORT, SKY13345_368LF_GPIO_CTRL_PIN);
-    
-    sky13345_368lf_disable();
-}
+#endif // HAL_H_
 
-void sky13345_368lf_enable()
-{
-    GPIO_setOutputHighOnPin(SKY13345_368LF_GPIO_CTRL_PORT, SKY13345_368LF_GPIO_CTRL_PIN);
-}
-
-void sky13345_368lf_disable()
-{
-    GPIO_setOutputLowOnPin(SKY13345_368LF_GPIO_CTRL_PORT, SKY13345_368LF_GPIO_CTRL_PIN);
-}
-
-//! \} End of sky13345_368lf group
+//! \} End of hal group

@@ -1,5 +1,5 @@
 /*
- * sky13345_368lf.c
+ * watchdog.c
  * 
  * Copyright (C) 2017, Federal University of Santa Catarina.
  * 
@@ -21,40 +21,42 @@
  */
 
 /**
- * \file sky13345_368lf.c
+ * \file watchdog.c
  * 
- * \brief SKY13345-368LF driver implementation.
+ * \brief Watchdog functions implementation
  * 
  * \author Gabriel Mariano Marcelino <gabriel.mm8@gmail.com>
  * 
  * \version 1.0-dev
  * 
- * \date 11/06/2017
+ * \date 23/09/2016
  * 
- * \addtogroup sky13345_368lf
+ * \addtogroup watchdog
  * \{
  */
 
+#include <config/config.h>
 #include <drivers/driverlib/driverlib.h>
 
-#include "sky13345_368lf.h"
-#include "sky13345_368lf_pinmap.h"
+#include "watchdog.h"
 
-void sky13345_368lf_init()
+void watchdog_init()
 {
-    GPIO_setAsOutputPin(SKY13345_368LF_GPIO_CTRL_PORT, SKY13345_368LF_GPIO_CTRL_PIN);
+    // Watchdog initialization
+    WDT_A_initWatchdogTimer(WATCHDOG_BASE_ADDRESS, WATCHDOG_CLK_SOURCE, WATCHDOG_CLK_DIVIDER);
     
-    sky13345_368lf_disable();
+    // Start counter
+    WDT_A_start(WATCHDOG_BASE_ADDRESS);
 }
 
-void sky13345_368lf_enable()
+void watchdog_reset_timer()
 {
-    GPIO_setOutputHighOnPin(SKY13345_368LF_GPIO_CTRL_PORT, SKY13345_368LF_GPIO_CTRL_PIN);
+    WDT_A_resetTimer(WATCHDOG_BASE_ADDRESS);
 }
 
-void sky13345_368lf_disable()
+void watchdog_hold()
 {
-    GPIO_setOutputLowOnPin(SKY13345_368LF_GPIO_CTRL_PORT, SKY13345_368LF_GPIO_CTRL_PIN);
+    WDT_A_hold(WATCHDOG_BASE_ADDRESS);
 }
 
-//! \} End of sky13345_368lf group
+//! \} End of watchdog group

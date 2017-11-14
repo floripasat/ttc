@@ -1,5 +1,5 @@
 /*
- * sky13345_368lf.c
+ * radio_hal_config.h
  * 
  * Copyright (C) 2017, Federal University of Santa Catarina.
  * 
@@ -21,40 +21,27 @@
  */
 
 /**
- * \file sky13345_368lf.c
+ * \file radio_hal_config.h
  * 
- * \brief SKY13345-368LF driver implementation.
+ * \brief Radio HAL configuration parameters.
  * 
  * \author Gabriel Mariano Marcelino <gabriel.mm8@gmail.com>
  * 
  * \version 1.0-dev
  * 
- * \date 11/06/2017
+ * \date 09/11/2017
  * 
- * \addtogroup sky13345_368lf
+ * \addtogroup radio_hal
  * \{
  */
 
-#include <drivers/driverlib/driverlib.h>
+#ifndef RADIO_HAL_CONFIG_H_
+#define RADIO_HAL_CONFIG_H_
 
-#include "sky13345_368lf.h"
-#include "sky13345_368lf_pinmap.h"
+#include <config/config.h>
 
-void sky13345_368lf_init()
-{
-    GPIO_setAsOutputPin(SKY13345_368LF_GPIO_CTRL_PORT, SKY13345_368LF_GPIO_CTRL_PIN);
-    
-    sky13345_368lf_disable();
-}
+#define RADIO_HAL_RX_ISR_PORT_VECTOR        RADIO_GPIO_nIRQ_ISR_VECTOR
 
-void sky13345_368lf_enable()
-{
-    GPIO_setOutputHighOnPin(SKY13345_368LF_GPIO_CTRL_PORT, SKY13345_368LF_GPIO_CTRL_PIN);
-}
+#endif // RADIO_HAL_CONFIG_H_
 
-void sky13345_368lf_disable()
-{
-    GPIO_setOutputLowOnPin(SKY13345_368LF_GPIO_CTRL_PORT, SKY13345_368LF_GPIO_CTRL_PIN);
-}
-
-//! \} End of sky13345_368lf group
+//! \} End of radio_hal group

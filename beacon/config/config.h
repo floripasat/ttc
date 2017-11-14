@@ -31,15 +31,14 @@
  * 
  * \date 08/06/2017
  * 
- * \defgroup config General configuration
- * \ingroup beacon
+ * \defgroup config General configuration parameters
  * \{
  */
 
 #ifndef CONFIG_H_
 #define CONFIG_H_
 
-#include <libs/driverlib/driverlib.h>
+#include <drivers/driverlib/driverlib.h>
 
 #include "modes.h"
 #include "pinmap.h"
@@ -69,7 +68,7 @@
 #define BEACON_TX_PERIOD_SEC_L4             30
 #define BEACON_TX_PERIOD_SEC_L5             30
 
-#define BEACON_HIBERNATION_PERIOD_SECONDS   (24*60*60*1L)
+#define BEACON_HIBERNATION_PERIOD_SECONDS   (24*60*60*1UL)
 #define BEACON_HIBERNATION_PERIOD_MINUTES   (24*60)
 #define BEACON_HIBERNATION_PERIOD_HOURS     24
 
@@ -78,11 +77,13 @@
 #define BEACON_ANTENNA_DEPLOY_SLEEP_HOUR    0
 
 #define BEACON_RADIO_RESET_PERIOD_MIN       10
-#define BEACON_RADIO_RESET_PERIOD_SEC       (BEACON_RADIO_RESET_PERIOD_MIN*60*1L)
+#define BEACON_RADIO_RESET_PERIOD_SEC       (BEACON_RADIO_RESET_PERIOD_MIN*60*1UL)
 
 #define BEACON_SYSTEM_RESET_PERIOD_HOURS    12
 #define BEACON_SYSTEM_RESET_PERIOD_MIN      (BEACON_SYSTEM_RESET_PERIOD_HOURS*60)
-#define BEACON_SYSTEM_RESET_PERIOD_SEC      (BEACON_SYSTEM_RESET_PERIOD_MIN*60*1L)
+#define BEACON_SYSTEM_RESET_PERIOD_SEC      (BEACON_SYSTEM_RESET_PERIOD_MIN*60*1UL)
+
+#define BEACON_TIMEOUT_RADIO_SHUTDOWN       1000000UL
 
 //########################################################
 //-- BEACON PACKETS --------------------------------------
@@ -99,6 +100,22 @@
 #define BEACON_RADIO                        RF4463F30
 #define BEACON_RADIO_SPI_CLK                100000
 
+#define RADIO_INIT_TIMEOUT_MS               100
+
+//########################################################
+//-- RADIO SIM -------------------------------------------
+//########################################################
+
+#define RADIO_SIM_UART_CLOCK_SOURCE         USCI_A_UART_CLOCKSOURCE_SMCLK
+#define RADIO_SIM_UART_CLOCK_PRESCALAR      208
+#define RADIO_SIM_UART_FIRST_MOD_REG        5
+#define RADIO_SIM_UART_SECOND_MOD_REG       0
+#define RADIO_SIM_UART_PARITY               USCI_A_UART_NO_PARITY
+#define RADIO_SIM_UART_ENDIENESS            USCI_A_UART_LSB_FIRST
+#define RADIO_SIM_UART_STOP_BITS            USCI_A_UART_ONE_STOP_BIT
+#define RADIO_SIM_UART_MODE                 USCI_A_UART_MODE
+#define RADIO_SIM_UART_OVERSAMPLING         USCI_A_UART_OVERSAMPLING_BAUDRATE_GENERATION
+
 //########################################################
 //-- PA --------------------------------------------------
 //########################################################
@@ -109,6 +126,8 @@
 
 #define BEACON_PA_DAC_BASE_ADDRESS          DAC12_A_BASE
 #define BEACON_PA_DAC_SUBMODULE             DAC12_A_SUBMODULE_0
+
+#define BEACON_PA_INIT_TIMEOUT_MS           100
 
 //########################################################
 //-- RF SWITCH -------------------------------------------
@@ -123,11 +142,13 @@
 #define BEACON_ANTENNA                      PASSIVE_ANTENNA
 #define BEACON_ANTENNA_I2C_CLK              100000
 
+#define BEACON_ANTENNA_INIT_TIMEOUT_MS      100
+
 //########################################################
 //-- CPU -------------------------------------------------
 //########################################################
 
-#define BEACON_CPU_FREQ_HZ                  16000000
+#define BEACON_CPU_FREQ_HZ                  16000000UL
 #define BEACON_CPU_FREQ_KHZ                 (BEACON_CPU_FREQ_HZ/1000)
 #define BEACON_CPU_FREQ_MHZ                 (BEACON_CPU_FREQ_HZ/1000000)
 
@@ -144,21 +165,59 @@
 //########################################################
 
 #define TIME_TIMER_BASE_ADDRESS             TIMER_A1_BASE
-#define TIME_TIMER_COMP_VAL_DIVIDER         64
+#define TIME_TIMER_VECTOR                   TIMER1_A0_VECTOR
+
+#define TIME_TIMER_CLOCK_SOURCE             TIMER_A_CLOCKSOURCE_SMCLK
+#define TIME_TIMER_CLOCK_SOURCE_DIVIDER     TIMER_A_CLOCKSOURCE_DIVIDER_64
+#define TIME_TIMER_INTERRUPT_ENABLE_TAIE    TIMER_A_TAIE_INTERRUPT_DISABLE
+#define TIME_TIMER_CLEAR                    TIMER_A_DO_CLEAR
+
+#define TIME_TIMER_COMPARE_MODE             TIMER_A_CAPTURECOMPARE_REGISTER_0
+#define TIME_TIMER_COMPARE_REGISTER         TIMER_A_CAPTURECOMPARE_REGISTER_0
+#define TIME_TIMER_COMPARE_INTERRUPT_ENABLE TIMER_A_CAPTURECOMPARE_INTERRUPT_ENABLE
+#define TIME_TIMER_COMPARE_OUTPUT_MODE      TIMER_A_OUTPUTMODE_OUTBITVALUE
+#define TIME_TIMER_COMPARE_DIVIDER_VALUE    64
+
+#define TIME_TIMER_MODE                     TIMER_A_CONTINUOUS_MODE
 
 //########################################################
-//-- OBDH COMMUNICATION ----------------------------------
+//-- OBDH ------------------------------------------------
 //########################################################
 
-#define OBDH_COM_DEADLINE_SEC               60
-#define OBDH_COM_DEADLINE_MIN               1
+#define OBDH_TIMEOUT                        1000000UL
+#define OBDH_TIMEOUT_SEC                    60
+#define OBDH_TIMEOUT_MIN                    1
+
+#define OBDH_INIT_TIMEOUT_MS                100
+
+#define OBDH_RADIO_TIMEOUT_SEC              2
+
+#define OBDH_PKT_ENERGY_LEVEL_POS           30
 
 //########################################################
-//-- EPS COMMUNICATION -----------------------------------
+//-- EPS -------------------------------------------------
 //########################################################
 
-#define EPS_COM_DEADLINE_SEC                60
-#define EPS_COM_DEADLINE_MIN                1
+#define EPS_TIMEOUT                         1000000UL
+#define EPS_TIMEOUT_SEC                     60
+#define EPS_TIMEOUT_MIN                     1
+
+#define EPS_INIT_TIMEOUT_MS                 100
+
+#define EPS_PKT_ENERGY_LEVEL_POS            30
+
+//########################################################
+//-- LOW-POWER MODE --------------------------------------
+//########################################################
+
+#define LOW_POWER_MODE_ON                   (LPM1_bits + GIE)
+#define LOW_POWER_MODE_OFF                  LPM1_EXIT
+
+//########################################################
+//-- DEBUG -----------------------------------------------
+//########################################################
+
+#define DEBUG_INIT_TIMEOUT_MS               100
 
 #endif // CONFIG_H_
 

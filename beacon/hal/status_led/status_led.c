@@ -1,7 +1,7 @@
 /*
- * sky13345_368lf.c
+ * status_led.c
  * 
- * Copyright (C) 2017, Federal University of Santa Catarina.
+ * Copyright (C) 2017, Federal University of Santa Catarina
  * 
  * This file is part of FloripaSat-Beacon.
  * 
@@ -21,40 +21,43 @@
  */
 
 /**
- * \file sky13345_368lf.c
+ * \file status_led.c
  * 
- * \brief SKY13345-368LF driver implementation.
+ * \brief Initialization and control of the status led (Implementation).
  * 
  * \author Gabriel Mariano Marcelino <gabriel.mm8@gmail.com>
  * 
  * \version 1.0-dev
  * 
- * \date 11/06/2017
- * 
- * \addtogroup sky13345_368lf
+ * \date 11/10/2016
+ * \addtogroup status_led
  * \{
  */
 
 #include <drivers/driverlib/driverlib.h>
 
-#include "sky13345_368lf.h"
-#include "sky13345_368lf_pinmap.h"
+#include "status_led.h"
 
-void sky13345_368lf_init()
+void status_led_init()
 {
-    GPIO_setAsOutputPin(SKY13345_368LF_GPIO_CTRL_PORT, SKY13345_368LF_GPIO_CTRL_PIN);
+    GPIO_setAsOutputPin(STATUS_LED_PORT, STATUS_LED_PIN);
     
-    sky13345_368lf_disable();
+    status_led_disable();
 }
 
-void sky13345_368lf_enable()
+void status_led_enable()
 {
-    GPIO_setOutputHighOnPin(SKY13345_368LF_GPIO_CTRL_PORT, SKY13345_368LF_GPIO_CTRL_PIN);
+    GPIO_setOutputHighOnPin(STATUS_LED_PORT, STATUS_LED_PIN);
 }
 
-void sky13345_368lf_disable()
+void status_led_disable()
 {
-    GPIO_setOutputLowOnPin(SKY13345_368LF_GPIO_CTRL_PORT, SKY13345_368LF_GPIO_CTRL_PIN);
+    GPIO_setOutputLowOnPin(STATUS_LED_PORT, STATUS_LED_PIN);
 }
 
-//! \} End of sky13345_368lf group
+void status_led_toggle()
+{
+    GPIO_toggleOutputOnPin(STATUS_LED_PORT, STATUS_LED_PIN);
+}
+
+//! \} End of status_led group

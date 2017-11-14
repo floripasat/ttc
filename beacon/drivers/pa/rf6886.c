@@ -35,7 +35,7 @@
  * \{
  */
 
-#include <libs/driverlib/driverlib.h>
+#include <drivers/driverlib/driverlib.h>
 
 #include "rf6886.h"
 #include "rf6886_pinmap.h"

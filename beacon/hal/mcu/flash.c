@@ -1,5 +1,5 @@
 /*
- * sky13345_368lf.c
+ * flash.c
  * 
  * Copyright (C) 2017, Federal University of Santa Catarina.
  * 
@@ -21,40 +21,69 @@
  */
 
 /**
- * \file sky13345_368lf.c
+ * \file flash.c
  * 
- * \brief SKY13345-368LF driver implementation.
+ * \brief Flash memory control functions implementation.
  * 
  * \author Gabriel Mariano Marcelino <gabriel.mm8@gmail.com>
  * 
  * \version 1.0-dev
  * 
- * \date 11/06/2017
+ * \date 10/06/2017
  * 
- * \addtogroup sky13345_368lf
+ * \addtogroup flash
  * \{
  */
 
 #include <drivers/driverlib/driverlib.h>
 
-#include "sky13345_368lf.h"
-#include "sky13345_368lf_pinmap.h"
+#include "flash.h"
 
-void sky13345_368lf_init()
+uint8_t *flash_ptr;
+
+bool flash_init()
 {
-    GPIO_setAsOutputPin(SKY13345_368LF_GPIO_CTRL_PORT, SKY13345_368LF_GPIO_CTRL_PIN);
+    return true;
+}
+
+uint8_t flash_read_byte(uint16_t adr)
+{
+    return 0xFF;
+}
+
+void flash_write_byte(uint8_t byte, uint16_t adr)
+{
+    FlashCtl_write8(&byte, flash_ptr, 1);
+}
+
+void flash_read_data(uint8_t *data, uint8_t size, uint8_t adr)
+{
     
-    sky13345_368lf_disable();
 }
 
-void sky13345_368lf_enable()
+void flash_write_data(uint8_t *data, uint8_t size, uint8_t adr)
 {
-    GPIO_setOutputHighOnPin(SKY13345_368LF_GPIO_CTRL_PORT, SKY13345_368LF_GPIO_CTRL_PIN);
+    FlashCtl_write8(data, flash_ptr, size);
 }
 
-void sky13345_368lf_disable()
+uint16_t flash_read_word(uint16_t adr)
 {
-    GPIO_setOutputLowOnPin(SKY13345_368LF_GPIO_CTRL_PORT, SKY13345_368LF_GPIO_CTRL_PIN);
+    return 0xFFFF;
 }
 
-//! \} End of sky13345_368lf group
+void flash_write_word(uint16_t word, uint16_t adr)
+{
+    FlashCtl_write16(&word, flash_ptr, 1);
+}
+
+uint32_t flash_read_word32(uint16_t adr)
+{
+    return 0xFFFFFFFF;
+}
+
+void flash_write_word32(uint32_t word32, uint16_t adr)
+{
+    FlashCtl_write32(&word32, flash_ptr, 1);
+}
+
+//! \} End of flash group

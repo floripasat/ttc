@@ -38,7 +38,7 @@
  */
 
 #include <stdint.h>
-#include <libs/driverlib/driverlib.h>
+#include <drivers/driverlib/driverlib.h>
 
 #include "rf4463_spi.h"
 #include "rf4463_pinmap.h"

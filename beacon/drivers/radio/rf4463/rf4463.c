@@ -37,8 +37,7 @@
  * \{
  */
 
-#include <libs/driverlib/driverlib.h>
-#include <modules/time/delay.h>         // delay_ms()
+#include <drivers/driverlib/driverlib.h>
 
 #include "rf4463.h"
 #include "rf4463_pinmap.h"
@@ -46,6 +45,7 @@
 #include "rf4463_spi.h"
 #include "rf4463_registers.h"
 #include "radio_config_Si4463.h"
+#include "rf4463_delay.h"
 
 const uint8_t RF4463_CONFIGURATION_DATA[] = RADIO_CONFIGURATION_DATA_ARRAY;
 
@@ -115,16 +115,16 @@ void rf4463_power_on_reset()
     uint8_t buffer[8] = {RF_POWER_UP};
     
     GPIO_setOutputHighOnPin(RF4463_SDN_PORT, RF4463_SDN_PIN);
-    delay_ms(100);
+    rf4463_delay_ms(100);
     GPIO_setOutputLowOnPin(RF4463_SDN_PORT, RF4463_SDN_PIN);
-    delay_ms(20);           // Wait for RF4463 stabilization
+    rf4463_delay_ms(20);           // Wait for RF4463 stabilization
     
     // Send power-up command
     GPIO_setOutputLowOnPin(RF4463_NSEL_PORT, RF4463_NSEL_PIN);
     rf4463_spi_write(buffer, 7);
     GPIO_setOutputHighOnPin(RF4463_NSEL_PORT, RF4463_NSEL_PIN);
     
-    delay_ms(200);
+    rf4463_delay_ms(200);
 }
 
 bool rf4463_tx_packet(uint8_t *data, uint8_t len)
@@ -147,7 +147,7 @@ bool rf4463_tx_packet(uint8_t *data, uint8_t len)
             return true;
         }
         
-        delay_us(100);
+        rf4463_delay_us(100);
     }
     
     // If the packet tranmission takes longer than expected, resets the radio.
@@ -208,7 +208,7 @@ bool rf4463_tx_long_packet(uint8_t *packet, uint16_t len)
                         return true;
                     }
 
-                    delay_us(100);
+                    rf4463_delay_us(100);
                 }
             }
             else

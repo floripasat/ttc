@@ -39,11 +39,11 @@
 #define BEACON_H_
 
 #include <stdint.h>
+#include <stdbool.h>
 
-#include <modules/modules.h>
+#include <system/buffer/buffer.h>
 
-#include "flags.h"
-#include "packet_payload.h"
+#include "fsat_module.h"
 
 /**
  * \struct Beacon
@@ -52,17 +52,21 @@
  */
 typedef struct
 {
-    Flags           flags;                          /**< General flags. */
-    uint8_t         energy_level;                   /**< Energy level of the satellite. */
-    uint32_t        second_counter;                 /**< Seconds since boot. */
-    uint32_t        last_radio_reset_time;          /**< Time stamp of the last radio reset. */
-    uint32_t        last_system_reset_time;         /**< Time stamp of the last system reset. */
-    uint32_t        last_ngham_pkt_transmission;    /**< Time stamp of the last NGHam packet transmission. */
-    uint32_t        last_devices_verification;      /**< Time stamp of the last devices verification. */
-    uint32_t        hibernation_mode_initial_time;  /**< Seconds since boot before the hibernations. */
-    OBDH            obdh;                           /**< OBDH struct. */
-    EPS             eps;                            /**< EPS struct. */
-    PacketPayload   packet_payload;                 /**< Payload of the next packet to transmit. */
+    bool        hibernation;                    /**< If true, the beacon is in hibernation mode, otherwise, not. */
+    bool        can_transmit;                   /**< If true, the beacon can transmit packets, otherwise, not. */
+    bool        transmitting;                   /**< If true, the beacon is transmitting packets, otherwise, not. */
+    uint8_t     energy_level;                   /**< Energy level of the satellite. */
+    uint32_t    last_radio_reset_time;          /**< Time stamp of the last radio reset. */
+    uint32_t    last_system_reset_time;         /**< Time stamp of the last system reset. */
+    uint32_t    last_ngham_pkt_transmission;    /**< Time stamp of the last NGHam packet transmission. */
+    uint32_t    last_devices_verification;      /**< Time stamp of the last devices verification. */
+    uint32_t    last_energy_level_set;          /**< Time stamp of the last energy level verification. */
+    uint32_t    hibernation_mode_initial_time;  /**< Seconds since boot before the hibernations. */
+    uint32_t    time_obdh_started_tx;           /**< Time stamp of the allowed window to OBDH transmit data via radio. */
+    Buffer      radio_rx;                       /**< Radio RX data buffer. */
+    Buffer      pkt_payload;                    /**< The current payload to transmit in a packet (With the OBDH or EPS data, or only with the satellite ID). */
+    FSatModule  obdh;                           /**< OBDH module. */
+    FSatModule  eps;                            /**< EPS module. */
 } Beacon;
 
 /**
@@ -82,15 +86,6 @@ extern Beacon beacon;
 void beacon_init();
 
 /**
- * \fn beacon_run
- * 
- * \brief Main operation routine.
- * 
- * \return None
- */
-void beacon_run();
-
-/**
  * \fn beacon_deinit
  * 
  * \brief Beacon deinitialization routine.
@@ -98,6 +93,15 @@ void beacon_run();
  * \return None
  */
 void beacon_deinit();
+
+/**
+ * \fn beacon_run
+ * 
+ * \brief Main operation routine.
+ * 
+ * \return None
+ */
+void beacon_run();
 
 /**
  * \fn beacon_shutdown
@@ -154,7 +158,7 @@ void beacon_enter_low_power_mode();
 uint8_t beacon_get_tx_period();
 
 /**
- * \fn beacon_generate_packet_payload
+ * \fn beacon_gen_pkt_payload
  * 
  * \brief Generates a packet payload from the OBDH or EPS data.
  * 
@@ -162,24 +166,10 @@ uint8_t beacon_get_tx_period();
  * 
  * \return None
  */
-void beacon_generate_packet_payload();
+void beacon_gen_pkt_payload();
 
 /**
- * \fn beacon_generate_packets
- * 
- * \brief Generates the payload and the packets to transmit.
- * 
- * \param ngham_pkt_str is a pointer to an array to store the NGHam packet.
- * \param ngham_pkt_str_len is a pointer to a byte to store the lenght of the NGHam packet.
- * \param ax25_pkt_str is a pointer to an array to store the AX.25 packet.
- * \param ax25_pkt_str_lens is a pointer to a byte to store the lenght of the AX.25 packet.
- * 
- * \return None
- */
-void beacon_generate_packets(uint8_t *ngham_pkt_str, uint16_t *ngham_pkt_str_len, uint8_t *ax25_pkt_str, uint16_t *ax25_pkt_str_len);
-
-/**
- * \fn beacon_generate_ngham_packet
+ * \fn beacon_gen_ngham_pkt
  * 
  * \brief Generates a payload and a NGHam packets to transmit.
  * 
@@ -188,10 +178,10 @@ void beacon_generate_packets(uint8_t *ngham_pkt_str, uint16_t *ngham_pkt_str_len
  * 
  * \return None
  */
-void beacon_generate_ngham_packet(uint8_t *ngham_pkt_str, uint16_t *ngham_pkt_str_len);
+void beacon_gen_ngham_pkt(uint8_t *ngham_pkt_str, uint16_t *ngham_pkt_str_len);
 
 /**
- * \fn beacon_generate_ax25_packet
+ * \fn beacon_gen_ax25_pkt
  * 
  * \brief Generates a payload and an AX.25 packet to transmit.
  * 
@@ -200,25 +190,25 @@ void beacon_generate_ngham_packet(uint8_t *ngham_pkt_str, uint16_t *ngham_pkt_st
  * 
  * \return None
  */
-void beacon_generate_ax25_packet(uint8_t *ax25_pkt_str, uint16_t *ax25_pkt_str_len);
+void beacon_gen_ax25_pkt(uint8_t *ax25_pkt_str, uint16_t *ax25_pkt_str_len);
 
 /**
- * \fn beacon_transmit_ngham_packet
+ * \fn beacon_send_ngham_pkt
  * 
  * \brief Transmit a beacon packet using the NGHam protocol.
  * 
  * \return None
  */
-void beacon_transmit_ngham_packet();
+void beacon_send_ngham_pkt();
 
 /**
- * \fn beacon_transmit_ax25_packet
+ * \fn beacon_send_ax25_pkt
  * 
  * \brief Transmit a beacon packet using the AX.25 protocol.
  * 
  * \return None
  */
-void beacon_transmit_ax25_packet();
+void beacon_send_ax25_pkt();
 
 /**
  * \fn beacon_set_energy_level
@@ -241,18 +231,33 @@ void beacon_set_energy_level();
 void beacon_check_devices_status();
 
 /**
- * \fn beacon_process_received_packet_data
+ * \fn beacon_process_radio_pkt
  * 
- * \brief Process an incoming packet payload.
+ * \brief Process an incoming packet payload from the radio.
  * 
  * Verifies if the received data is a valid command, and executes it.
  * 
- * \param data is the packet payload to process.
- * \param len is the lenght of the packet payload to process.
+ * \return None
+ */
+void beacon_process_radio_pkt();
+
+/**
+ * \fn beacon_process_obdh_pkt
+ * 
+ * \brief Processes a packet from the OBDH module.
  * 
  * \return None
  */
-void beacon_process_received_packet_data(uint8_t *data, uint8_t len);
+void beacon_process_obdh_pkt();
+
+/**
+ * \fn beacon_process_eps_pkt
+ * 
+ * \brief Processes a packet from the EPS module.
+ * 
+ * \return None
+ */
+void beacon_process_eps_pkt();
 
 /**
  * \fn beacon_antenna_deployment
@@ -262,20 +267,6 @@ void beacon_process_received_packet_data(uint8_t *data, uint8_t len);
  * \return None
  */
 void beacon_antenna_deployment();
-
-/**
- * \fn beacon_receive_packet
- * 
- * \brief Receives a incoming packet.
- * 
- * This function decodes a packet (with the NGHam protocol) and executes its command.
- * 
- * \param pkt is an array with the received raw packet.
- * \param len is the lenght of the received packet.
- * 
- * \return None
- */
-void beacon_receive_packet(uint8_t *pkt, uint8_t len);
 
 #endif // BEACON_H_
 

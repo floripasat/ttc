@@ -39,6 +39,7 @@
 #define CC11XX_FLORIPASAT_REG_CONFIG_H_
 
 #include <stdint.h>
+
 #include "cc11xx.h"
 
 /**

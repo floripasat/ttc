@@ -43,15 +43,7 @@
 
 #include <config/config.h>
 
-// UART-RADIO-SIM pin map
-#define UART_RADIO_SIM_UART_USCI            RADIO_SIM_UART_USCI
-#define UART_RADIO_SIM_UART_BASE_ADDRESS    RADIO_SIM_UART_BASE_ADDRESS
-#define UART_RADIO_SIM_UART_TX_PORT         RADIO_SIM_UART_TX_PORT
-#define UART_RADIO_SIM_UART_TX_PIN          RADIO_SIM_UART_TX_PIN
-
-// Initialization modes
-#define UART_RADIO_ONLY_SET_TX_PIN_AS_PERIPHERAL        0
-#define UART_RADIO_NORMAL_INITIALIZATION                1
+#include "uart_radio_sim_config.h"
 
 /**
  * \fn uart_radio_sim_init

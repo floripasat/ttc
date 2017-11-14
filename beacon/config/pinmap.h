@@ -31,7 +31,7 @@
  * 
  * \date 08/06/2017
  * 
- * \defgroup init Initialization
+ * \defgroup pinmap Pinmap
  * \ingroup config
  * \{
  */
@@ -39,7 +39,7 @@
 #ifndef PINMAP_H_
 #define PINMAP_H_
 
-#include <libs/driverlib/driverlib.h>
+#include <drivers/driverlib/driverlib.h>
 
 //##################################################
 //-- COMMON ----------------------------------------
@@ -73,6 +73,7 @@
 
 #define RADIO_GPIO_nIRQ_PORT        GPIO_PORT_P3
 #define RADIO_GPIO_nIRQ_PIN         GPIO_PIN1
+#define RADIO_GPIO_nIRQ_ISR_VECTOR  PORT3_VECTOR
 
 #define RADIO_GPIO_0_PORT           GPIO_PORT_P3
 #define RADIO_GPIO_0_PIN            GPIO_PIN2
@@ -123,36 +124,36 @@
 #define ANTENNA_GPIO_DEBUG_PIN      GPIO_PIN7
 
 //##################################################
-//-- EPS COMMUNICATION -----------------------------
+//-- EPS -------------------------------------------
 //##################################################
 
-#define EPS_COM_UART_PORT           GPIO_PORT_P2
-#define EPS_COM_UART_USCI           USCI_A
-#define EPS_COM_UART_BASE_ADDRESS   USCI_A0_BASE
-#define EPS_COM_UART_ISR_VECTOR     USCI_A0_VECTOR
+#define EPS_UART_PORT               GPIO_PORT_P2
+#define EPS_UART_USCI               USCI_A
+#define EPS_UART_BASE_ADDRESS       USCI_A0_BASE
+#define EPS_UART_ISR_VECTOR         USCI_A0_VECTOR
 
-#define EPS_COM_UART_RX_PORT        GPIO_PORT_P2
-#define EPS_COM_UART_RX_PIN         GPIO_PIN5
+#define EPS_UART_RX_PORT            GPIO_PORT_P2
+#define EPS_UART_RX_PIN             GPIO_PIN5
 
 //##################################################
-//-- OBDH COMMUNICATION ----------------------------
+//-- OBDH ------------------------------------------
 //##################################################
 
-#define OBDH_COM_SPI_PORT           GPIO_PORT_P9
-#define OBDH_COM_SPI_USCI           USCI_A
-#define OBDH_COM_SPI_BASE_ADDRESS   USCI_A2_BASE
+#define OBDH_SPI_PORT               GPIO_PORT_P9
+#define OBDH_SPI_USCI               USCI_A
+#define OBDH_SPI_BASE_ADDRESS       USCI_A2_BASE
 
-#define OBDH_COM_SPI_NSEL_PORT      GPIO_PORT_P9
-#define OBDH_COM_SPI_NSEL_PIN       GPIO_PIN4
+#define OBDH_SPI_NSEL_PORT          GPIO_PORT_P9
+#define OBDH_SPI_NSEL_PIN           GPIO_PIN4
 
-#define OBDH_COM_SPI_MOSI_PORT      GPIO_PORT_P9
-#define OBDH_COM_SPI_MOSI_PIN       GPIO_PIN2
+#define OBDH_SPI_MOSI_PORT          GPIO_PORT_P9
+#define OBDH_SPI_MOSI_PIN           GPIO_PIN2
 
-#define OBDH_COM_SPI_MISO_PORT      GPIO_PORT_P9
-#define OBDH_COM_SPI_MISO_PIN       GPIO_PIN3
+#define OBDH_SPI_MISO_PORT          GPIO_PORT_P9
+#define OBDH_SPI_MISO_PIN           GPIO_PIN3
 
-#define OBDH_COM_SPI_SCLK_PORT      GPIO_PORT_P9
-#define OBDH_COM_SPI_SCLK_PIN       GPIO_PIN1
+#define OBDH_SPI_SCLK_PORT          GPIO_PORT_P9
+#define OBDH_SPI_SCLK_PIN           GPIO_PIN1
 
 //##################################################
 //-- STATUS LED ------------------------------------
@@ -162,7 +163,7 @@
 #define STATUS_LED_GPIO_PIN         GPIO_PIN4
 
 //##################################################
-//-- DEBUG UART ------------------------------------
+//-- DEBUG -----------------------------------------
 //##################################################
 
 #define DEBUG_UART_BASE_ADDRESS     USCI_A1_BASE

@@ -35,53 +35,141 @@
  * \ingroup drivers
  * \{
  */
- 
+
 #ifndef ISIS_ANTENNA_H_
 #define ISIS_ANTENNA_H_
 
-#define ANTENNA_STATUS_NOT_RELEASED     0x00
-#define ANTENNA_STATUS_RELEASED         0x01
-
 #include <stdint.h>
+#include <stdbool.h>
 
 /**
- * \fn antenna_Init()
+ * \struct ISIS_Antenna_Status
  * 
- * \brief Initialization of the antenna deployment peripherals.
- * 
- * \note TO BE DEVELOPED!
- * 
- * \return none
+ * \brief 
  */
-uint8_t isis_antenna_Init();
+typedef struct
+{
+    uint8_t antenna_1_status  : 1;      /**< . */
+    uint8_t antenna_1_timeout : 1;      /**< . */
+    uint8_t antenna_1_burning : 1;      /**< . */
+    uint8_t antenna_2_status  : 1;      /**< . */
+    uint8_t antenna_2_timeout : 1;      /**< . */
+    uint8_t antenna_2_burning : 1;      /**< . */
+    uint8_t ignoring_switches : 1;      /**< . */
+    uint8_t antenna_3_status  : 1;      /**< . */
+    uint8_t antenna_3_timeout : 1;      /**< . */
+    uint8_t antenna_3_burning : 1;      /**< . */
+    uint8_t independent_burn  : 1;      /**< . */
+    uint8_t antenna_4_status  : 1;      /**< . */
+    uint8_t antenna_4_timeout : 1;      /**< . */
+    uint8_t antenna_4_burning : 1;      /**< . */
+    uint8_t armed             : 1;      /**< . */
+} ISIS_Antenna_Status;
+
+#define ISIS_ANTENNA_STATUS_MASK            0x8888  /**< . */
+
+// Antenna status
+#define ISIS_ANTENNA_STATUS_NOT_DEPLOYED    1       /**< Value if antennas are not deployed yet */
+#define ISIS_ANTENNA_STATUS_DEPLOYED        0       /**< Value if antennas are deployed         */
+
+// Antenna stop cause
+#define ISIS_ANTENNA_TIMEOUT_CAUSE          1       /**< Value if deployment system stops because timeout                   */
+#define ISIS_ANTENNA_OTHER_CAUSE            0       /**< Value if deployment system stops because other reason than timeout */
+
+// Antenna burn system
+#define ISIS_ANTENNA_BURN_ACTIVE            1       /**< Value if the referring antenna burn system is active */
+#define ISIS_ANTENNA_BURN_INACTIVE          0       /**< Value if the referring antenna burn system is off    */
+
+#define ISIS_ANTENNA_ANT_1                  1       /**< . */
+#define ISIS_ANTENNA_ANT_2                  2       /**< . */
+#define ISIS_ANTENNA_ANT_3                  3       /**< . */
+#define ISIS_ANTENNA_ANT_4                  4       /**< . */
+
+#define VERIFY_STATUS(status, bit)          ( (status & bit) > 0 )
 
 /**
- * \fn antenna_IsReleased
+ * \fn isis_antenna_init()
+ * 
+ * \brief .
+ * 
+ * \return None
+ */
+void isis_antenna_init();
+
+/**
+ * \fn isis_antenna_is_released
  * 
  * \brief Verifies if the antenna is released or not.
  * 
- * \note TO BE DEVELOPED!
- * 
- * \return It can return:
- *              -\b ANTENNA_STATUS_NOT_RELEASED if the antenna is not released.
- *              -\b ANTENNA_STATUS_RELEASED if the antenna is released.
+ * \return Deployment status. It can return:
+ *              -\b true if the antenna is released.
+ *              -\b false if the antenna is not released.
  *              .
  */
-uint8_t isis_antenna_is_released();
+bool isis_antenna_is_released();
 
 /**
- * \fn antenna_Release
+ * \fn isis_antenna_release
  * 
  * \brief Enables the antenna deployment.
  * 
- * \note TO BE DEVELOPED!
- * 
- * \return Deployment status. It can be:
- *              -\b STATUS_SUCCESS
- *              -\b STATUS_FAIL
+ * \return It can be:
+ *              -\b true
+ *              -\b false
  *              .
  */
-uint8_t isis_antenna_release();
+bool isis_antenna_release();
+
+/**
+ * \fn isis_antenna_arm
+ * 
+ * \brief 
+ * 
+ * \return None
+ */
+void isis_antenna_arm();
+
+/**
+ * \fn isis_antenna_disarm
+ * 
+ * \brief 
+ * 
+ * \return None
+ */
+void isis_antenna_disarm();
+
+/**
+ * \fn isis_antenna_start_sequential_deploy
+ * 
+ * \brief 
+ * 
+ * \param sec
+ * 
+ * \return None
+ */
+void isis_antenna_start_sequential_deploy(uint8_t sec);
+
+/**
+ * \fn isis_antenna_start_independent_deploy
+ * 
+ * \brief 
+ * 
+ * \param ant
+ * \param sec
+ * \param ovr
+ * 
+ * \return None
+ */
+void isis_antenna_start_independent_deploy(uint8_t ant, uint8_t sec, uint8_t ovr);
+
+/**
+ * \fn isis_antenna_read_deployment_status
+ * 
+ * \brief 
+ * 
+ * \return The deployment status code.
+ */
+static uint16_t isis_antenna_read_deployment_status();
 
 #endif // ANTENNA_H_
 

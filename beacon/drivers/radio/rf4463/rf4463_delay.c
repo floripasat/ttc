@@ -1,7 +1,7 @@
 /*
- * sky13345_368lf.c
+ * rf4463_delay.c
  * 
- * Copyright (C) 2017, Federal University of Santa Catarina.
+ * Copyright (C) 2017, Federal University of Santa Catarina
  * 
  * This file is part of FloripaSat-Beacon.
  * 
@@ -17,44 +17,51 @@
  * 
  * You should have received a copy of the GNU General Public License
  * along with FloripaSat-Beacon. If not, see <http://www.gnu.org/licenses/>.
- * 
+ *
  */
 
 /**
- * \file sky13345_368lf.c
+ * \file rf4463_delay.c
  * 
- * \brief SKY13345-368LF driver implementation.
+ * \brief RF4463 delay functions implementation.
  * 
  * \author Gabriel Mariano Marcelino <gabriel.mm8@gmail.com>
  * 
  * \version 1.0-dev
  * 
- * \date 11/06/2017
+ * \date 23/09/2016
  * 
- * \addtogroup sky13345_368lf
+ * \addtogroup rf4463
  * \{
  */
 
-#include <drivers/driverlib/driverlib.h>
+#include <msp430.h>
+#include <config/config.h>
 
-#include "sky13345_368lf.h"
-#include "sky13345_368lf_pinmap.h"
+#include "rf4463_delay.h"
 
-void sky13345_368lf_init()
+void rf4463_delay_s(uint8_t s)
 {
-    GPIO_setAsOutputPin(SKY13345_368LF_GPIO_CTRL_PORT, SKY13345_368LF_GPIO_CTRL_PIN);
-    
-    sky13345_368lf_disable();
+    while(s--)
+    {
+        __delay_cycles(BEACON_CPU_FREQ_HZ);
+    }
 }
 
-void sky13345_368lf_enable()
+void rf4463_delay_ms(uint16_t ms)
 {
-    GPIO_setOutputHighOnPin(SKY13345_368LF_GPIO_CTRL_PORT, SKY13345_368LF_GPIO_CTRL_PIN);
+    while(ms--)
+    {
+        __delay_cycles(BEACON_CPU_FREQ_HZ/1000);
+    }
 }
 
-void sky13345_368lf_disable()
+void rf4463_delay_us(uint32_t us)
 {
-    GPIO_setOutputLowOnPin(SKY13345_368LF_GPIO_CTRL_PORT, SKY13345_368LF_GPIO_CTRL_PIN);
+    while(us--)
+    {
+        __delay_cycles(BEACON_CPU_FREQ_HZ/1000000);
+    }
 }
 
-//! \} End of sky13345_368lf group
+//! \} End of rf4463 group
