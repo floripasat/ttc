@@ -290,7 +290,7 @@ void beacon_gen_pkt_payload()
     }
     
 #if BEACON_PACKET_PAYLOAD_CONTENT & PAYLOAD_SAT_ID
-    buffer_fill(&beacon.pkt_payload, SATELLITE_ID, sizeof(SATELLITE_ID));
+    buffer_fill(&beacon.pkt_payload, SATELLITE_ID, sizeof(SATELLITE_ID)-1);
 #endif // PAYLOAD_SAT_ID
     
     if ((beacon.obdh.errors == 0) && (!beacon.obdh.is_dead))
