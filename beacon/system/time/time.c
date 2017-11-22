@@ -44,7 +44,9 @@
 
 #include "time.h"
 
-uint32_t second_counter;
+Time time;
+
+Time time_backup;
 
 void time_init()
 {
@@ -52,7 +54,7 @@ void time_init()
     debug_print_msg("Time control initialization... ");
 #endif // DEBUG_MODE
     
-    second_counter = 0;
+    time_reset();
     
     time_timer_init();
     
@@ -85,6 +87,30 @@ static void time_timer_init()
     Timer_A_initCompareMode(TIME_TIMER_BASE_ADDRESS, &timer_comp_params);
 }
 
+static uint8_t time_crc8(uint32_t time_counter)
+{
+    uint8_t time_in_bytes[4];
+    time_in_bytes[0] = (uint8_t)((time_counter & 0xFF000000) >> 24);
+    time_in_bytes[1] = (uint8_t)((time_counter & 0x00FF0000) >> 16);
+    time_in_bytes[2] = (uint8_t)((time_counter & 0x0000FF00) >> 8);
+    time_in_bytes[3] = (uint8_t)(time_counter & 0x000000FF);
+    
+    uint8_t crc = TIME_CRC8_INITIAL_VALUE;
+    uint8_t i = 0;
+    for(i=0; i<(32/8); i++)
+    {
+        crc ^= time_in_bytes[i];
+        uint8_t j = 0;
+        for (j=0; j<8; j++)
+        {
+            crc = (crc << 1) ^ ((crc & 0x80)? TIME_CRC8_POLYNOMIAL: 0);
+        }
+        crc &= 0xFF;
+    }
+    
+    return crc;
+}
+
 void time_timer_start()
 {
     Timer_A_startCounter(TIME_TIMER_BASE_ADDRESS, TIME_TIMER_MODE);
@@ -92,12 +118,29 @@ void time_timer_start()
 
 void time_reset()
 {
-    second_counter = 0;
+    time.second_counter = 0;
+    time.crc8 = 0;
+    
+    time_backup.second_counter = time.second_counter;
+    time_backup.crc8 = time.crc8;
 }
 
 uint32_t time_get_seconds()
 {
-    return second_counter;
+    if (time_crc8(time.second_counter) != time.crc8)
+    {
+        if (time_crc8(time_backup.second_counter) == time_backup.crc8)
+        {
+            time.second_counter = time_backup.second_counter;
+            time.crc8 = time_backup.crc8;
+        }
+        else
+        {
+            time_reset();
+        }
+    }
+    
+    return time.second_counter;
 }
 
 /**
@@ -121,7 +164,26 @@ void time_timer_isr()
     uint16_t comp_val = Timer_A_getCaptureCompareCount(TIME_TIMER_BASE_ADDRESS, TIME_TIMER_COMPARE_REGISTER)
                         + (uint16_t)(UCS_getSMCLK()/TIME_TIMER_COMPARE_DIVIDER_VALUE);
     
-    second_counter++;
+    if (time_crc8(time.second_counter) == time.crc8)
+    {
+        time.second_counter++;
+        time.crc8 = time_crc8(time.second_counter);
+        
+        time_backup.second_counter = time.second_counter;
+        time_backup.crc8 = time.crc8;
+    }
+    else if (time_crc8(time_backup.second_counter) == time_backup.crc8)
+    {
+        time_backup.second_counter++;
+        time_backup.crc8 = time_crc8(time_backup.second_counter);
+        
+        time.second_counter = time_backup.second_counter;
+        time.crc8 = time_backup.crc8;
+    }
+    else
+    {
+        time_reset();
+    }
     
     // Add Offset to CCR0
     Timer_A_setCompareValue(TIME_TIMER_BASE_ADDRESS, TIME_TIMER_COMPARE_REGISTER, comp_val);

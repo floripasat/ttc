@@ -41,12 +41,33 @@
 
 #include <stdint.h>
 
+#define TIME_CRC8_INITIAL_VALUE     0x00        // CRC8-CCITT
+#define TIME_CRC8_POLYNOMIAL        0x07        // CRC8-CCITT
+
 /**
- * \var second
+ * \struct Time
  * 
- * \brief Time control variable (in seconds).
+ * \brief Time struct.
  */
-extern uint32_t second_counter;
+typedef struct
+{
+    uint32_t second_counter;    /**< Seconds counter. */
+    uint8_t crc8;               /**< Checksum of the seconds counter using the CRC8 algorithm. */
+} Time;
+
+/**
+ * \var time
+ * 
+ * \brief Time control variable.
+ */
+extern Time time;
+
+/**
+ * \var time_backup
+ * 
+ * \brief Backup of the main time control variable (Time control redundance).
+ */
+extern Time time_backup;
 
 /**
  * \fn time_init
@@ -73,6 +94,20 @@ void time_init();
  * \return None
  */
 static void time_timer_init();
+
+/**
+ * \fn time_crc8
+ * 
+ * \brief CRC8 checksum.
+ * 
+ * \param time_counter is the time value to get the CRC8 value.
+ * 
+ * This function converts a 32-bit time counter to an 4 element 8-bit array
+ * to get the CRC8 value of the time counter.
+ * 
+ * \return The crc8 value of the time counter variable.
+ */
+static uint8_t time_crc8(uint32_t time_counter);
 
 /**
  * \fn time_timer_start
