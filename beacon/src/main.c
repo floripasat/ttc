@@ -44,8 +44,8 @@
  * 
  * After the initializations of the peripherals, the program stays
  * running in a infinite loop. If the program get out of the main
- * infinite loop (If any critical error occurs), all the deinitialization
- * routines are excuted before the MCU turns off.
+ * infinite loop (If any critical error occurs), there is a second
+ * infinite loop to force an watchdog trigger.
  * 
  * \return None
  */
@@ -55,9 +55,7 @@ void main()
     
     beacon_run();
     
-    beacon_deinit();
-    
-    beacon_shutdown();
+    while(1);       // Safety infinite loop (If the code get out of the main loop, the watchdog will be triggered here)
 }
 
 //! \} End of src group
