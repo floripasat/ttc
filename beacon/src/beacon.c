@@ -35,7 +35,6 @@
  * \{
  */
 
-#include <msp430.h>
 #include <stdbool.h>
 
 #include <config/config.h>
@@ -143,32 +142,18 @@ void beacon_run()
         
         task_periodic(&radio_init, BEACON_RADIO_RESET_PERIOD_SEC, &beacon.last_radio_reset_time, time_get_seconds());
         
-        task_periodic(&beacon_reset, BEACON_SYSTEM_RESET_PERIOD_SEC, &beacon.last_system_reset_time, time_get_seconds());
+        task_periodic(&system_reset, BEACON_SYSTEM_RESET_PERIOD_SEC, &beacon.last_system_reset_time, time_get_seconds());
         
     #if BEACON_MODE != FLIGHT_MODE
         status_led_toggle();                // Heartbeat
     #endif // BEACON_MODE
         
-        beacon_enter_low_power_mode();      // Wait until the time timer execution (When the system leaves low-power mode)
+        system_enter_low_power_mode();      // Wait until the time timer execution (When the system leaves low-power mode)
         
     #if BEACON_MODE != DEBUG_MODE
         watchdog_reset_timer();
     #endif // BEACON_MODE
     }
-}
-
-void beacon_shutdown()
-{
-    //_BIS_SR(LPM4_5_bits);
-}
-
-void beacon_reset()
-{
-    //beacon_save_time();
-    
-    //WTDCTL = 0xDEAD;                // Reset system by writing to the WDT register without using the proper password
-    
-    PMMCTL0 = PMMPW | PMMSWBOR;     // Triggers a software BOR
 }
 
 void beacon_enter_hibernation()
@@ -204,11 +189,6 @@ void beacon_leave_hibernation()
 #if BEACON_MODE == DEBUG_MODE
     debug_print_msg("DONE!\n");
 #endif // DEBUG_MODE
-}
-
-void beacon_enter_low_power_mode()
-{
-    _BIS_SR(LOW_POWER_MODE_ON);
 }
 
 uint8_t beacon_get_tx_period()
@@ -664,7 +644,7 @@ void beacon_antenna_deployment()
         watchdog_reset_timer();
 #endif // BEACON_MODE
         
-        beacon_enter_low_power_mode();
+        system_enter_low_power_mode();
     }
     
     antenna_deploy();

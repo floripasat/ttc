@@ -1,5 +1,5 @@
 /*
- * system.h
+ * power.c
  * 
  * Copyright (C) 2017, Federal University of Santa Catarina.
  * 
@@ -21,30 +21,42 @@
  */
 
 /**
- * \file system.h
+ * \file power.c
  * 
- * \brief System include file.
+ * \brief System power control implementation.
  * 
  * \author Gabriel Mariano Marcelino <gabriel.mm8@gmail.com>
  * 
  * \version 1.0-dev
  * 
- * \date 11/11/2017
+ * \date 24/11/2017
  * 
- * \defgroup system System
+ * \addtogroup power
  * \{
  */
 
-#ifndef SYSTEM_H_
-#define SYSTEM_H_
+#include <msp430.h>
+#include <config/config.h>
 
-#include "buffer/buffer.h"
-#include "debug/debug.h"
-#include "power/power.h"
-#include "queue/queue.h"
-#include "tasks/tasks.h"
-#include "time/time.h"
+#include "power.h"
 
-#endif // SYSTEM_H_
+void system_enter_low_power_mode()
+{
+    _BIS_SR(LOW_POWER_MODE_ON);
+}
 
-//! \} End of system group
+void system_reset()
+{
+    //beacon_save_time();
+    
+    //WTDCTL = 0xDEAD;                // Reset system by writing to the WDT register without using the proper password
+    
+    PMMCTL0 = PMMPW | PMMSWBOR;     // Triggers a software BOR
+}
+
+void system_shutdown()
+{
+    //_BIS_SR(LPM4_5_bits);
+}
+
+//! \} End of power group

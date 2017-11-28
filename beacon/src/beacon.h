@@ -104,24 +104,6 @@ void beacon_deinit();
 void beacon_run();
 
 /**
- * \fn beacon_shutdown
- * 
- * \brief Shutdowns the system.
- * 
- * \return None
- */
-void beacon_shutdown();
-
-/**
- * \fn beacon_reset
- * 
- * \brief Resets the system using a software BOR.
- * 
- * \return None
- */
-void beacon_reset();
-
-/**
  * \fn beacon_enter_hibernation
  * 
  * \brief Makes the beacon enter in hibernation.
@@ -138,15 +120,6 @@ void beacon_enter_hibernation();
  * \return None
  */
 void beacon_leave_hibernation();
-
-/**
- * \fn beacon_enter_low_power_mode
- * 
- * \brief Makes the MCU enter in low-power mode.
- * 
- * \return None
- */
-void beacon_enter_low_power_mode();
 
 /**
  * \fn beacon_get_tx_period

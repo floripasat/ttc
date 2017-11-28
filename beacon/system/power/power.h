@@ -1,5 +1,5 @@
 /*
- * system.h
+ * power.h
  * 
  * Copyright (C) 2017, Federal University of Santa Catarina.
  * 
@@ -21,30 +21,51 @@
  */
 
 /**
- * \file system.h
+ * \file power.h
  * 
- * \brief System include file.
+ * \brief System power control.
  * 
  * \author Gabriel Mariano Marcelino <gabriel.mm8@gmail.com>
  * 
  * \version 1.0-dev
  * 
- * \date 11/11/2017
+ * \date 24/11/2017
  * 
- * \defgroup system System
+ * \defgroup power
+ * \ingroup system
  * \{
  */
 
-#ifndef SYSTEM_H_
-#define SYSTEM_H_
+#ifndef POWER_H_
+#define POWER_H_
 
-#include "buffer/buffer.h"
-#include "debug/debug.h"
-#include "power/power.h"
-#include "queue/queue.h"
-#include "tasks/tasks.h"
-#include "time/time.h"
+/**
+ * \fn system_enter_low_power_mode
+ * 
+ * \brief Makes the MCU enter in low-power mode.
+ * 
+ * \return None
+ */
+void system_enter_low_power_mode();
 
-#endif // SYSTEM_H_
+/**
+ * \fn system_reset
+ * 
+ * \brief Resets the system using a software BOR.
+ * 
+ * \return None
+ */
+void system_reset();
 
-//! \} End of system group
+/**
+ * \fn system_shutdown
+ * 
+ * \brief Shutdowns the system.
+ * 
+ * \return None
+ */
+void system_shutdown();
+
+#endif // POWER_H_
+
+//! \} End of power group
