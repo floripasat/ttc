@@ -134,6 +134,8 @@ void beacon_run()
         
         task_aperiodic(&beacon_process_eps_pkt, eps_available()? true : false);
         
+        task_aperiodic(&beacon_process_radio_pkt, (radio_available()? true : false) && (beacon.obdh.is_dead? true : false));
+        
         task_aperiodic(&radio_enable_rx, beacon.obdh.is_dead? true : false);
         
         task_scheduled(&beacon_leave_hibernation, beacon.hibernation_mode_initial_time + BEACON_HIBERNATION_PERIOD_SECONDS, time_get_seconds(), 5, beacon.hibernation? true : false);
@@ -543,7 +545,7 @@ void beacon_process_eps_pkt()
 }
 
 void beacon_process_radio_pkt()
-{    
+{
     if (!beacon.hibernation)
     {
         uint8_t data[100];
