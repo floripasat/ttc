@@ -30,3 +30,19 @@
 
 # Txt files
 *.txt
+
+# Latex output files
+*.aux
+*.bbl
+*.blg
+*.ilg
+*.lof
+*.log
+*.lot
+*.nlo
+*.nls
+*.out
+*.synctex.gz
+*.gz
+*.toc
+
