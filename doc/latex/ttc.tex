@@ -4,7 +4,7 @@
 % Author: 				Gabriel Mariano Marcelino
 % 
 % Created on: 			13/12/2017
-% Last modification: 	14/12/2017
+% Last modification: 	15/12/2017
 %*********************************************************
 
 \documentclass[12pt]{book}
@@ -447,6 +447,38 @@ The table \ref{tab:pci104-ref} describes the PCI-104 connector used pins. The fi
 \chapter{Software}
 
 \lettrine{S}{oftware}...
+
+\nomenclature{\textbf{HAL}}{Hardware Abstraction Layer.}
+
+\begin{figure}[!h]
+	\begin{center}
+		\includegraphics[width=0.5\textwidth]{figures/beacon_software_layers.pdf}
+		\caption{Beacon software stack-up.}
+		\label{fig:beacon-software-layers}
+	\end{center}
+\end{figure}
+
+\section{Flowcharts}
+
+\begin{figure}[!h]
+	\begin{center}
+		\includegraphics[width=0.25\textwidth]{figures/beacon_main_flowchart.pdf}
+		\caption{Main flowchart of the beacon software.}
+		\label{fig:beacon-main-flowchart}
+	\end{center}
+\end{figure}
+
+\nomenclature{\textbf{ISR}}{Interruption Service Routine.}
+
+\begin{figure}[!h]
+	\begin{center}
+		\subfigure[OBDH communication ISR flowchart.\label{fig:beacon-obdh-isr-flowchart}]{\includegraphics[width=0.4\textwidth]{figures/beacon_obdh_isr_flowchart.pdf}}
+		\qquad
+		\subfigure[EPS communication ISR flowchart.\label{fig:beacon-eps-isr-flowchart}]{\includegraphics[width=0.4\textwidth]{figures/beacon_eps_isr_flowchart.pdf}}
+		\caption{OBDH and EPS modules comunication ISRs routines.}
+		\label{fig:obdh-eps-isr-flowchart}
+	\end{center}
+\end{figure}
 
 %****************************************************
 %****************************************************
