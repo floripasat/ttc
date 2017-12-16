@@ -8,6 +8,7 @@
 %*********************************************************
 
 \documentclass[12pt]{book}
+
 \usepackage[a4paper,left=2.5cm,right=2.5cm,top=2.5cm,bottom=2.5cm]{geometry}
 \usepackage[T1]{fontenc}  
 \usepackage[utf8]{inputenc} 
@@ -17,14 +18,14 @@
 \usepackage[hidelinks]{hyperref}
 \usepackage{fancyhdr}
 \usepackage{subfigure}
-\usepackage{nomencl}
+\usepackage{nomencl}				% Nomenclature list
 \usepackage{float}
 \usepackage{titlesec}
 \usepackage{booktabs}
 \usepackage{emptypage}
-\usepackage{lettrine}
+\usepackage{lettrine}				% First letter bigger in the begining of a chapter
 \usepackage{tabularx}
-\usepackage{marvosym}
+\usepackage{enumitem}				% Custom enumerate
 
 \title{Telemetry, Tracking and Command Module of the FloripaSat Project}
 \author{Gabriel Mariano Marcelino}
@@ -61,7 +62,7 @@
 
 % List of abbreviations
 \makenomenclature
-\setlength\nomlabelwidth{1.5cm}
+\setlength\nomlabelwidth{2cm}
 
 % Bibliography style
 \bibliographystyle{unsrt}
@@ -239,6 +240,119 @@ This document...
 
 \section{Module Requirements}
 
+In the list below, the TTC module requirements for the mission are described. These requirements are nominated as TMR\nomenclature{\textbf{TMR}}{Telemetry, Tracking and Command Module Requirements.}, or Telemetry, Tracking and Command Module Requirements.
+
+\begin{enumerate}[label=\textit{TMR \arabic*}, leftmargin=*, align=left]
+	\item The FloripaSat shall have a physical device to inhibit radio frequency (RF\nomenclature{\textbf{RF}}{Radio Frequency.}) transmission.
+	
+	\begin{footnotesize}
+		Compliance with CDS\nomenclature{\textbf{CDS}}{CubeSat Design Specification.} 3.3.9: The use of three independent inhibits is highly recommended and can reduce required documentation and analysis.	
+	\end{footnotesize}
+	
+	\item The CubeSat will have the RF power output to the transmitting antenna input no greater than 1,5 W.
+	
+	\begin{footnotesize}
+		Compliance with CDS 3.3.9.1.
+	\end{footnotesize}
+	
+	\item The CubeSat will have the RF power output to the transmitting antenna input no less than 1,0 W (or 30 dBm).
+	
+	\begin{footnotesize}
+		Defined by team analysis.
+	\end{footnotesize}
+	\item No CubeSats shall generate or transmit any RF signal from the time of integration into the P-POD\nomenclature{\textbf{P-POD}}{Poly-Picosatellite Orbital Deployer.} through 45 minutes after on-orbit deployment from the P-POD.
+	
+	\begin{footnotesize}
+		Compliance with CDS.
+	\end{footnotesize}
+	
+	\item TTC transceiver shall transmit and receive on the frequency of 437,9 Mhz.
+	
+	\begin{footnotesize}
+		Defined by the team, based on available spectrum allocation to Amateur communication.
+	\end{footnotesize}
+	
+	\item TTC beacon shall transmit on the frequency of 145,9 Mhz.
+	
+	\begin{footnotesize}
+		Defined by the team, based on available spectrum allocation to Amateur communication.
+	\end{footnotesize}
+	
+	\item TTC shall modulate and demodulate information using GFSK\nomenclature{\textbf{GFSK}}{Gaussian Frequency-Shift Keyring.}.
+	
+	\begin{footnotesize}
+		Defined by the team.
+	\end{footnotesize}
+	
+	\item TTC Beacon must transmit periodic beacon messages at an interval of 10
+seconds, except when in hibernation or shutdown mode. Allows ground stations to track and receive satellite data even if telecommand was not sent to the satellite.
+	\item TTC transceiver must receive signals from ground stations and demodulate them.
+	\item TTC must interface with OBDH, exchanging encoded raw data received or to be transmitted.
+	\item TTC must interface with OBDH using the SPI protocol ($@$2 KHz).
+	
+	\begin{footnotesize}
+		Defined by the team.
+	\end{footnotesize}
+	
+	\item TTC radio must modulate raw data received from OBDH using GFSK, prior to transmission, and demodulate received data and forward raw data to OBDH.
+	\item TTC transceiver shall transmit and receive data at a baud rate of 2400 bps. Defined by the team, based on link budget analysis.
+	\item TTC beacon shall transmit data at a baud rate of 1200 bps.
+	
+	\begin{footnotesize}
+		Defined by the team, based on link budget analysis.
+	\end{footnotesize}
+	
+	\item TTC beacon shall transmit packets using the NGHam and AX.25 protocols.
+	
+	\begin{footnotesize}
+		Defined by the team.
+	\end{footnotesize}
+	
+	\item A same beacon packet must be transmitted in both NGHam and AX.25 protocols.
+	
+	\begin{footnotesize}
+		Defined by the team.
+	\end{footnotesize}
+	
+	\item TTC must receive the batteries voltages from the EPS module at every 10 seconds.
+	
+	\begin{footnotesize}
+		Defined by the team.
+	\end{footnotesize}
+	
+	\item The payload from the packets transmitted by the beacon must contain at least the satellite ID ("FLORIPASAT") and batteries voltages (received from the EPS module at every 10 seconds).
+	\item TTC uC must perform the antenna deployment of the VHF band antenna.
+	
+	\begin{footnotesize}
+		Defined by the team.
+	\end{footnotesize}
+	
+	\item Between the beacon packets transmissions, the beacon MCU and radio must operate in low power mode, to save energy.
+	
+	\begin{footnotesize}
+		Defined by the team.
+	\end{footnotesize}
+	
+	\item TTC PAs (Power amplifiers) must just only be activated during transmissions. When they are not in operation, they must be turned off.
+	
+	\begin{footnotesize}
+		Defined by the team.
+	\end{footnotesize}
+	
+	\item All the beacon critical data, like time control and antenna deployment status, must be stored in a non-volatile memory.
+	
+	\begin{footnotesize}
+		Defined by the team.
+	\end{footnotesize}
+	
+	\item TTC beacon must be able to receive a 24 hour shutdown command from the OBDH module.
+	
+	\begin{footnotesize}
+		Compliance with AMSAT/IARU regulations.
+	\end{footnotesize}
+	
+\end{enumerate}
+
 %****************************************************
 %****************************************************
 %-- HARDWARE ----------------------------------------
@@ -377,8 +491,8 @@ A brief description of each connection is presented in the table \ref{tab:connec
 			\toprule[1.5pt]
 			\textit{Number} & \textit{Connector} & \textit{Description} \\
 			\midrule
-			1 & Male pin header ($1 \times 2$) & UART TX \MVAt 4800 bps. These pins transmit the beacon packets over a serial connection (It is enable in the configuration file, setting the BEACON\_RADIO variable as UART\_SIM). \\
-			2 & Male pin header ($1 \times 2$) & Debug UART TX/RX \MVAt 115200 bps. These pins transmit a description of the main events of the beacon software during it's execution. This feature is only available in DEBUG\_MODE. \\
+			1 & Male pin header ($1 \times 2$) & UART TX $@$4800 bps. These pins transmit the beacon packets over a serial connection (It is enable in the configuration file, setting the BEACON\_RADIO variable as UART\_SIM). \\
+			2 & Male pin header ($1 \times 2$) & Debug UART TX/RX $@$115200 bps. These pins transmit a description of the main events of the beacon software during it's execution. This feature is only available in DEBUG\_MODE. \\
 			3 & Male PicoBlade$^{TM}$ ($\times 6$) & JTAG and Debug. This connection contains the relevant pins of the connectors 2 and 4. \\
 			4 & Male pin header ($2 \times 2$) & MSP430 JTAG. This connection is for programming the uC code, using a MSP-FET debugger. \\
 			5 & Male PicoBlade$^{TM}$ ($\times 6$) & Antenna I2C. I2C bus for a communication channel with the antenna module. \\
@@ -407,7 +521,7 @@ The table \ref{tab:pci104-ref} describes the PCI-104 connector used pins. The fi
 			\midrule
 			1 & GND & GND & GND & GND \\
 			2 & GND & GND & GND & GND \\
-			3 & - & - & UART RX \MVAt 4800 bps from the EPS module. & - \\
+			3 & - & - & UART RX $@$4800 bps from the EPS module. & - \\
 			4 & Telemetry radio GPIO0 & Telemetry radio GPIO1 & - & - \\
 			5 & Telemetry radio GPIO2 & Enable beacon radio power supply & - & - \\
 			6 & Telemetry radio SDN & - & OBDH communication (SPI MOSI) & OBDH communication (SPI clock) \\
