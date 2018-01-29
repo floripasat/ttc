@@ -4,7 +4,7 @@
 % Author:            Gabriel Mariano Marcelino
 % 
 % Created on:        13/12/2017
-% Last modification: 17/12/2017
+% Last modification: 29/01/2018
 %*********************************************************
 
 \documentclass[12pt]{book}
@@ -239,6 +239,17 @@ This document...
 \cite{site}.
 
 \cite{github}
+
+The beacon executes the following tasks during its execution:
+
+\begin{itemize}
+	\item 145 MHz band antenna deployment.
+	\item One-way communication (RX) with the EPS module, using the FSP protocol.
+	\item Two-way communication (TX and RX) with the OBDH module, using the FSP protocol.
+	\item Transmission of the beacon packets (In two protocols: NGHam and AX.25), containing the data from the EPS or the OBDH module and the satellite ID (``FLORIPASAT").
+	\item When required by the OBDH module, the transmissions are stopped for an hibernation period (shutdown).
+	\item In case of an critical failure of the OBDH module, or the uplink channel, the beacon activates its reception and is capable of make its own hibernation (shutdown).
+\end{itemize}
 
 \section{Module Requirements}
 
@@ -554,6 +565,18 @@ The table \ref{tab:pci104-ref} describes the PCI-104 connector used pins. The fi
 	\end{center}
 \end{table}
 
+\section{PCB}
+
+The PCB (Printed Circuit Board) of the TTC module has basically the MSP430F6659 ic, the RF4463F30 module and all the external connectors.
+
+Some characteristics of this PCB are described bellow:
+
+\begin{itemize}
+	\item The components and traces of the board are distributed over two layers.
+	\item The RF modules are placed in a isolated ground plane (Connected to the main GND using a ferrite bead).
+	\item The antenna output of the RF4463F30 modules are connected to their respective connector over a 50 Ohm coupled trace.
+\end{itemize}
+
 %****************************************************
 %****************************************************
 %-- SOFTWARE ----------------------------------------
@@ -595,6 +618,33 @@ The table \ref{tab:pci104-ref} describes the PCI-104 connector used pins. The fi
 		\label{fig:obdh-eps-isr-flowchart}
 	\end{center}
 \end{figure}
+
+\section{Tasks}
+
+In the table \ref{tab:sw_tasks}, the beacon tasks are listed with a brief description and its period of execution.
+
+\begin{table}[!h]
+	\begin{center}
+		\begin{tabular}{L{0.2\textwidth} C{0.4\textwidth} C{0.3\textwidth}}
+			\toprule[1.5pt]
+			\textit{Task} & \textit{Description} & \textit{Period} \\
+			\midrule
+			System initialization & Submodules initialization (CPU, memory, radio, etc.) & Aperiodic (Executed only at initializations) \\
+			Antenna deployment & 145 MHz band antenna deployment after the satellite launch & Aperiodic (Executed once) \\
+			NGHam packet transmission & Transmission of the beacon packets with a basic telemetry data using the NGHam protocol & 10, 20 or 30 seconds (EPS energy level dependent) \\
+			AX.25 packet transmission & Transmission of the beacon packets with a basic telemetry data using the AX.25 protocol & 10, 20 or 30 seconds (EPS energy level dependent) \\
+			OBDH data processing & The OBDH module can send telemetry data or commands & Aperiodic (OBDH module dependent) \\
+			EPS data processing & The EPS modules sends telemetry data & Aperiodic (EPS module dependent) \\
+			Radio data processing & Processing of an incoming packet from the beacon radio & Aperiodic (Only when the OBDH fails and an hibernation is required) \\
+			Beacon radio reception activation & When a critical failure occur in the OBDH module, the beacon activates its reception between the beacon transmissions & Aperiodic (Only when the OBDH module fails) \\
+			Radio reset & Beacon radio reset & 10 minutes \\
+			Beacon reset & Beacon system reset & 12 hours \\
+			\bottomrule[1.5pt]
+		\end{tabular}
+		\caption{Beacon software tasks.}
+		\label{tab:sw_tasks}
+	\end{center}
+\end{table}
 
 %****************************************************
 %****************************************************
