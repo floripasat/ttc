@@ -4,7 +4,7 @@
 % Author:            Gabriel Mariano Marcelino
 % 
 % Created on:        13/12/2017
-% Last modification: 29/01/2018
+% Last modification: 31/01/2018
 %*********************************************************
 
 \documentclass[12pt]{book}
@@ -110,7 +110,7 @@ FLORIPASAT - TTC-DOC - REV1
 \vfill
 
 \begin{flushright}
-December 2017
+January 2018
 \end{flushright}
 
 \pagenumbering{roman}
@@ -132,7 +132,7 @@ December 2017
 
 \textbf{FloripaSat Project, Telemetry, Tracking and Command Module Documentation}
 
-\textit{December, 2017}
+\textit{January, 2018}
 
 \vspace{1cm}
 
@@ -171,7 +171,7 @@ Gabriel Mariano Marcelino
 \end{figure}
 %\end{wrapfigure}
 
-\textcopyright\  2017 by Federal University of Santa Catarina. Telemetry, Tracking and Command Module of the FloripaSat Project. This work is licensed under the Creative Commons Attribution-ShareAlike 4.0 International License. To view a copy of this license, visit http://creativecommons.org/licenses/by-sa/4.0/.
+\textcopyright\  2018 by Federal University of Santa Catarina. Telemetry, Tracking and Command Module of the FloripaSat Project. This work is licensed under the Creative Commons Attribution-ShareAlike 4.0 International License. To view a copy of this license, visit http://creativecommons.org/licenses/by-sa/4.0/.
 
 %****************************************************
 %****************************************************
@@ -458,7 +458,11 @@ The beacon microcontroller is the MSP430F6659IPZR \cite{msp430f6659}. Its main c
 
 The NiceRF RF4463F30 \cite{rf4463f30} is a transceiver module based on the Silicon Labs Si4463 \cite{si4463} radio. This module also contains a PA module to increase the output power up to 31 dBm.
 
+In compliance with the \textit{TMR 3}, the RF4463F30 module operates with 5 V as input voltage in the TTC board, to achieve 30 dBm (1 W) in its output (The RF connector).
+
 \subsubsection{Si4463}
+
+The RF4463F30 module uses the Si4463 radio module. The main characteristics of this IC can be found in the table \ref{tab:si4463-info}.
 
 \begin{table}[!h]
 	\begin{center}
@@ -572,10 +576,26 @@ The PCB (Printed Circuit Board) of the TTC module has basically the MSP430F6659 
 Some characteristics of this PCB are described bellow:
 
 \begin{itemize}
-	\item The components and traces of the board are distributed over two layers.
-	\item The RF modules are placed in a isolated ground plane (Connected to the main GND using a ferrite bead).
+	\item The components and traces of the board are distributed over two layers (one in each side of the board).
+	\item The RF modules are placed in a isolated ground plane (Connected to the main GND using a ferrite bead). This region can be seen in the figure \ref{fig:rf-ground-plane}.
 	\item The antenna output of the RF4463F30 modules are connected to their respective connector over a 50 Ohm coupled trace.
 \end{itemize}
+
+\begin{figure}[!h]
+	\begin{center}
+		\includegraphics[width=0.5\textwidth]{figures/ttc_rf_ground_plane.png}
+		\caption{RF ground plane region (red) of the TTC board.}
+		\label{fig:rf-ground-plane}
+	\end{center}
+\end{figure}
+
+\subsection{Types of assembly}
+
+The TTC PCB has two types of assembly: Develop and flight.
+
+The develop type has the purpose to be used during the development stage and tests. In this version, the connectors 3 and 5 are not soldered (Using the figure \ref{tab:connections-ref} as reference).
+
+The flight version were designed to be used during the satellite operation. In this version, the connectors 1, 2, 4 and 6, and the reset button, are not soldered.
 
 %****************************************************
 %****************************************************
