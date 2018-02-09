@@ -4,7 +4,7 @@
 % Author:            Gabriel Mariano Marcelino
 % 
 % Created on:        13/12/2017
-% Last modification: 31/01/2018
+% Last modification: 08/02/2018
 %*********************************************************
 
 \documentclass[12pt]{book}
@@ -30,7 +30,7 @@
 
 \title{Telemetry, Tracking and Command Module of the FloripaSat Project}
 \author{Gabriel Mariano Marcelino}
-\date{13/12/2017}
+\date{09/02/2018}
 
 % File metadata
 \hypersetup
@@ -110,7 +110,7 @@ FLORIPASAT - TTC-DOC - REV1
 \vfill
 
 \begin{flushright}
-January 2018
+February 2018
 \end{flushright}
 
 \pagenumbering{roman}
@@ -132,7 +132,7 @@ January 2018
 
 \textbf{FloripaSat Project, Telemetry, Tracking and Command Module Documentation}
 
-\textit{January, 2018}
+\textit{February, 2018}
 
 \vspace{1cm}
 
@@ -230,13 +230,18 @@ This document...
 
 \pagenumbering{arabic}
 
-\lettrine{I}{ntroduction}...
+\lettrine{T}{his} document is the general documentation of the Telemetry, Tracking and Command module of the FloripaSat project.
 
-\nomenclature{\textbf{TTC}}{Telemetry, Tracking and Command.}
+The TTC\nomenclature{\textbf{TTC}}{Telemetry, Tracking and Command.} (or TT\&C) is the communication module of the FloripaSat\cite{site} cubesat. It is responsible to make the communication between the earth (A ground station) and the satellite, and is divided in two sub-modules: Beacon and telemetry.
+
+The beacon is a independent sub-module who transmits a periodic signal containing an identification data (ID) of the satellite and some basic telemetry data.
+
+The telemetry sub-module is the main communication device. It has a bidirectional data link to receive telecommands from the earth and transmit all the requested data.
+
+The telemetry sub-module is controlled by the OBDH\nomenclature{\textbf{OBDH}}{Onboard Data Handling.} module (The OBC\nomenclature{\textbf{OBC}}{Onboard Computer.} of the satellite), and the software for handling with this sub-module is under development in the OBDH module, and is not documented here.
+
 \nomenclature{\textbf{PCB}}{Printed Circuit Board.}
 \nomenclature{\textbf{USB}}{Universal Serial Bus.}
-
-\cite{site}.
 
 \cite{github}
 
@@ -393,7 +398,7 @@ In the figure \ref{fig:ttc-board}, ...
 
 \section{General Diagram}
 
-In the figure \ref{fig:hardware-diagram}, a general hardware diagram can be seen.
+In the figure \ref{fig:hardware-diagram}, a general hardware diagram can be seen, with the connection and protocols between the components.
 
 \begin{figure}[!h]
 	\begin{center}
@@ -404,8 +409,6 @@ In the figure \ref{fig:hardware-diagram}, a general hardware diagram can be seen
 \end{figure}
 
 \section{Main Components}
-
-M...
 
 \subsection{Microcontroller}
 
@@ -605,9 +608,26 @@ The flight version were designed to be used during the satellite operation. In t
 
 \chapter{Software}
 
-\lettrine{S}{oftware}...
+\lettrine{T}{he} beacon software is responsible to transmit periodic beacon signals, containing the satellite identification and a basic telemetry data.
+
+To achieve it, this software communicates with other modules of the satellite (to acquire data to transmit in the beacon packets), controls the beacon's radio module and its antenna module.
+
+It's written in C, using the Code Composer Studio IDE (Version 7.4.0). The radio module (Si4463 IC) is configured using the WDS (Version 3.2.11), a step-by-step tutorial is available as an apendix.
+
+\section{Dependencies}
+
+The beacon software is dependent of the following libraries:
+
+\begin{itemize}
+    \item NGHam: Used to generate and interpret the NGHam protocol packets (This library was modified for this firmware).
+    \item DriverLib: Used to handle the internal peripherals of the MSP430F6659 uC.
+\end{itemize}
 
 \nomenclature{\textbf{HAL}}{Hardware Abstraction Layer.}
+
+\section{Software Layers}
+
+The figure \ref{fig:beacon-software-layers} describes the software layers of the beacon system.
 
 \begin{figure}[!h]
 	\begin{center}
@@ -617,7 +637,18 @@ The flight version were designed to be used during the satellite operation. In t
 	\end{center}
 \end{figure}
 
+It is composed by five layers:
+
+\begin{itemize}
+    \item Hardware layer: All the TTC hardware (MSP430F6659 and the RF4463F30).
+    \item Drivers layer: The software to make the interface with the hardware (Internal peripherals of the uC, the radio module and the antenna module).
+    \item System layer: General usage functions and resources of the beacon system (like data structures, power management, etc.).
+    \item Application layer: The main beacon software, where all the tasks were implemented.
+\end{itemize}
+
 \section{Flowcharts}
+
+\subsection{Main}
 
 \begin{figure}[!h]
 	\begin{center}
@@ -627,7 +658,71 @@ The flight version were designed to be used during the satellite operation. In t
 	\end{center}
 \end{figure}
 
+\subsection{Initialization}
+
+\begin{figure}[!h]
+	\begin{center}
+		\includegraphics[width=0.75\textwidth]{figures/beacon_init_flowchart.pdf}
+		\caption{Flowchart of the beacon initialization.}
+		\label{fig:beacon-init-flowchart}
+	\end{center}
+\end{figure}
+
+\subsubsection{Watchdog}
+
+The watchdog is initialized using the ACLK as clock source and a 512k clock divider (generating a 16 second watchdog). The counter starts right after the initialization.
+
+\subsubsection{CPU}
+
+For the CPU configuration, the core voltage is setted to level 2 (required for a clock between 12 and 20 MHz). The DCO FLL reference is setted to REF0 (with the clock divider equal to 1). The ACLK clock is setted to be equal to REF0 (same as DCO, clock divider equal to 1). The SMCLK reference is setted to be the DCO, but with a divider factor equal to 4.
+
+So, the final configuration is: MCLK = 16 MHz, SMCLK = 4 MHz and ACLK = 32,768 kHz.
+
+\subsubsection{Memory}
+
+UNDER DEVELOPMENT.
+
+\subsubsection{Time}
+
+During the time initialization, the last value stored in the memory is loaded and the counter continues from it value, preventing the lost of time reference after a system reboot or fault.
+
+\subsubsection{Timer}
+
+For the system time, a 1 second timer is used (using the timer interruption to increment a second counter variable, 32-bit unsigned integer). This counting starts from the last value stored into the memory.
+
+\subsubsection{Antenna}
+
+UNDER DEVELOPMENT.
+
+\subsubsection{EPS Communication Bus}
+
+
+
+\subsubsection{OBDH Communication Bus}
+
+
+
+\subsubsection{Radio}
+
+
+
+\subsubsection{RF Protocols}
+
+
+
+\subsubsection{Operational Parameters}
+
+
+
+\subsection{ISRs}
+
 \nomenclature{\textbf{ISR}}{Interruption Service Routine.}
+
+\subsubsection{OBDH and EPS Communication}
+
+The flowchart of the interruption service routine (ISR) of the OBDH communication can be seen in the figure \ref{fig:beacon-obdh-isr-flowchart}. Basically, when a new byte arrives, it is pushed to a queue (if it isn't full), and periodically, the OBDH communication task process these new bytes (taking out the bytes from the queue).
+
+The flowchart of the interruption service routine (ISR) of the EPS communication can be seen in the figure \ref{fig:beacon-eps-isr-flowchart}. It's operation is equal to the OBDH communication ISR.
 
 \begin{figure}[!h]
 	\begin{center}
@@ -638,6 +733,18 @@ The flight version were designed to be used during the satellite operation. In t
 		\label{fig:obdh-eps-isr-flowchart}
 	\end{center}
 \end{figure}
+
+\section{Operation Modes}
+
+There are three operation modes in the beacon software:
+
+\begin{itemize}
+    \item DEBUG MODE: In this mode, the operation of the beacon is described through an UART port. At every operation, a message describing what is happening is transmitted to the debug UART port.
+    \item TEST MODE: In this mode, the antenna deployment routines are not executed. This is the main mode to use during the satellite integration tests.
+    \item FLIGHT MODE: This is the mode to use in flight, with all the available resources enabled.
+\end{itemize}
+
+The selection of the operation mode can be done using the ``BEACON\_MODE" variable in the ``config.h" file.
 
 \section{Tasks}
 
@@ -663,6 +770,110 @@ In the table \ref{tab:sw_tasks}, the beacon tasks are listed with a brief descri
 		\end{tabular}
 		\caption{Beacon software tasks.}
 		\label{tab:sw_tasks}
+	\end{center}
+\end{table}
+
+\section{Packets Payload}
+
+In the normal satellite operation, the beacon packets contains the data from the table \ref{tab:beacon-normal-payload}.
+
+\begin{table}[!h]
+	\begin{center}
+		\begin{tabular}{lc}
+			\toprule[1.5pt]
+			\textit{Information} & \textit{Length (Bytes)} \\
+			\midrule
+			Satellite ID: ``FLORIPASAT" & 10 \\
+			Batteries voltages & 4 \\
+			Batteries temperatures & 6 \\
+			Total charge of batteries & 2 \\
+			Solar panels currents & 12 \\
+			Solar panels voltages & 6 \\
+			Overall status of the satellite & 2 \\
+			Accelerometer and gyroscope & 12 \\
+			Time since boot & 4 \\
+			Number of OBDH module resets since launch & 2 \\
+			\bottomrule[1.5pt]
+		\end{tabular}
+		\caption{Normal content of the beacon packets.}
+		\label{tab:beacon-normal-payload}
+	\end{center}
+\end{table}
+
+If a fault on the OBDH module occurs, only the EPS data are transmitted, the contents of this kind of packet can be seen in the table \ref{tab:beacon-without-obdh-payload}.
+
+\begin{table}[!h]
+	\begin{center}
+		\begin{tabular}{lc}
+			\toprule[1.5pt]
+			\textit{Information} & \textit{Length (Bytes)} \\
+			\midrule
+			Satellite ID: ``FLORIPASAT" & 10 \\
+			Batteries voltages & 4 \\
+			Batteries temperatures & 6 \\
+			Total charge of batteries & 2 \\
+			Solar panels currents & 12 \\
+			Solar panels voltages & 6 \\
+			Energy level & 1 \\
+			\bottomrule[1.5pt]
+		\end{tabular}
+		\caption{Content of the beacon packets with a fault in the OBDH module.}
+		\label{tab:beacon-without-obdh-payload}
+	\end{center}
+\end{table}
+
+If a fault occurs in the OBDH and the EPS modules, only the satellite ID is transmitted. It can be seen in the table \ref{tab:beacon-without-eps-payload}.
+
+\begin{table}[!h]
+	\begin{center}
+		\begin{tabular}{lc}
+			\toprule[1.5pt]
+			\textit{Information} & \textit{Length (Bytes)} \\
+			\midrule
+			Satellite ID: ``FLORIPASAT" & 10 \\
+			\bottomrule[1.5pt]
+		\end{tabular}
+		\caption{Content of the beacon packets with a fault in the OBDH and EPS modules.}
+		\label{tab:beacon-without-eps-payload}
+	\end{center}
+\end{table}
+
+The decodification of the packets data are done automatically by the GRS software.
+
+\section{USCIs Configuration}
+
+\begin{table}[!h]
+	\begin{center}
+		\begin{tabular}{lcc}
+			\toprule[1.5pt]
+			\textit{MSP Interface} & \textit{Mode} & \textit{Connected Components} \\
+			\midrule
+			USCI\_A0 & UART RX & EPS Bus \\
+			USCI\_A0 & UART TX & Packets transmission (Only for tests) \\
+			USCI\_A1 & UART TX/RX & Debug \\
+			USCI\_A2 & SPI Slave & OBDH Bus \\
+			USCI\_B0 & SPI Master & Beacon transceiver \\
+			USCI\_B2 & $I^{2}C$ Master & Antenna bus  \\
+			\bottomrule[1.5pt]
+		\end{tabular}
+		\caption{USCIs configuration of the beacon microcontroller.}
+		\label{tab:beacon-uc-usci-config}
+	\end{center}
+\end{table}
+
+\section{Timers}
+
+\begin{table}[!h]
+	\begin{center}
+		\begin{tabular}{lccc}
+			\toprule[1.5pt]
+			\textit{Timer Interface} & \textit{Mode} & \textit{Period} & \textit{Function} \\
+			\midrule
+			TIMER\_A1 & Continuous-Compare & 1 s & Time Control \\
+			\bottomrule[1.5pt]
+		\end{tabular}
+		\caption{Timers configuration of the beacon microcontroller.}
+		\label{tab:beacon-uc-timers-config}
 	\end{center}
 \end{table}
 
