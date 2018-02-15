@@ -4,7 +4,7 @@
 % Author:            Gabriel Mariano Marcelino
 % 
 % Created on:        13/12/2017
-% Last modification: 08/02/2018
+% Last modification: 15/02/2018
 %*********************************************************
 
 \documentclass[12pt]{book}
@@ -600,6 +600,24 @@ The develop type has the purpose to be used during the development stage and tes
 
 The flight version were designed to be used during the satellite operation. In this version, the connectors 1, 2, 4 and 6, and the reset button, are not soldered.
 
+\section{Power Budget}
+
+\begin{figure}[!h]
+	\begin{center}
+		\includegraphics[width=\textwidth]{figures/power_budget_static.pdf}
+		\caption{Static power budget of the TTC module.}
+		\label{fig:power-budget-static}
+	\end{center}
+\end{figure}
+
+\begin{figure}[!h]
+	\begin{center}
+		\includegraphics[width=\textwidth]{figures/power_budget_dynamic.pdf}
+		\caption{Dynamic power budget of the TTC module.}
+		\label{fig:power-budget-dynamic}
+	\end{center}
+\end{figure}
+
 %****************************************************
 %****************************************************
 %-- SOFTWARE ----------------------------------------
@@ -696,23 +714,19 @@ UNDER DEVELOPMENT.
 
 \subsubsection{EPS Communication Bus}
 
-
+The EPS communication bus (UART) is configured at a transfer rate of 4800 bps, no parity bit, LSB first and one stop bit. The clock source of this UART bus is the SMCLK. The EPS queue is also initialized.
 
 \subsubsection{OBDH Communication Bus}
 
-
+The same occurs for the OBDH communication bus (SPI): the transfer rate is 2400 bps and the endianness is MSB first. The OBDH queue is also initialized.
 
 \subsubsection{Radio}
 
-
+During the initialization of the radio, it is reseted and all the configuration parameters are transfered to the radio module. More informations about this process can be found in the radio IC documentation.
 
 \subsubsection{RF Protocols}
 
-
-
-\subsubsection{Operational Parameters}
-
-
+The NGHam, AX.25 and the FSP protocols also need an initialization, to set internal variables and counters.
 
 \subsection{ISRs}
 
@@ -890,16 +904,6 @@ The decodification of the packets data are done automatically by the GRS softwar
 \section{RF Signal Power}
 
 P...
-
-%****************************************************
-%****************************************************
-%-- CONCLUSION --------------------------------------
-%****************************************************
-%****************************************************
-
-\chapter{Conclusion} \label{ch:conclusion}
-
-\lettrine{C}{onclusion}...
 
 %****************************************************
 %****************************************************
