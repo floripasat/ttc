@@ -96,6 +96,14 @@ void beacon_init()
     beacon.last_ngham_pkt_transmission  = time_get_seconds();
     beacon.last_devices_verification    = time_get_seconds();
     beacon.last_energy_level_set        = time_get_seconds();
+    
+    beacon.eps.time_last_valid_pkt      = time_get_seconds();
+    beacon.eps.errors                   = 0;
+    beacon.eps.is_dead                  = false;
+
+    beacon.obdh.time_last_valid_pkt     = time_get_seconds();
+    beacon.obdh.errors                  = 0;
+    beacon.obdh.is_dead                 = false;
 }
 
 void beacon_deinit()
