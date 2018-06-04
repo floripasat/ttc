@@ -1,7 +1,7 @@
 /*
  * debug.h
  * 
- * Copyright (C) 2017, Federal University of Santa Catarina
+ * Copyright (C) 2017, Universidade Federal de Santa Catarina
  * 
  * This file is part of FloripaSat-Beacon.
  * 
@@ -21,8 +21,6 @@
  */
 
 /**
- * \file debug.h
- * 
  * \brief Functions for printing messages and bytes over UART port.
  * 
  * \author Gabriel Mariano Marcelino <gabriel.mm8@gmail.com>
@@ -43,8 +41,6 @@
 #include <stdbool.h>
 
 /**
- * \fn debug_init
- * 
  * \brief Initialization of the debug mode.
  * 
  * After the UART initialization, to show if the debug mode is
@@ -62,95 +58,79 @@
  * *************************************
  * 
  * \return UART initialization status. It can be:
- *      - \b TRUE
- *      - \b FALSE
+ *      - TRUE
+ *      - FALSE
  *      .
  */
 bool debug_init();
 
 /**
- * \fn debug_print_msg
- * 
  * \brief Prints a message over the UART.
  * 
  * \param msg is the message to be written.
  * 
- * \return None
+ * \return None.
  */
 void debug_print_msg(const char *msg);
 
 /**
- * \fn debug_print_digit
- * 
  * \brief Prints a integer digit over the debug UART.
  * 
  * \param d is the digit to be written (0 to 9)
  * 
- * \return None
+ * \return None.
  */
 void debug_print_digit(uint8_t d);
 
 /**
- * \fn debug_print_int8
- * 
  * \brief Prints a 8 bits unsigned integer over the UART.
  * 
  * Example:
  *      - Integer   = 0x65
  *      - Output    = "0x65"
  * 
- * \note
- * The integer is printed in ASCII code.
+ * \note The integer is printed in ASCII code.
  * 
  * \param int8 is the integer to be written.
  * 
- * \return None
+ * \return None.
  */
 void debug_print_int8(uint8_t int8);
 
 /**
- * \fn debug_print_int16
- * 
  * \brief Prints a 16 bits unsigned integer over the UART.
  * 
  * Example:
  *      - Integer   = 0x1865
  *      - Output    = "0x1865"
  * 
- * \note
- * The unsigned integer is printed in ASCII code.
+ * \note The unsigned integer is printed in ASCII code.
  * 
  * \param int16 is the unsigned integer to be written.
  * 
- * \return None
+ * \return None.
  */
 void debug_print_int16(uint16_t int16);
 
 /**
- * \fn debug_print_byte
- * 
  * \brief Prints a raw byte over the UART.
  * 
  * \param byte is the byte to be printed.
  * 
- * \return None
+ * \return None.
  */
 void debug_print_byte(uint8_t byte);
 
 /**
- * \fn debug_abort
- * 
  * \brief Puts the program in an infinite loop.
  * 
  * This function can be used in case of a critical error during debug mode.
  * 
- * \return None
+ * \return None.
  */
 void debug_abort();
 
 /**
- * \fn debug_uart_init
- * 
  * \brief Initialization of the debug UART.
  * 
  * UART settings:
@@ -162,8 +142,8 @@ void debug_abort();
  *      .
  * 
  * \return Initialization status. It can be:
- *      - \b TRUE
- *      - \b FALSE
+ *      - TRUE
+ *      - FALSE
  *      .
  */
 bool debug_uart_init();

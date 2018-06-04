@@ -22,11 +22,10 @@
  */
 
 /**
- * \file ngham_externsion.h
- * 
  * \brief .
  * 
- * \author Jon Petter Skagmo <web@skagmo.com>; Mods. for FloripaSat-TTC by Gabriel Mariano Marcelino <gabriel.mm8@gmail.com>
+ * \author Jon Petter Skagmo <web@skagmo.com>
+ * \author Gabriel Mariano Marcelino <gabriel.mm8@gmail.com>
  * 
  * \version 1.0-dev
  * 
@@ -43,51 +42,34 @@
 #include "stdint.h"
 #include "ngham_packets.h"
 
-/**
- * \brief Possible values for the type field. After type byte, length follows.
- * 
- * \{
- */
-#define PKT_TYPE_DATA           0
-#define PKT_TYPE_ID             1
-#define PKT_TYPE_STAT           2
-#define PKT_TYPE_SIMPLEDIGI     3
-#define PKT_TYPE_POS            4
-#define PKT_TYPE_TOH            5
-#define PKT_TYPE_DEST           6   /**< Destination/receiver callsign */
-#define PKT_TYPE_CMD_REQ        7   /**< Command packet */
-#define PKT_TYPE_CMD_REPLY      8   /**< Command packet */
-#define PKT_TYPE_REQUEST        9
-//! \}
+// Possible values for the type field. After type byte, length follows.
+#define PKT_TYPE_DATA           0           /**< . */
+#define PKT_TYPE_ID             1           /**< . */
+#define PKT_TYPE_STAT           2           /**< . */
+#define PKT_TYPE_SIMPLEDIGI     3           /**< . */
+#define PKT_TYPE_POS            4           /**< . */
+#define PKT_TYPE_TOH            5           /**< . */
+#define PKT_TYPE_DEST           6           /**< Destination/receiver callsign. */
+#define PKT_TYPE_CMD_REQ        7           /**< Command packet. */
+#define PKT_TYPE_CMD_REPLY      8           /**< Command packet. */
+#define PKT_TYPE_REQUEST        9           /**< . */
 
-#define PKT_TYPES               10
-#define PKT_SIZE_VARIABLE       0xFFFF
+#define PKT_TYPES               10          /**< . */
+#define PKT_SIZE_VARIABLE       0xFFFF      /**< . */
 
-/**
- * \brief Additional NA-values
- * 
- * \{
- */
-#define TEMP_NA                 0xFF
-#define VOLT_NA                 0xFF
-#define UINT8_NA                0xFF
-#define INT32_NA                0x7FFFFFFF
-#define COG_NA                  0x7FF
-//! \}
+// Additional NA-values
+#define TEMP_NA                 0xFF        /**< . */
+#define VOLT_NA                 0xFF        /**< . */
+#define UINT8_NA                0xFF        /**< . */
+#define INT32_NA                0x7FFFFFFF  /**< . */
+#define COG_NA                  0x7FF       /**< . */
 
 #define ATTRIBUTE_PACKED __attribute__ ((packed))
 
-/**
- * \brief 
- * \{
- */
-extern const char* PKT_TYPE_STRINGS[];
-extern const uint16_t PKT_TYPE_SIZES[];
-//! \}
+extern const char* PKT_TYPE_STRINGS[];      /**< . */
+extern const uint16_t PKT_TYPE_SIZES[];     /**< . */
 
 /**
- * \struct ngham_toh_t
- * 
  * \brief TOH packet.
  * 
  */
@@ -98,10 +80,7 @@ typedef struct ATTRIBUTE_PACKED
 } ngham_toh_t;
 
 /**
- * \struct ngham_stat_t
- * 
  * \brief Statistics packet.
- * 
  */
 typedef struct ATTRIBUTE_PACKED
 {
@@ -120,10 +99,7 @@ typedef struct ATTRIBUTE_PACKED
 } ngham_stat_t;
 
 /**
- * \struct ngham_pos_t
- * 
  * \brief Position packet.
- * 
  */
 typedef struct ATTRIBUTE_PACKED
 {
@@ -136,12 +112,9 @@ typedef struct ATTRIBUTE_PACKED
 } ngham_pos_t;
 
 /**
- * \struct ngham_id_t
- * 
  * \brief 
  * 
  * Always first in a packet, except when resent by another station.
- * 
  */
 typedef struct ATTRIBUTE_PACKED
 {
@@ -150,10 +123,7 @@ typedef struct ATTRIBUTE_PACKED
 } ngham_id_t;
 
 /**
- * \struct ngham_dest_t
- * 
  * \brief
- * 
  */
 typedef struct ATTRIBUTE_PACKED
 {
@@ -161,8 +131,6 @@ typedef struct ATTRIBUTE_PACKED
 } ngham_dest_t;
 
 /**
- * \fn ngham_ext_allocate_pkt
- * 
  * \brief 
  * 
  * Will set data type and length and increase tx_pkt length to fit data,
@@ -177,8 +145,6 @@ typedef struct ATTRIBUTE_PACKED
 uint8_t* ngham_ext_allocate_pkt(NGHam_TX_Packet *p, uint8_t pkt_type, uint16_t data_len);
 
 /**
- * \fn ngham_ext_append_pkt
- * 
  * \brief Append extension packet with given data, type and size to tx_pkt.
  * 
  * \param *p
@@ -191,8 +157,6 @@ uint8_t* ngham_ext_allocate_pkt(NGHam_TX_Packet *p, uint8_t pkt_type, uint16_t d
 void ngham_ext_append_pkt(NGHam_TX_Packet *p, uint8_t type, uint8_t *data, uint16_t size);
 
 /**
- * \fn ngham_ext_num_pkts
- * 
  * \brief 
  * 
  * \param *d
@@ -203,8 +167,6 @@ void ngham_ext_append_pkt(NGHam_TX_Packet *p, uint8_t type, uint8_t *data, uint1
 uint16_t ngham_ext_num_pkts(uint8_t *d, uint16_t d_len);
 
 /**
- * \fn ngham_ext_encode_callsign
- * 
  * \brief 
  * 
  * \param *enc_callsign
@@ -215,8 +177,6 @@ uint16_t ngham_ext_num_pkts(uint8_t *d, uint16_t d_len);
 uint8_t ngham_ext_encode_callsign(uint8_t *enc_callsign, int8_t *callsign);
 
 /**
- * \fn ngham_ext_decode_callsign
- * 
  * \brief 
  * 
  * 11 long array (7 characters, dash, two decimals and termination)

@@ -22,11 +22,10 @@
  */
 
 /**
- * \file ccsds_scrambler.h
- * 
  * \brief .
  * 
- * \author Jon Petter Skagmo <web@skagmo.com>; Mods. for FloripaSat-TTC by Gabriel Mariano Marcelino <gabriel.mm8@gmail.com>
+ * \author Jon Petter Skagmo <web@skagmo.com>
+ * \author Gabriel Mariano Marcelino <gabriel.mm8@gmail.com>
  * 
  * \version 1.0-dev
  * 
@@ -44,15 +43,12 @@
 
 /**
  * \brief CCSDS polynomial.
- * 
- * \{
+ *
+ * Repeats after 255 bits, but repeats byte-aligning after 255 byte.
  */
 extern const uint8_t ccsds_poly[255];
-//! \}
 
 /**
- * \fn ngham_CCSDS_ScramblerInit
- * 
  * \brief
  * 
  * \return None
@@ -60,8 +56,6 @@ extern const uint8_t ccsds_poly[255];
 void ngham_CCSDS_ScramblerInit();
 
 /**
- * \fn ngham_CCSDS_ScramblerXor
- * 
  * \brief 
  * 
  * Data should be Xored with the sequence, starting from index zero.

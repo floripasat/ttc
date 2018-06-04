@@ -1,7 +1,7 @@
 /*
  * cc11xx_registers.h
  * 
- * Copyright (C) 2017, Federal University of Santa Catarina
+ * Copyright (C) 2017, Universidade Federal de Santa Catarina.
  * 
  * This file is part of FloripaSat-Beacon.
  * 
@@ -21,8 +21,6 @@
  */
  
 /**
- * \file cc11xx_registers.h
- * 
  * \brief CC1125/CC1175 registers addresses.
  * 
  * \author Gabriel Mariano Marcelino <gabriel.mm8@gmail.com>
@@ -44,8 +42,7 @@
  * 
  * \brief Addresses of CC1175 SPI Address Space
  * 
- * Reference: CC112X/CC1175 User's Guide Table 4
- * 
+ * \see CC112X/CC1175 User's Guide Table 4
  * \{
  */
 #define CC11XX_IOCFG3                   0x0000      /**< GPIO3 IO Pin Configuration */
@@ -103,8 +100,7 @@
  * 
  * \brief Addresses of CC1175 Extended Register Space Mapping
  * 
- * Reference: CC112X/CC1175 User's Guide Table 5
- * 
+ * \see CC112X/CC1175 User's Guide Table 5
  * \{
  */
 #define CC11XX_IF_MIX_CFG               0x2F00      /**< IF Mix Configuration */

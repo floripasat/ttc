@@ -1,7 +1,7 @@
 /*
  * sky13345_368lf.c
  * 
- * Copyright (C) 2017, Federal University of Santa Catarina.
+ * Copyright (C) 2017, Universidade Federal de Santa Catarina.
  * 
  * This file is part of FloripaSat-Beacon.
  * 
@@ -21,8 +21,6 @@
  */
 
 /**
- * \file sky13345_368lf.c
- * 
  * \brief SKY13345-368LF driver implementation.
  * 
  * \author Gabriel Mariano Marcelino <gabriel.mm8@gmail.com>

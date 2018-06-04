@@ -32,7 +32,7 @@
  * \date 23/07/2017
  * 
  * \defgroup cpu CPU
- * \ingroup modules
+ * \ingroup hal
  * \{
  */
 
@@ -40,16 +40,15 @@
 #define CPU_H_
 
 /**
- * \fn cpu_init
- * 
  * \brief Configures the CPU clocks.
  * 
- *      - \b MCLK = 16 MHz
- *      - \b SMCLK = 4 MHz
- *      - \b ACLK = 32,768 kHz
+ * Clocks values:
+ *      - MCLK = 16 MHz
+ *      - SMCLK = 4 MHz
+ *      - ACLK = 32,768 kHz
  *      .
  * 
- * \return None
+ * \return None.
  */
 void cpu_init();
 

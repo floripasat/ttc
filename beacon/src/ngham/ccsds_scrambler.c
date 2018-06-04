@@ -22,11 +22,10 @@
  */
 
 /**
- * \file ccsds_scrambler.c
- * 
  * \brief .
  * 
- * \author Jon Petter Skagmo <web@skagmo.com>; Mods. for FloripaSat-TTC by Gabriel Mariano Marcelino <gabriel.mm8@gmail.com>
+ * \author Jon Petter Skagmo <web@skagmo.com>
+ * \author Gabriel Mariano Marcelino <gabriel.mm8@gmail.com>
  * 
  * \version 1.0-dev
  * 
@@ -40,7 +39,6 @@
 
 #include <stdint.h>
 
-// Repeats after 255 bits, but repeats byte-aligning after 255 byte
 const uint8_t ccsds_poly[255] = {
     0xFF, 0x48, 0x0E, 0xC0, 0x9A, 0x0D, 0x70, 0xBC, 0x8E, 0x2C, 0x93, 0xAD, 0xA7,
     0xB7, 0x46, 0xCE, 0x5A, 0x97, 0x7D, 0xCC, 0x32, 0xA2, 0xBF, 0x3E, 0x0A, 0x10,

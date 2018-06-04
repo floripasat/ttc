@@ -146,11 +146,11 @@ void obdh_clear()
 }
 
 /**
- * \fn USCI_A2_IST
- * 
  * \brief USCI_A2 interrupt vector service routine.
+ *
+ * \image html obdh_isr.png "OBDH ISR flowchart" width=400px
  * 
- * \return None
+ * \return None.
  */
 #if defined(__TI_COMPILER_VERSION__) || defined(__IAR_SYSTEMS_ICC__)
 #pragma vector=USCI_A2_VECTOR

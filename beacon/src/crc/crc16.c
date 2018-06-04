@@ -21,8 +21,6 @@
  */
 
 /**
- * \file crc16.c
- * 
  * \brief CRC16 implementation.
  * 
  * \author Gabriel Mariano Marcelino <gabriel.mm8@gmail.com>

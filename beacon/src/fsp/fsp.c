@@ -21,8 +21,6 @@
  */
 
 /**
- * \file fsp.c
- * 
  * \brief FloripaSat Protocol library implementation.
  * 
  * \author Gabriel Mariano Marcelino <gabriel.mm8@gmail.com>

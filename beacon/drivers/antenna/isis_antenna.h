@@ -1,7 +1,7 @@
 /*
  * isis_antenna.h
  * 
- * Copyright (C) 2017, Federal University of Santa Catarina
+ * Copyright (C) 2017, Universidade Federal de Santa Catarina
  * 
  * This file is part of FloripaSat-Beacon.
  * 
@@ -21,8 +21,6 @@
  */
 
 /**
- * \file isis_antenna.h
- * 
  * \brief ISIS antenna driver.
  * 
  * \author Gabriel Mariano Marcelino <gabriel.mm8@gmail.com>
@@ -43,9 +41,7 @@
 #include <stdbool.h>
 
 /**
- * \struct ISIS_Antenna_Status
- * 
- * \brief 
+ * \brief ISIS antenna status.
  */
 typedef struct
 {
@@ -88,83 +84,67 @@ typedef struct
 #define VERIFY_STATUS(status, bit)          ( (status & bit) > 0 )
 
 /**
- * \fn isis_antenna_init()
- * 
  * \brief .
  * 
- * \return None
+ * \return None.
  */
 void isis_antenna_init();
 
 /**
- * \fn isis_antenna_is_released
- * 
  * \brief Verifies if the antenna is released or not.
  * 
  * \return Deployment status. It can return:
- *              -\b true if the antenna is released.
- *              -\b false if the antenna is not released.
+ *              - true if the antenna is released.
+ *              - false if the antenna is not released.
  *              .
  */
 bool isis_antenna_is_released();
 
 /**
- * \fn isis_antenna_release
- * 
  * \brief Enables the antenna deployment.
  * 
  * \return It can be:
- *              -\b true
- *              -\b false
+ *              - true
+ *              - false
  *              .
  */
 bool isis_antenna_release();
 
 /**
- * \fn isis_antenna_arm
- * 
  * \brief 
  * 
- * \return None
+ * \return None.
  */
 void isis_antenna_arm();
 
 /**
- * \fn isis_antenna_disarm
- * 
  * \brief 
  * 
- * \return None
+ * \return None.
  */
 void isis_antenna_disarm();
 
 /**
- * \fn isis_antenna_start_sequential_deploy
- * 
  * \brief 
  * 
  * \param sec
  * 
- * \return None
+ * \return None.
  */
 void isis_antenna_start_sequential_deploy(uint8_t sec);
 
 /**
- * \fn isis_antenna_start_independent_deploy
- * 
  * \brief 
  * 
  * \param ant
  * \param sec
  * \param ovr
  * 
- * \return None
+ * \return None.
  */
 void isis_antenna_start_independent_deploy(uint8_t ant, uint8_t sec, uint8_t ovr);
 
 /**
- * \fn isis_antenna_read_deployment_status
- * 
  * \brief 
  * 
  * \return The deployment status code.

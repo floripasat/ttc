@@ -1,7 +1,7 @@
 /*
  * cc11xx_floripasat_reg_config.h
  * 
- * Copyright (C) 2016, Universidade Federal de Santa Catarina
+ * Copyright (C) 2017, Universidade Federal de Santa Catarina.
  * 
  * This file is part of FloripaSat-TTC.
  * 
@@ -21,8 +21,6 @@
  */ 
 
 /**
- * \file cc11xx_floripasat_reg_config.h
- * 
  * \brief CC1125/CC1175 registers values to set
  * 
  * \author Gabriel Mariano Marcelino <gabriel.mm8@gmail.com>
@@ -43,12 +41,9 @@
 #include "cc11xx.h"
 
 /**
- * \struct RegistersSettings
- * 
  * \brief CC11XX register setting basic struct
  * 
  * This struct contains the address and the value of a register.
- * 
  */
 typedef struct
 {
@@ -68,7 +63,6 @@ typedef struct
  *      .
  * 
  * All values obtained from SmartRF Studio.
- * 
  */
 static const RegistersSettings reg_values[] = 
 {
@@ -120,10 +114,9 @@ static const RegistersSettings reg_values[] =
 };
 
 /**
- * Register settings for activating the internal temperature sensor.
+ * \brief Register settings for activating the internal temperature sensor.
  * 
- * Reference: CC112x/CC1175 User's Guide, table 12.
- * 
+ * \see CC112x/CC1175 User's Guide, table 12.
  */
 static const RegistersSettings temp_sensor_values[] =
 {

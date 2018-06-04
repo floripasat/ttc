@@ -22,11 +22,10 @@
  */
 
 /**
- * \file crc_ccitt.h
- * 
  * \brief CRC-CCITT.
  * 
- * \author Jon Petter Skagmo <web@skagmo.com>; Mods. for FloripaSat-TTC by Gabriel Mariano Marcelino <gabriel.mm8@gmail.com>
+ * \author Jon Petter Skagmo <web@skagmo.com>
+ * \author Gabriel Mariano Marcelino <gabriel.mm8@gmail.com>
  * 
  * \version 1.0-dev
  * 
@@ -43,8 +42,6 @@
 #include <stdint.h>
 
 /**
- * \fn ngham_CRC_CCITTByte
- * 
  * \brief 
  * 
  * \param buf
@@ -55,8 +52,6 @@
 uint16_t ngham_CRC_CCITTByte(uint8_t buf, uint16_t crc);
 
 /**
- * \fn ngham_CRC_CCITT
- * 
  * \brief 
  * 
  * \param *buf

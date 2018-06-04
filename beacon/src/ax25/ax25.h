@@ -21,13 +21,11 @@
  */
  
 /**
- * \file ax25.h
- * 
  * \brief Functions of the AX25 protocol.
  * 
- * This module have all the functions to generate/manipulate packets with
- * the AX25 protocol.
- * Reference: AX.25 Link Access Protocol for Amateur Packet Radio. Version 2.2 Revision: July 1998.
+ * This module have all the functions to generate/manipulate packets with the AX25 protocol.
+ *
+ * \see AX.25 Link Access Protocol for Amateur Packet Radio. Version 2.2 Revision: July 1998.
  * 
  * \author Gabriel Mariano Marcelino <gabriel.mm8@gmail.com>
  * 
@@ -36,7 +34,7 @@
  * \date 16/12/2016
  * 
  * \defgroup ax25 AX25
- * \ingroup beacon
+ * \ingroup src
  * \{
  */
 
@@ -49,8 +47,6 @@
 #include "ax25_fields.h"
 
 /**
- * \struct AX25_Transfer_Frame_Header
- * 
  * \brief The struct with the fields of the transfer frame header of the AX25.
  */
 typedef struct
@@ -60,8 +56,6 @@ typedef struct
 } AX25_Transfer_Frame_Header;
 
 /**
- * \struct AX25_Pkt_Payload
- * 
  * \brief The struct with the packet payload data and length (in bytes).
  */
 typedef struct
@@ -71,8 +65,6 @@ typedef struct
 } AX25_Pkt_Payload;
 
 /**
- * \struct AX25_Packet
- * 
  * \brief The struct with all the AX25 fields.
  */
 typedef struct
@@ -88,8 +80,6 @@ typedef struct
 } AX25_Packet;
 
 /**
- * \struct bit
- * 
  * \brief A struct to hold a bit variable.
  * 
  * This struct is used during the bit stuffing process.
@@ -100,8 +90,6 @@ typedef struct
 } bit;
 
 /**
- * \fn ax25_beacon_pkt_gen
- * 
  * \brief Generates the packet with a initial data.
  * 
  * The header of the Beacon AX25 packet is defined with following configuration:
@@ -121,39 +109,33 @@ typedef struct
  * \param data is data to be transmitted at the data field of the packet.
  * \param data_size is size of the data to be transmitted at the data field of the packet.
  * 
- * \return None
+ * \return None.
  */
 void ax25_beacon_pkt_gen(AX25_Packet *ax25_packet, uint8_t *data, uint16_t data_size);
 
 /**
- * \fn ax25_update_data_from_pkt
- * 
  * \brief Updates the data field of an already generated packet.
  * 
  * \param ax25_packet is the packet who the data will be modify.
  * \param new_data is the new data of the data field of the packet.
  * \param new_data_size is size of the new data of the data field of the packet.
  * 
- * \return None
+ * \return None.
  */
 void ax25_update_data_from_pkt(AX25_Packet *ax25_packet, uint8_t *new_data, uint16_t new_data_size);
 
 /**
- * \fn ax25_pkt_2_str
- * 
  * \brief Converts a packet in a struct, to an array (string) of bytes.
  * 
  * \param ax25_packet is the packet to be converted.
  * \param str_pkt is the array containing the converted packet.
  * \param str_pkt_len is the size of the data field of the packet.
  * 
- * \return None
+ * \return None.
  */
 void ax25_pkt_2_str(AX25_Packet *ax25_packet, uint8_t *str_pkt, uint16_t *str_pkt_len);
 
 /**
- * \fn ax25_bit_stuffing
- * 
  * \brief Applies bit stuffing to an AX25 packet.
  * 
  * In order to ensure that the flag bit sequence mentioned above does not appear
@@ -168,20 +150,18 @@ void ax25_pkt_2_str(AX25_Packet *ax25_packet, uint8_t *str_pkt, uint16_t *str_pk
  * \param new_pkt is an array to store the new packet (with the bit suttfing applied).
  * \param new_pkt_len is the length if the new_pkt (in bytes).
  * 
- * \return None
+ * \return None.
  */
 void ax25_bit_stuffing(uint8_t *pkt, uint16_t pkt_len, uint8_t *new_pkt, uint16_t *new_pkt_len);
 
 /**
- * \fn ax25_encode
- * 
  * \brief Encodes a pre-generated AX25 packet to a ready-to-transmit format.
  * 
  * \param ax25_pkt is a AX25_Packet struct containing a pre-generated AX25 packet.
  * \param pkt is the resulting AX25 packet ready to transmit (in an array of bytes format).
  * \param pkt_len is the length of the pkt (in bytes).
  * 
- * \return None
+ * \return None.
  */
 void ax25_encode(AX25_Packet *ax25_pkt, uint8_t *pkt, uint16_t *pkt_len);
 

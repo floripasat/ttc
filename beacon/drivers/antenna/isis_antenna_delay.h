@@ -1,7 +1,7 @@
 /*
  * isis_antenna_delay.h
  * 
- * Copyright (C) 2017, Federal University of Santa Catarina
+ * Copyright (C) 2017, Universidade Federal de Santa Catarina
  * 
  * This file is part of FloripaSat-Beacon.
  * 
@@ -21,8 +21,6 @@
  */
 
 /**
- * \file isis_antenna_delay.h
- * 
  * \brief ISIS antenna delay functions.
  * 
  * \author Gabriel Mariano Marcelino <gabriel.mm8@gmail.com>
@@ -41,8 +39,6 @@
 #include <stdint.h>
 
 /**
- * \fn isis_antenna_delay_s
- * 
  * \brief Seconds delay.
  * 
  * \param s is the delay in seconds.
@@ -52,8 +48,6 @@
 void isis_antenna_delay_s(uint8_t s);
 
 /**
- * \fn isis_antenna_delay_ms
- * 
  * \brief Milliseconds delay.
  * 
  * \param ms is the delay in milliseconds.
@@ -63,8 +57,6 @@ void isis_antenna_delay_s(uint8_t s);
 void isis_antenna_delay_ms(uint16_t ms);
 
 /**
- * \fn isis_antenna_delay_us
- * 
  * \brief Microseconds delay
  * 
  * \param us is the delay in microseconds.

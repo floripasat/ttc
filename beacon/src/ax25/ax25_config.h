@@ -21,8 +21,6 @@
  */
  
 /**
- * \file ax25_config.h
- * 
  * \brief AX25 protocol general configuration.
  * 
  * \author Gabriel Mariano Marcelino <gabriel.mm8@gmail.com>
@@ -31,17 +29,18 @@
  * 
  * \date 08/09/2017
  * 
- * \addtogroup ax25
+ * \defgroup ax25_config Config
+ * \ingroup ax25
  * \{
  */
 
 #ifndef AX25_CONFIG_H_
 #define AX25_CONFIG_H_
 
-#define AX25_FLORIPASAT_CALLSIGN                    "PY0EFS"    // The FloripaSat project callsign.
-#define AX25_FLORIPASAT_GRS_SSID                    0x00        // The SSID of the groundstation. User defined field.
-#define AX25_FLORIPASAT_SAT_SSID                    0x01        // The SSID of the satellite. User defined field.
-#define AX25_FLORIPASAT_HEADER_SIZE                 20          // The size of the header
+#define AX25_FLORIPASAT_CALLSIGN                    "PY0EFS"    /**< The FloripaSat project callsign. */
+#define AX25_FLORIPASAT_GRS_SSID                    0x00        /**< The SSID of the groundstation. User defined field. */
+#define AX25_FLORIPASAT_SAT_SSID                    0x01        /**< The SSID of the satellite. User defined field. */
+#define AX25_FLORIPASAT_HEADER_SIZE                 20          /**< The size of the header. */
 
 #endif // AX25_CONFIG_H_
 

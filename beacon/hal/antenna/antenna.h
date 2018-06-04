@@ -31,8 +31,8 @@
  * 
  * \date 15/06/2017
  * 
- * \defgroup antenna Antenna module
- * \ingroup modules
+ * \defgroup antenna Antenna
+ * \ingroup hal
  * \{
  */
 
@@ -42,37 +42,31 @@
 #include <stdbool.h>
 
 /**
- * \fn antenna_init
- * 
  * \brief Antenna module initialization.
  * 
  * \return Deployment status. It can be:
- *              -\b TRUE if the antenna initialization was successful.
- *              -\b FALSE if the antenna initialization was not successful.
+ *              - TRUE if the antenna initialization was successful.
+ *              - FALSE if the antenna initialization was not successful.
  *              .
  */
 bool antenna_init();
 
 /**
- * \fn antenna_is_released
- * 
  * \brief Checks if the antenna is released or not.
  * 
  * \return Returns:
- *              -\b TRUE if the antenna is released.
- *              -\b FALSE if the antenna is not released.
+ *              - TRUE if the antenna is released.
+ *              - FALSE if the antenna is not released.
  *              .
  */
 bool antenna_is_released();
 
 /**
- * \fn antenna_deploy
- * 
  * \brief Antenna deployment routine.
  * 
  * \return Deployment status. It can be:
- *              -\b TRUE if the deployment was successful.
- *              -\b FALSE if the deployment was not successful.
+ *              - TRUE if the deployment was successful.
+ *              - FALSE if the deployment was not successful.
  *              .
  */
 bool antenna_deploy();

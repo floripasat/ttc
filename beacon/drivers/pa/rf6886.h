@@ -1,7 +1,7 @@
 /*
  * rf6886.h
  * 
- * Copyright (C) 2017, Federal University of Santa Catarina
+ * Copyright (C) 2017, Universidade Federal de Santa Catarina.
  * 
  * This file is part of FloripaSat-Beacon.
  * 
@@ -21,8 +21,6 @@
  */
 
 /**
- * \file rf6886.h
- * 
  * \brief Gain control of the RF6886 PA.
  * 
  * \author Gabriel Mariano Marcelino <gabriel.mm8@gmail.com>
@@ -42,8 +40,6 @@
 #include <stdint.h>
 
 /**
- * \fn rf6886_init()
- * 
  * \brief Initialization of the power amplifier of the beacon (RF6886)
  * 
  * This function settings the MCU DAC12, and initizalizes the ENE_3V3_PA_BEACON pin.
@@ -66,40 +62,34 @@
  *      .
  * 
  * \return Initialization status. It can be:
- *      - \b STATUS_SUCCESS
- *      - \b STATUS_FAIL
+ *      - STATUS_SUCCESS
+ *      - STATUS_FAIL
  *      .
  */
 uint8_t rf6886_init();
 
 /**
- * \fn rf6886_enable()
- * 
  * \brief Enables the RF6886.
  * 
  * This function enable the ENE_3V3_PA_BEACON pin (turn on the PA).
  * Also, it enables the MCU DAC12 output, with or without (0, in this case)
  * a previous output voltage setting.
  * 
- * \return None
+ * \return None.
  */
 void rf6886_enable();
 
 /**
- * \fn rf6886_disable()
- * 
  * \brief Disables the RF6886
  * 
  * This function disables the MCU DAC12 output (bringing it to zero), and the PA
  * power regulator (ENE_3V3_PA_BEACON).
  * 
- * \return None
+ * \return None.
  */
 void rf6886_disable();
 
 /**
- * \fn rf6886_set_v_reg()
- * 
  * \brief RF6886 Vreg1/2 voltage.
  * 
  * This function sets the DAC output voltage.
@@ -117,7 +107,7 @@ void rf6886_disable();
  * 
  * \param v_reg is the DAC output voltage,
  * 
- * \return None
+ * \return None.
  */
 void rf6886_set_v_reg(float v_reg);
 

@@ -1,7 +1,7 @@
 /*
  * cc11xx.h
  * 
- * Copyright (C) 2017, Federal University of Santa Catarina
+ * Copyright (C) 2017, Universidade Federal de Santa Catarina.
  * 
  * This file is part of FloripaSat-Beacon.
  * 
@@ -21,8 +21,6 @@
  */
  
 /**
- * \file cc11xx.h
- * 
  * \brief Functions of the CC1125/CC1175.
  * 
  * \author Gabriel Mariano Marcelino <gabriel.mm8@gmail.com>
@@ -51,11 +49,11 @@
 
 /**
  * \defgroup cmd_strobe CC1175 Command Strobes
- * \ingroup cc1175
+ * \ingroup cc11xx
  * 
  * \brief CC1175 command strobes values
  * 
- * Reference: CC112x/CC1175 User's Guide Table 6
+ * \see CC112x/CC1175 User's Guide Table 6
  * 
  * \{
  */
@@ -83,7 +81,7 @@
  * 
  * \brief FIFO access addresses
  * 
- * Referemce: CC112x/CC1175 User's Guide Table 4
+ * \see CC112x/CC1175 User's Guide Table 4
  * 
  * \{
  */
@@ -99,7 +97,7 @@
  * 
  * \brief CC1175 access modes values
  * 
- * Reference: CC112x/CC1175 User's Guide Table 3
+ * \see CC112x/CC1175 User's Guide Table 3
  * 
  * \{
  */
@@ -121,7 +119,7 @@
  *      - Reserved         = bits 3:0
  *      .
  * 
- * Reference: CC112x/CC1175 User's Guide Table 2
+ * \see CC112x/CC1175 User's Guide Table 2
  * 
  * \{
  */
@@ -143,7 +141,7 @@
  * 
  * \brief Calibration const.
  * 
- * Reference: CC112X, CC1175 Silicon Errata
+ * \see CC112X, CC1175 Silicon Errata
  * 
  * \{
  */
@@ -159,7 +157,7 @@
  * 
  * \brief GPIO signals.
  * 
- * Reference: CC112x/CC1175 User's Guide Table 10
+ * \see CC112x/CC1175 User's Guide Table 10
  * 
  * \{
  */
@@ -249,8 +247,6 @@
 //! \} End of gpio_signals
 
 /**
- * \fn cc11xx_Init
- * 
  * \brief cc11xx initialization
  * 
  * This function makes:
@@ -260,53 +256,45 @@
  *      .
  * 
  * \return Initialization status. It can be:
- *      -\b STATUS_SUCCESS
- *      -\b STATUS_FAIL
+ *      - STATUS_SUCCESS
+ *      - STATUS_FAIL
  *      .
  */
 uint8_t cc11xx_Init();
 
 /**
- * \fn cc11xx_RegConfig
- * 
  * \brief Configuration of the registers of the cc11xx
  * 
  * This function takes an array with the address of a register and its value,
  * and writes the data using cc11xx_WriteReg().
  * 
- * \return None
+ * \return None.
  */
 void cc11xx_RegConfig();
 
 /**
- * \fn cc11xx_WriteRef
- * 
  * \brief 
  * 
  * \param addr is the address of the register to be written.
  * \param pData is a pointer to the data to be written in the register.
  * \param len is the size of the data (*pData) to be written.
  * 
- * \return Chip status
+ * \return Chip status.
  */
 uint8_t cc11xx_WriteReg(uint16_t addr, uint8_t *pData, uint8_t len);
 
 /**
- * \fn cc11xx_ReadRef
- * 
  * \brief 
  * 
  * \param addr is the address of the register to be written.
  * \param pData is a pointer to the data to be written in the register.
  * \param len is the size of the data (*pData) to be written.
  * 
- * \return Chip status
+ * \return Chip status.
  */
 uint8_t cc11xx_ReadReg(uint16_t addr, uint8_t *pData, uint8_t len);
 
 /**
- * \fn cc11xx_CmdStrobe
- * 
  * \brief Sends a command strobe to the cc11xx.
  * 
  * \param cmd is the command strobe (See "CC112X/CC1175 User's Guide", table 6).
@@ -314,13 +302,11 @@ uint8_t cc11xx_ReadReg(uint16_t addr, uint8_t *pData, uint8_t len);
  * To get a list with all the possible commands, see: "CC112X/CC1175 User's Guide", table 6.
  * The table above is transcripted in \ref cmd_strobe CC11XX Command Strobes.
  * 
- * \return Chip status
+ * \return Chip status.
  */
 uint8_t cc11xx_CmdStrobe(uint8_t cmd);
 
 /**
- * \fn cc11xx_8BitRegAccess
- * 
  * \brief This function performs a read or write from/to a 8bit register
  *        address space. The function handles burst and single read/write
  *        as specfied in addrByte. Function assumes that chip is ready.
@@ -333,27 +319,24 @@ uint8_t cc11xx_CmdStrobe(uint8_t cmd);
  * \param pData data array
  * \param len length of array to be read (TX)/written (RX)
  * 
- * \return Chip status
+ * \return Chip status.
  */
 uint8_t cc11xx_8BitRegAccess(uint8_t access_type, uint8_t addr_byte, uint8_t *pData, uint16_t len);
 
 /**
- * \fn cc11xx_16BitRegAccess
- * 
  * \brief
+ *
  * \param access_type
  * \param ext_addr
  * \param red_addr
  * \param pData
  * \param len
  * 
- * \return Chip status
+ * \return Chip status.
  */
 uint8_t cc11xx_16BitRegAccess(uint8_t access_type, uint8_t ext_addr, uint8_t reg_addr, uint8_t *pData, uint8_t len);
 
 /**
- * \fn cc11xx_ReadWriteBurstSingle
- * 
  * \brief Read/Write data using Burst/Single mode.
  * 
  * \param addr is the address of the register to be accessed.
@@ -361,73 +344,61 @@ uint8_t cc11xx_16BitRegAccess(uint8_t access_type, uint8_t ext_addr, uint8_t reg
  *        Or a pointer to a variable to receive the register value.
  * \param len is the size of the data (pData).
  *
- * \return None
+ * \return None.
  */
 void cc11xx_ReadWriteBurstSingle(uint8_t addr, uint8_t *pData, uint16_t len);
 
 /**
- * \fn cc11xx_ManualReset
- * 
  * \brief Reset by using RESETn pin (active-low).
  * 
- * \return None
+ * \return None.
  */
 void cc11xx_ManualReset();
 
 /**
- * \fn cc11xx_ManualCalibration()
- * 
  * \brief Chip calibration.
  * 
- * See "CC112X, CC1175 Silicon Errata".
+ * \see "CC112X, CC1175 Silicon Errata".
  * 
- * \return None
+ * \return None.
  */
 void cc11xx_ManualCalibration();
 
 /**
- * \fn cc11xx_WriteTXFIFO()
- * 
  * \brief Writes data into the TX FIFO.
  * 
  * \param pData is a pointer to the data to be written.
  * \param len is the size of the data (*pData) to be written.
  * 
- * \return Chip status
+ * \return Chip status.
  */
 uint8_t cc11xx_WriteTXFIFO(uint8_t *pData, uint8_t len);
 
 /**
- * \fn cc11xx_SPI_Init
- * 
  * \brief Initialization of the MCU SPI.
  * 
  * Used interface: USCI_B0
  * 
  * \return Initialization status. It can be:
- *      - \b STATUS_SUCCESS
- *      - \b STATUS_FAIL
+ *      - STATUS_SUCCESS
+ *      - STATUS_FAIL
  *      .
  */
 uint8_t cc11xx_SPI_Init();
 
 /**
- * \fn cc11xx_GPIO_Init
- * 
  * \brief Initialization of the MCU<=>cc11xx GPIOs.
  * 
- * \return None
+ * \return None.
  */
 void cc11xx_GPIO_Init();
 
 /**
- * \fn cc11xx_WakeUp
- * 
  * \brief Wakes up the radio if it is in sleep mode.
  * 
  * To wake up the radio in sleep mode, the CSn pin just need to be kept low.
  * 
- * \return none
+ * \return None.
  */
 void cc11xx_WakeUp();
 

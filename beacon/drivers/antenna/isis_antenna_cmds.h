@@ -1,7 +1,7 @@
 /*
  * isis_antenna_cmds.h
  * 
- * Copyright (C) 2017, Federal University of Santa Catarina
+ * Copyright (C) 2017, Universidade Federal de Santa Catarina
  * 
  * This file is part of FloripaSat-Beacon.
  * 
@@ -21,8 +21,6 @@
  */
 
 /**
- * \file isis_antenna_cmds.h
- * 
  * \brief ISIS antenna driver commands.
  * 
  * \author Gabriel Mariano Marcelino <gabriel.mm8@gmail.com>
@@ -39,39 +37,25 @@
 #define ISIS_ANTENNA_CMDS_H_
 
 /**
- * \brief Reset.
- * 
- * Description: Performs a reset of the microcontroller.
- * 
- * Parameters: None
- * 
- * Response: None
+ * \brief Performs a reset of the microcontroller.
  */
 #define ISIS_ANTENNA_CMD_RESET                          0xAA
 
 /**
  * \brief Arm antenna system.
  * 
- * Description: Arm the antenna system. The system needs to be armed to be
+ * Arm the antenna system. The system needs to be armed to be
  * able to deploy antennas.
- * 
- * Parameters: None
- * 
- * Response: None
  */
 #define ISIS_ANTENNA_CMD_ARM                            0xAD
 
 /**
  * \brief Disarm antenna system.
  * 
- * Description: Disarms the antenna system. This command will deactivate
- * any active antenna deployment systems and terminate an ongoing automated
- * sequential antenna deployment before disarming the system. The antenna
- * system will only be able to deploy antennas once it has been armed again.
- * 
- * Parameters: None
- * 
- * Response: None
+ * Disarms the antenna system. This command will deactivate any active antenna
+ * deployment systems and terminate an ongoing automated sequential antenna
+ * deployment before disarming the system. The antenna system will only be able
+ * to deploy antennas once it has been armed again.
  */
 #define ISIS_ANTENNA_CMD_DISARM                         0xAC
 

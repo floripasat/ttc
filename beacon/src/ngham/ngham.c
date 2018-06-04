@@ -22,11 +22,10 @@
  */
 
 /**
- * \file ngham.c
- * 
  * \brief NGHam protocol functions.
  * 
- * \author Jon Petter Skagmo <web@skagmo.com>; Mods. for FloripaSat-TTC by Gabriel Mariano Marcelino <gabriel.mm8@gmail.com>
+ * \author Jon Petter Skagmo <web@skagmo.com>
+ * \author Gabriel Mariano Marcelino <gabriel.mm8@gmail.com>
  * 
  * \date 10/02/2017
  *
@@ -103,8 +102,6 @@ void ngham_deinit_arrays()
 }
 
 /**
- * \fn ngham_TagCheck
- * 
  * \brief Check hamming distance.
  * 
  * Used to check if hamming distance in size tag is smaller than treshold.
@@ -115,8 +112,8 @@ void ngham_deinit_arrays()
  * \param y
  * 
  * \return It can return:
- *          -\b NGH_HAMMING_DISTANCE_GREATER if false
- *          -\b NGH_HAMMING_DISTANCE_SMALLER if true
+ *          - NGH_HAMMING_DISTANCE_GREATER if false
+ *          - NGH_HAMMING_DISTANCE_SMALLER if true
  *          .
  */
 static uint8_t ngham_tag_check(uint32_t x, uint32_t y)

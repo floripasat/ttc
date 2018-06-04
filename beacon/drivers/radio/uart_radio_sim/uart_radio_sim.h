@@ -1,7 +1,7 @@
 /*
  * uart_radio_sim.h
  * 
- * Copyright (C) 2017, Federal University of Santa Catarina.
+ * Copyright (C) 2017, Universidade Federal de Santa Catarina.
  * 
  * This file is part of FloripaSat-Beacon.
  * 
@@ -21,8 +21,6 @@
  */
 
 /**
- * \file uart_radio_sim.h
- * 
  * \brief UART Radio Simulation driver.
  * 
  * \author Gabriel Mariano Marcelino <gabriel.mm8@gmail.com>
@@ -46,31 +44,27 @@
 #include "uart_radio_sim_config.h"
 
 /**
- * \fn uart_radio_sim_init
- * 
  * \brief Initialization of the UART radio simulation.
  * 
  * \param init_mode is the type of initialization. It can be:
- *              -\b UART_RADIO_ONLY_SET_TX_PIN_AS_PERIPHERAL only configures the TX pin as a peripheral pin.
- *              -\b UART_RADIO_NORMAL_INITIALIZATION initializates and configures the UART-RADIO-SIM UART port.
+ *              - UART_RADIO_ONLY_SET_TX_PIN_AS_PERIPHERAL only configures the TX pin as a peripheral pin.
+ *              - UART_RADIO_NORMAL_INITIALIZATION initializates and configures the UART-RADIO-SIM UART port.
  *              .
  * 
  * \return Initiazaliton status. It can be:
- *              -\b STATUS_SUCCESS
- *              -\b STATUS_FAIL
+ *              - STATUS_SUCCESS
+ *              - STATUS_FAIL
  *              .
  */
 uint8_t uart_radio_sim_init(uint8_t init_mode);
 
 /**
- * \fn uart_radio_sim_send_data
- * 
  * \brief Send data through the UART port.
  * 
  * \param data is a pointer to the data to be written in the UART port.
  * \param size is the size of the data to be written in the UART port.
  * 
- * \return None
+ * \return None.
  */
 void uart_radio_sim_send_data(uint8_t *data, uint16_t size);
 

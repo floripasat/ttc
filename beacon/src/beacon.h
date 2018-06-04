@@ -21,8 +21,6 @@
  */
 
 /**
- * \file beacon.h
- * 
  * \brief Beacon header.
  * 
  * \author Gabriel Mariano Marcelino <gabriel.mm8@gmail.com>
@@ -32,6 +30,7 @@
  * \date 08/06/2017
  * 
  * \defgroup beacon Beacon
+ * \ingroup src
  * \{
  */
 
@@ -46,8 +45,6 @@
 #include "fsat_module.h"
 
 /**
- * \struct Beacon
- * 
  * \brief Beacon variables struct.
  */
 typedef struct
@@ -70,60 +67,48 @@ typedef struct
 } Beacon;
 
 /**
- * \var beacon
- * 
  * \brief Beacon variables struct.
  */
 extern Beacon beacon;
 
 /**
- * \fn beacon_init
- * 
  * \brief Beacon initialization routine.
  * 
- * \return None
+ * \image html beacon_init_flowchart.png "Beacon initialization flowchart" width=600px
+ *
+ * \return None.
  */
 void beacon_init();
 
 /**
- * \fn beacon_deinit
- * 
  * \brief Beacon deinitialization routine.
  * 
- * \return None
+ * \return None.
  */
 void beacon_deinit();
 
 /**
- * \fn beacon_run
- * 
  * \brief Main operation routine.
  * 
- * \return None
+ * \return None.
  */
 void beacon_run();
 
 /**
- * \fn beacon_enter_hibernation
- * 
  * \brief Makes the beacon enter in hibernation.
  * 
- * \return None
+ * \return None.
  */
 void beacon_enter_hibernation();
 
 /**
- * \fn beacon_leave_hibernation
- * 
  * \brief Makes the beacon leave the hibernation.
  * 
- * \return None
+ * \return None.
  */
 void beacon_leave_hibernation();
 
 /**
- * \fn beacon_get_tx_period
- * 
  * \brief Returns the TX period of the beacon (This value is dependent of the satellite energy level).
  * 
  * \return The TX period of the beacon.
@@ -131,113 +116,91 @@ void beacon_leave_hibernation();
 uint8_t beacon_get_tx_period();
 
 /**
- * \fn beacon_gen_pkt_payload
- * 
  * \brief Generates a packet payload from the OBDH or EPS data.
  * 
  * If the last OBDH data is not valid, the last valid EPS data is used to generate the packet payload.
  * 
- * \return None
+ * \return None.
  */
 void beacon_gen_pkt_payload();
 
 /**
- * \fn beacon_gen_ngham_pkt
- * 
  * \brief Generates a payload and a NGHam packets to transmit.
  * 
  * \param ngham_pkt_str is a pointer to an array to store the NGHam packet.
  * \param ngham_pkt_str_len is a pointer to a byte to store the lenght of the NGHam packet.
  * 
- * \return None
+ * \return None.
  */
 void beacon_gen_ngham_pkt(uint8_t *ngham_pkt_str, uint16_t *ngham_pkt_str_len);
 
 /**
- * \fn beacon_gen_ax25_pkt
- * 
  * \brief Generates a payload and an AX.25 packet to transmit.
  * 
  * \param ax25_pkt_str is a pointer to an array to store the AX.25 packet.
  * \param ax25_pkt_str_lens is a pointer to a byte to store the lenght of the AX.25 packet.
  * 
- * \return None
+ * \return None.
  */
 void beacon_gen_ax25_pkt(uint8_t *ax25_pkt_str, uint16_t *ax25_pkt_str_len);
 
 /**
- * \fn beacon_send_ngham_pkt
- * 
  * \brief Transmit a beacon packet using the NGHam protocol.
  * 
- * \return None
+ * \return None.
  */
 void beacon_send_ngham_pkt();
 
 /**
- * \fn beacon_send_ax25_pkt
- * 
  * \brief Transmit a beacon packet using the AX.25 protocol.
  * 
- * \return None
+ * \return None.
  */
 void beacon_send_ax25_pkt();
 
 /**
- * \fn beacon_set_energy_level
- * 
  * \brief Sets the beacon energy level (From the data received from the OBDH or EPS modules).
  * 
  * If both OBDH and EPS are not sending data anymore, the smaller energy level is chosen.
  * 
- * \return None
+ * \return None.
  */
 void beacon_set_energy_level();
 
 /**
- * \fn beacon_check_devices_status
- * 
  * \brief Checks if the system devices or modules (OBDH, EPS, antenna, radio, etc.) are working or not.
  * 
- * \return None
+ * \return None.
  */
 void beacon_check_devices_status();
 
 /**
- * \fn beacon_process_radio_pkt
- * 
  * \brief Process an incoming packet payload from the radio.
  * 
  * Verifies if the received data is a valid command, and executes it.
  * 
- * \return None
+ * \return None.
  */
 void beacon_process_radio_pkt();
 
 /**
- * \fn beacon_process_obdh_pkt
- * 
  * \brief Processes a packet from the OBDH module.
  * 
- * \return None
+ * \return None.
  */
 void beacon_process_obdh_pkt();
 
 /**
- * \fn beacon_process_eps_pkt
- * 
  * \brief Processes a packet from the EPS module.
  * 
- * \return None
+ * \return None.
  */
 void beacon_process_eps_pkt();
 
 /**
- * \fn beacon_antenna_deployment
- * 
  * \brief Antenna deployment procedure.
  * 
- * \return None
+ * \return None.
  */
 void beacon_antenna_deployment();
 

@@ -31,8 +31,8 @@
  * 
  * \date 10/03/2017
  * 
- * \defgroup rf_switch
- * \ingroup modules
+ * \defgroup rf_switch RF Switch
+ * \ingroup hal
  * \{
  */
 
@@ -40,29 +40,23 @@
 #define RF_SWITCH_H_
 
 /**
- * \fn rf_switch_init
- * 
  * \brief Initilization routine of the RF switch.h
  * 
- * \return None
+ * \return None.
  */
 void rf_switch_init();
 
 /**
- * \fn rf_switch_enable_beacon
- * 
  * \brief Puts the RF switch in beacon position.
  * 
- * \return None
+ * \return None.
  */
 void rf_switch_enable_beacon();
 
 /**
- * \fn rf_switch_disable_beacon
- * 
  * \brief Puts the RF switch out of beacon position.
  * 
- * \return None
+ * \return None.
  */
 void rf_switch_disable_beacon();
 

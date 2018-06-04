@@ -1,7 +1,7 @@
 /*
  * cc11xx_pins.h
  * 
- * Copyright (C) 2017, Federal University of Santa Catarina
+ * Copyright (C) 2017, Universidade Federal de Santa Catarina.
  * 
  * This file is part of FloripaSat-Beacon.
  * 
@@ -21,8 +21,6 @@
  */
  
 /**
- * \file cc11xx_pins.h
- * 
  * \brief CC1125/CC1175 pins map.
  * 
  * \author Gabriel Mariano Marcelino <gabriel.mm8@gmail.com>

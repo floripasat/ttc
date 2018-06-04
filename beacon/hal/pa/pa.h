@@ -32,7 +32,7 @@
  * \date 14/06/2017
  * 
  * \defgroup pa PA
- * \ingroup modules
+ * \ingroup hal
  * \{
  */
 
@@ -42,43 +42,35 @@
 #include <stdint.h>
 
 /**
- * \fn pa_init
- * 
  * \brief PA module initialization.
  * 
  * \return Initialization status. It can be:
- *      - \b STATUS_SUCCESS
- *      - \b STATUS_FAIL
+ *      - STATUS_SUCCESS
+ *      - STATUS_FAIL
  *      .
  */
 uint8_t pa_init();
 
 /**
- * \fn pa_enable
- * 
  * \brief Enables the PA module.
  * 
- * \return None
+ * \return None.
  */
 void pa_enable();
 
 /**
- * \fn pa_disable
- * 
  * \brief Disables the PA module.
  * 
- * \return None
+ * \return None.
  */
 void pa_disable();
 
 /**
- * \fn pa_set_gain
- * 
  * \brief Sets the gain of the PA module.
  * 
  * \param gain is the new gain of the PA module.
  * 
- * \return None
+ * \return None.
  */
 void pa_set_gain(float gain);
 

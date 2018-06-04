@@ -65,9 +65,7 @@ void cpu_init()
 }
 
 /**
- * \fn NMI_ISR
- * 
- * \brief 
+ * \brief CPU clock failure ISR.
  * 
  * \return None
  */

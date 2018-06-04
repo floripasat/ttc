@@ -1,7 +1,7 @@
 /*
  * isis_antenna_config.h
  * 
- * Copyright (C) 2017, Federal University of Santa Catarina
+ * Copyright (C) 2017, Universidade Federal de Santa Catarina
  * 
  * This file is part of FloripaSat-Beacon.
  * 
@@ -21,8 +21,6 @@
  */
 
 /**
- * \file isis_antenna_i2c.h
- * 
  * \brief ISIS antenna driver general configuration.
  * 
  * \author Gabriel Mariano Marcelino <gabriel.mm8@gmail.com>

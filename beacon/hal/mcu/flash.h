@@ -62,27 +62,21 @@
 #define FLASH_MASS_ERASE    0XFFFFFF
 
 /**
- * \var flash_ptr
- * 
- * \brief 
+ * \brief Flash memory address pointer.
  */
 extern uint8_t *flash_ptr;
 
 /**
- * \fn flash_init
- * 
- * \brief 
+ * \brief Flash memory initialization.
  * 
  * \return The initialization status. It can be:
- *              -\b TRUE
- *              -\b FALSE
+ *              - TRUE
+ *              - FALSE
  *              .
  */
 bool flash_init();
 
 /**
- * \fn flash_read_byte
- * 
  * \brief Reads a byte from an address from the flash memory.
  * 
  * \param adr is the memory address to read the byte.
@@ -92,46 +86,38 @@ bool flash_init();
 uint8_t flash_read_byte(uint16_t adr);
 
 /**
- * \fn flash_write_byte
- * 
  * \brief Writes a byte to a memory address in the flash memory.
  * 
  * \param byte is the byte to be written in the flash memory.
  * \param adr is memory address to write the byte.
  * 
- * \return None
+ * \return None.
  */
 void flash_write_byte(uint8_t byte, uint16_t adr);
 
 /**
- * \fn flash_read_data
- * 
  * \brief Reads data from the flash memory.
  * 
  * \param data is a pointer to array to write the data that will be read.
  * \param size is the size of the data that will be read.
  * \param adr is memory address of the start of the data that will be read.
  * 
- * \return None
+ * \return None.
  */
 void flash_read_data(uint8_t *data, uint8_t size, uint8_t adr);
 
 /**
- * \fn flash_write_data
- * 
  * \brief Writes data to the flash memory.
  * 
  * \param data is a pointer to an array of data to be written in the flash memory.
  * \param size is size of the data that will be written in flash memory.
  * \param adr is address of the first byte that will be written in the flash memory.
  * 
- * \return None
+ * \return None.
  */
 void flash_write_data(uint8_t *data, uint8_t size, uint8_t adr);
 
 /**
- * \fn flash_read_word
- * 
  * \brief Reads a word (16-bits) from an address from the flash memory.
  * 
  * \param adr is the memory address to read the word.
@@ -141,20 +127,16 @@ void flash_write_data(uint8_t *data, uint8_t size, uint8_t adr);
 uint16_t flash_read_word(uint16_t adr);
 
 /**
- * \fn flash_write_word
- * 
  * \brief Writes a word (16-bits) to a memory address in the flash memory.
  * 
  * \param word is the word to be written in the flash memory.
  * \param adr is memory address to write the byte.
  * 
- * \return None
+ * \return None.
  */
 void flash_write_word(uint16_t word, uint16_t adr);
 
 /**
- * \fn flash_read_word32
- * 
  * \brief Reads a word (32-bits) from an address from the flash memory.
  * 
  * \param adr is the memory address to read the word.
@@ -164,14 +146,12 @@ void flash_write_word(uint16_t word, uint16_t adr);
 uint32_t flash_read_word32(uint16_t adr);
 
 /**
- * \fn flash_write_word32
- * 
  * \brief Writes a word (32-bits) to a memory address in the flash memory.
  * 
  * \param word32 is the word to be written in the flash memory.
  * \param adr is memory address to write the byte.
  * 
- * \return None
+ * \return None.
  */
 void flash_write_word32(uint32_t word32, uint16_t adr);
 

@@ -31,7 +31,7 @@
  * 
  * \date 09/06/2017
  * 
- * \addtogroup radio
+ * \addtogroup radio_hal
  * \{
  */
 
@@ -240,8 +240,6 @@ static void radio_push(uint8_t byte)
 
 #if BEACON_RADIO == RF4463F30
 /**
- * \fn radio_rx_isr
- * 
  * \brief Radio RX interrupt vector service routine.
  * 
  * \return None

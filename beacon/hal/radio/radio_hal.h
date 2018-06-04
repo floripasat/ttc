@@ -31,7 +31,7 @@
  * 
  * \date 09/06/2017
  * 
- * \defgroup radio_hal Radio HAL
+ * \defgroup radio_hal Radio
  * \ingroup hal
  * \{
  */
@@ -45,92 +45,72 @@
 #include <system/queue/queue.h>
 
 /**
- * \var radui_rx_queue
- * 
  * \brief Queue to store the RX data from the radio device.
  */
 extern Queue radio_rx_queue;
 
 /**
- * \fn radio_init
- * 
  * \brief Initialization of the radio module.
  * 
- * \return 
+ * \return Initialization status.
  */
 bool radio_init();
 
 /**
- * \fn radio_reset
- * 
  * \brief Resets the radio module.
  * 
- * \return None
+ * \return None.
  */
 void radio_reset();
 
 /**
- * \fn radio_write
- * 
  * \brief Writes data to the radio module.
  * 
  * \param data is a pointer to an array of bytes to be written in the radio.
  * \param len is the lenght of the data to be written.
  * 
- * \return None
+ * \return None.
  */
 void radio_write(uint8_t *data, uint16_t len);
 
 /**
- * \fn radio_read
- * 
  * \brief Reads data from the radio module.
  * 
  * \param len is the length of the RX FIFO data.
  * 
- * \return None
+ * \return None.
  */
 void radio_read(uint8_t len);
 
 /**
- * \fn radio_sleep
- * 
  * \brief Put the radio to sleep.
  * 
- * \return None
+ * \return None.
  */
 void radio_sleep();
 
 /**
- * \fn radio_wake_up
- * 
  * \brief Wakes up de radio module.
  * 
- * \return None
+ * \return None.
  */
 void radio_wake_up();
 
 /**
- * \fn radio_enable_rx
- * 
  * \brief Enables the RX on the radio module.
  * 
- * \return None
+ * \return None.
  */
 void radio_enable_rx();
 
 /**
- * \fn radio_disable_rx
- * 
  * \brief Disables the RX of the radio (If available, enables the standby mode).
  * 
- * \return None
+ * \return None.
  */
 void radio_disable_rx();
 
 /**
- * \fn radio_available
- * 
  * \brief Returns the number of bytes available in the radio RX queue.
  * 
  * \return The number of bytes received from the radio and not processed yet.
@@ -138,8 +118,6 @@ void radio_disable_rx();
 uint8_t radio_available();
 
 /**
- * \fn radio_pop
- * 
  * \brief Pops a byte from the radio RX queue.
  * 
  * \return The first available byte from the radio RX queue.
@@ -147,22 +125,18 @@ uint8_t radio_available();
 uint8_t radio_pop();
 
 /**
- * \fn radio_init_rx_isr
- * 
  * \brief Configures the ISR on a pin of the radio module (If available).
  * 
- * \return None
+ * \return None.
  */
 static void radio_init_rx_isr();
 
 /**
- * \fn radio_push
- * 
  * \brief Pushes data from the radio RX (When available) to the radio RX queue.
  * 
  * \param byte is the byte to be pushed into the radio RX queue.
  * 
- * \return None
+ * \return None.
  */
 static void radio_push(uint8_t byte);
 

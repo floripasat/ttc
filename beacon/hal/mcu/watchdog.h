@@ -32,7 +32,7 @@
  * \date 23/09/2016
  * 
  * \defgroup watchdog Watchdog
- * \ingroup modules
+ * \ingroup hal
  * \{
  */
 
@@ -40,31 +40,25 @@
 #define WATCHDOG_H_
 
 /**
- * \fn watchdog_init
- * 
  * \brief Initialization of the watchdog.
  * 
  * This function starts the watchdog with a 3 seconds counter in watchdog mode.
  * 
- * \return None
+ * \return None.
  */
 void watchdog_init();
 
 /**
- * \fn watchdog_reset_timer
- * 
  * \brief Resets the watchdog timer.
  * 
- * \return None
+ * \return None.
  */
 void watchdog_reset_timer();
 
 /**
- * \fn watchdog_hold
- * 
  * \brief Disables the watchdog timer.
  * 
- * \return None
+ * \return None.
  */
 void watchdog_hold();
 

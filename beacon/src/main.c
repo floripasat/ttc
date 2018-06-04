@@ -21,8 +21,6 @@
  */
 
 /**
- * \file main.c
- * 
  * \brief Main file.
  * 
  * \author Gabriel Mariano Marcelino <gabriel.mm8@gmail.com>
@@ -38,16 +36,16 @@
 #include "beacon.h"
 
 /**
- * \fn main
- * 
  * \brief The main function.
  * 
  * After the initializations of the peripherals, the program stays
  * running in a infinite loop. If the program get out of the main
  * infinite loop (If any critical error occurs), there is a second
  * infinite loop to force an watchdog trigger.
+ *
+ * \image html beacon_main_flowchart.png "Beacon main flowchart" width=200px
  * 
- * \return None
+ * \return None.
  */
 void main()
 {

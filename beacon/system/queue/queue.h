@@ -1,7 +1,7 @@
 /* 
  * queue.h
  * 
- * Copyright (C) 2017, Federal University of Santa Catarina
+ * Copyright (C) 2017, Universidade Federal de Santa Catarina
  * 
  * This file is part of FloripaSat-Beacon.
  * 
@@ -21,8 +21,6 @@
  */
 
 /**
- * \file queue.h
- * 
  * \brief Basic queue.
  * 
  * \author Gabriel Mariano Marcelino <gabriel.mm8@gmail.com>
@@ -42,13 +40,11 @@
 #include <stdint.h>
 #include <stdbool.h>
 
-#define QUEUE_LENGTH        128
+#define QUEUE_LENGTH        128     /**< Queue length in bytes. */
 
-#define QUEUE_DEFAULT_BYTE  0xFF
+#define QUEUE_DEFAULT_BYTE  0xFF    /**< Queue default byte (empty position). */
 
 /**
- * \struct Queue
- * 
  * \brief Queue representation as a struct.
  */
 typedef struct
@@ -60,19 +56,15 @@ typedef struct
 } Queue;
 
 /**
- * \fn queue_init
- * 
  * \brief Queue initialization.
  * 
  * \param queue is a pointer to a Queue struct.
  * 
- * \return None
+ * \return None.
  */
 void queue_init(Queue *queue);
 
 /**
- * \fn queue_length
- * 
  * \brief Returns the length (capacity) of a queue.
  * 
  * \param queue is a pointer to a Queue struct.
@@ -82,8 +74,6 @@ void queue_init(Queue *queue);
 uint8_t queue_length(Queue *queue);
 
 /**
- * \fn queue_push_back
- * 
  * \brief Puts an element into the back position of an queue.
  * 
  * \param queue is a pointer to a Queue struct.
@@ -94,8 +84,6 @@ uint8_t queue_length(Queue *queue);
 bool queue_push_back(Queue *queue, uint8_t byte);
 
 /**
- * \fn queue_pop_front
- * 
  * \brief Grabs an element from the front position of an queue.
  * 
  * \param queue is a pointer to a Queue struct.
@@ -105,8 +93,6 @@ bool queue_push_back(Queue *queue, uint8_t byte);
 uint8_t queue_pop_front(Queue *queue);
 
 /**
- * \fn queue_empty
- * 
  * \brief Verifies if the a queue is empty or not.
  * 
  * \param queue is a pointer to a Queue struct.
@@ -116,8 +102,6 @@ uint8_t queue_pop_front(Queue *queue);
 bool queue_empty(Queue *queue);
 
 /**
- * \fn queue_full
- * 
  * \brief Verifies if the a queue is full or not.
  * 
  * \param queue is a pointer to a Queue struct.
@@ -127,8 +111,6 @@ bool queue_empty(Queue *queue);
 bool queue_full(Queue *queue);
 
 /**
- * \fn queue_size
- * 
  * \brief Returns the size of a queue.
  * 
  * \param queue is a pointer to a Queue struct.

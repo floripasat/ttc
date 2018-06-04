@@ -1,7 +1,7 @@
 /*
  * time.c
  * 
- * Copyright (C) 2017, Federal University of Santa Catarina
+ * Copyright (C) 2017, Universidade Federal de Santa Catarina
  * 
  * This file is part of FloripaSat-Beacon.
  * 
@@ -21,8 +21,6 @@
  */
 
 /**
- * \file time.c
- * 
  * \brief Time control module implementation.
  * 
  * \author Gabriel Mariano Marcelino <gabriel.mm8@gmail.com>
@@ -144,14 +142,12 @@ uint32_t time_get_seconds()
 }
 
 /**
- * \fn time_timer_isr
- *
  * \brief Time timer interrupt service routine.
  * 
  * The one second timer increments the time counters (seconds counter) and
  * wake up the CPU to run system cycle.
  * 
- * \return none
+ * \return none.
  */
 #if defined(__TI_COMPILER_VERSION__) || defined(__IAR_SYSTEMS_ICC__)
 #pragma vector=TIME_TIMER_VECTOR

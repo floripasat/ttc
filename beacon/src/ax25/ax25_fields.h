@@ -21,8 +21,6 @@
  */
  
 /**
- * \file ax25_fields.h
- * 
  * \brief AX25 protocol header fields.
  * 
  * \author Gabriel Mariano Marcelino <gabriel.mm8@gmail.com>
@@ -31,7 +29,8 @@
  * 
  * \date 08/09/2017
  * 
- * \addtogroup ax25
+ * \defgroup ax25_fields Fields
+ * \ingroup ax25
  * \{
  */
 
@@ -46,12 +45,10 @@
  * the end of the first frame and the start of the next frame. A flag consists of a zero followed
  * by six ones followed by another zero, or 01111110 (7E hex). As a result of bit stuffing,
  * this sequence is not allowed to occur anywhere else inside a complete frame.
- * \{
  */
-#define AX25_FLAG                                   0x7E    /**< The AX25 flag (0x7E = 01111110). */
-//! \}
+#define AX25_FLAG                                   0x7E
 
-/**
+/*
  * \brief Address Field Enconding.
  * 
  * The address field identifies both the source of the frame and its destination. In addition,
@@ -69,7 +66,6 @@
  * to "0" to indicate the next octet contains more address information, or to "1", to indicate
  * that this is the last octet of the HDLC address field. To make room for this extension bit,
  * the amateur radio call sign information is shifted one bit left.
- * \{
  */
 #define AX25_ADR_NON_REPEATER_SSID                  0x60    /**< If Layer 2 repeaters are not being used. */
 #define AX25_ADR_REPEATER_SSID                      0x61    /**< If Layer 2 repeaters are being used. */
@@ -77,18 +73,16 @@
 #define AX25_ADR_DST_RESPONSE                       0x00    /**< Destination SSID C-Bit as response frame. */
 #define AX25_ADR_SRC_COMMAND                        0x00    /**< Source SSID C-Bit as command frame. */
 #define AX25_ADR_SRC_RESPONSE                       0x80    /**< Source SSID C-Bit as response frame. */
-//! \}
 
-/**
+/*
  * \brief Control Fields.
  * 
  * The control field identifies the type of frame being sent.
  * The control fields in AX.25 are modeled after the ISO HDLC
  * balanced operation control fields.
- * \{
  */
 
-/**
+/*
  * \brief Control Fields Formats.
  * 
  * The three formats of control fields used in AX.25 are the:
@@ -96,18 +90,15 @@
  *      - Supervisory frame (S frame)
  *      - Unnumbered frame (U frame)
  *      .
- * \{
  */
 #define AX25_CTRL_INFORMATION                       0x00    /**< Information Frame (I). */
 #define AX25_CTRL_SUPERVISORY                       0x01    /**< Supervisory Frame (S). */
 #define AX25_CTRL_UNNUMBERED                        0x03    /**< Unnumbered Frame (U). */
 #define AX25_CTRL_INFORMATION_128                   0x0000  /**< Information Frame modulo 128. */
 #define AX25_CTRL_SUPERVISORY_128                   0x0001  /**< Supervisory Frame modulo 128. */
-//! \}
 
-/**
+/*
  * \brief Supervisory Frame Control Field.
- * \{
  */
 #define AX25_CTRL_SUPERVISORY_RR                    0x01    /**< Receive Ready (RR) - System Ready To Receive. */
 #define AX25_CTRL_SUPERVISORY_RNR                   0x05    /**< Receive Not Ready (RNR) - TNC Buffer Full. */
@@ -117,13 +108,11 @@
 #define AX25_CTRL_SUPERVISORY_RNR_128               0x0005  /**< Receive Not Ready modulo 128. */
 #define AX25_CTRL_SUPERVISORY_REJ_128               0x0009  /**< Reject modulo 128. */
 #define AX25_CTRL_SUPERVISORY_SREJ_128              0x000D  /**< Selective Reject modulo 128. */
-//! \}
 
-/**
+/*
  * \brief Unnumbered Frame Control Fields.
  * 
  * Unnumbered frame control fields are either commands or responses.
- * \{
  */
 #define AX25_CTRL_UNNUMBERED_SABME                  0x6F    /**< Set Asynchronous Balanced Mode Extended (SABME). */
 #define AX25_CTRL_UNNUMBERED_SABM                   0x2F    /**< Set Asynchronous Balanced Mode (SABM). */
@@ -134,24 +123,19 @@
 #define AX25_CTRL_UNNUMBERED_UI                     0x03    /**< Unnumered Information (UI). */
 #define AX25_CTRL_UNNUMBERED_XID                    0xAF    /**< Exchange Identification (XID). */
 #define AX25_CTRL_UNNUMBERED_TEST                   0xE3    /**< Test (TEST). */
-//! \}
 
-/**
+/*
  * \brief Poll/Final (P/F) Bit Options.
- * \{
  */
 #define AX25_CTRL_PF_TRUE                           0x10    /**< Poll/Final bit true. */
 #define AX25_CTRL_PF_FALSE                          0x00    /**< Poll/Final bit false. */
 #define AX25_CTRL_PF_DISABLE                        0x00    /**< Poll/Final disabled. */
-//! \}
-//! \}
 
-/**
+/*
  * \brief Protocol Identifier Field.
  * 
  * The Protocol Identifier (PID) field appears in information frames (I and UI) only.
  * It identifies which kind of Layer 3 protocol, if any, is in use.
- * \{
  */
 #define AX25_PID_AX25_LAYER_3_IMPLEMENTED           0x10    /**< AX.25 Layer Implemented. */
 #define AX25_PID_ISO_8208_CCITT_X25_PLP             0x01    /**< ISO 8208/CCITT X.25 PLP. */
@@ -168,7 +152,6 @@
 #define AX25_PID_NET_ROM                            0xCF    /**< NET/ROM. */
 #define AX25_PID_NO_LAYER_3                         0xF0    /**< No Layer 3 Protocol */
 #define AX25_PID_ESCAPE_CHARACTER                   0xFF    /**< Escape Character - Next octet contains more Layer 3 protocol information. */
-//! \}
 
 #endif // AX25_FIELDS_H_
 

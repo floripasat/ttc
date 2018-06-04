@@ -1,7 +1,7 @@
 /*
  * sky13345_368lf.h
  * 
- * Copyright (C) 2017, Federal University of Santa Catarina.
+ * Copyright (C) 2017, Universidade Federal de Santa Catarina.
  * 
  * This file is part of FloripaSat-Beacon.
  * 
@@ -21,8 +21,6 @@
  */
 
 /**
- * \file sky13345_368lf.h
- * 
  * \brief SKY13345-368LF driver.
  * 
  * \author Gabriel Mariano Marcelino <gabriel.mm8@gmail.com>
@@ -40,29 +38,23 @@
 #define SKY13345_368LF_H_
 
 /**
- * \fn sky13345_368lf_init
- * 
  * \brief SKY13345-368LF initialization.
  * 
- * \return None
+ * \return None.
  */
 void sky13345_368lf_init();
 
 /**
- * \fn sky13345_368lf_enable
- * 
  * \brief Enables beacon position on SKY13345-368LF.
  * 
- * \return None
+ * \return None.
  */
 void sky13345_368lf_enable();
 
 /**
- * \fn sky13345_368lf
- * 
  * \brief Disables beacon position on SKY13345-368LF.
  * 
- * \return None
+ * \return None.
  */
 void sky13345_368lf_disable();
 

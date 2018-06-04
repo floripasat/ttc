@@ -1,7 +1,7 @@
 /*
  * drivers.h
  * 
- * Copyright (C) 2017, Federal University of Santa Catarina.
+ * Copyright (C) 2017, Universidade Federal de Santa Catarina.
  * 
  * This file is part of FloripaSat-Beacon.
  * 
@@ -21,8 +21,6 @@
  */
 
 /**
- * \file drivers.h
- * 
  * \brief Drivers include file.
  * 
  * \author Gabriel Mariano Marcelino <gabriel.mm8@gmail.com>

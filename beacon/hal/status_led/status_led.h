@@ -45,38 +45,30 @@
 #define STATUS_LED_PIN          STATUS_LED_GPIO_PIN
 
 /**
- * \fn status_led_init
- * 
  * \brief Initialization of the status led.
  * 
- * \return None
+ * \return None.
  */
 void status_led_init();
 
 /**
- * \fn status_led_enable
- * 
  * \brief Turns on the status led.
  * 
- * \return None
+ * \return None.
  */
 void status_led_enable();
 
 /**
- * \fn status_led_disable
- * 
  * \brief Turns off the status led.
  * 
- * \return None
+ * \return None.
  */
 void status_led_disable();
 
 /**
- * \fn status_led_toggle
- * 
  * \brief Toggles the status led.
  * 
- * \return None
+ * \return None.
  */
 void status_led_toggle();
 

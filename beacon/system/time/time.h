@@ -1,7 +1,7 @@
 /*
  * time.h
  * 
- * Copyright (C) 2017, Federal University of Santa Catarina
+ * Copyright (C) 2017, Universidade Federal de Santa Catarina
  * 
  * This file is part of FloripaSat-Beacon.
  * 
@@ -21,8 +21,6 @@
  */
 
 /**
- * \file time.h
- * 
  * \brief Time control module.
  * 
  * \author Gabriel Mariano Marcelino <gabriel.mm8@gmail.com>
@@ -41,12 +39,10 @@
 
 #include <stdint.h>
 
-#define TIME_CRC8_INITIAL_VALUE     0x00        // CRC8-CCITT
-#define TIME_CRC8_POLYNOMIAL        0x07        // CRC8-CCITT
+#define TIME_CRC8_INITIAL_VALUE     0x00        /**< CRC8-CCITT. */
+#define TIME_CRC8_POLYNOMIAL        0x07        /**< CRC8-CCITT. */
 
 /**
- * \struct Time
- * 
  * \brief Time struct.
  */
 typedef struct
@@ -56,34 +52,26 @@ typedef struct
 } Time;
 
 /**
- * \var time
- * 
  * \brief Time control variable.
  */
 extern Time time;
 
 /**
- * \var time_backup
- * 
  * \brief Backup of the main time control variable (Time control redundance).
  */
 extern Time time_backup;
 
 /**
- * \fn time_init
- * 
  * \brief System time initialization.
  * 
  * The system time initialization load the initial value of the time and
  * initializes the time control timer.
  * 
- * \return None
+ * \return None.
  */
 void time_init();
 
 /**
- * \fn time_timer_init
- * 
  * \brief This function initializes a timer in continuous mode.
  * 
  * Start timer in continuous mode sourced by TIME_TIMER_CLOCK_SOURCE with a
@@ -91,13 +79,11 @@ void time_init();
  * 
  * This timer is used to control the time.
  * 
- * \return None
+ * \return None.
  */
 static void time_timer_init();
 
 /**
- * \fn time_crc8
- * 
  * \brief CRC8 checksum.
  * 
  * \param time_counter is the time value to get the CRC8 value.
@@ -110,26 +96,20 @@ static void time_timer_init();
 static uint8_t time_crc8(uint32_t time_counter);
 
 /**
- * \fn time_timer_start
- * 
  * \brief Starts the time control timer operation (timer continuous mode).
  * 
- * \return None
+ * \return None.
  */
 void time_timer_start();
 
 /**
- * \fn time_reset
- * 
  * \brief Resets all the time counter.
  * 
- * \return None
+ * \return None.
  */
 void time_reset();
 
 /**
- * \fn time_get_seconds
- * 
  * \brief Returns the system time, in seconds.
  * 
  * \return The seconds counter value.

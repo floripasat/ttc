@@ -136,13 +136,13 @@ static void eps_push(uint8_t byte)
 }
 
 /**
- * \fn USCI_A0_ISR
- *
  * \brief This is the USCI_A0 interrupt vector service routine.
  *
  * UART RX interruption routine.
  *
- * \return none
+ * \image html eps_isr.png "EPS ISR flowchart" width=400px
+ *
+ * \return None.
  */
 #if defined(__TI_COMPILER_VERSION__) || defined(__IAR_SYSTEMS_ICC__)
 #pragma vector=EPS_HAL_UART_ISR_VECTOR

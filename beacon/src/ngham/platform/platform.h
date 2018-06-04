@@ -22,11 +22,10 @@
  */
 
 /**
- * \file platform.h
- * 
  * \brief Platform.
  * 
- * \author Jon Petter Skagmo <web@skagmo.com>; Mods. for FloripaSat-TTC by Gabriel Mariano Marcelino <gabriel.mm8@gmail.com>
+ * \author Jon Petter Skagmo <web@skagmo.com>
+ * \author Gabriel Mariano Marcelino <gabriel.mm8@gmail.com>
  * 
  * \version 1.0-dev
  * 
@@ -48,20 +47,15 @@
  * \brief NGHAM_BYTES_TILL_ACTION_HALFWAY is number of payload bytes until ngham_action_reception_halfway is executed.
  * 
  * Don't care about this if you don't use the mentioned function.
- * 
- * \{
  */
 #define NGHAM_BYTES_TILL_ACTION_HALFWAY 10	
-//! \}
 
-extern uint8_t rx_buf[];        // Should hold the largest packet - ie. 255 B
+extern uint8_t rx_buf[];        /**< Should hold the largest packet - ie. 255 B. */
 extern uint16_t rx_buf_len;
 extern NGHam_RX_Packet rx_pkt;
 extern uint8_t decoder_state;
 
 /**
- * \fn ngham_action_send_data
- * 
  * \brief Data to be transmitted (to modulator).
  * 
  * Priority can be ignored if NGHam is not used for timing purposes.
@@ -77,8 +71,6 @@ extern uint8_t decoder_state;
 void ngham_action_send_data(uint8_t *d, uint16_t d_len, uint8_t priority, uint8_t *pkt, uint16_t *pkt_len);
 
 /**
- * \fn ngham_action_set_packet_size
- * 
  * \brief Set packet size demodulator, if applicable, to make the demodulator stop outputting data when the packet is finished.
  * 
  * \param size
@@ -88,8 +80,6 @@ void ngham_action_send_data(uint8_t *d, uint16_t d_len, uint8_t priority, uint8_
 void ngham_action_set_packet_size(uint8_t size);
 
 /**
- * \fn ngham_action_get_rssi
- * 
  * \brief Should return RSSI in dBm + 200.
  * 
  * \return RSSI
@@ -97,8 +87,6 @@ void ngham_action_set_packet_size(uint8_t size);
 uint8_t ngham_action_get_rssi();
 
 /**
- * \fn ngham_action_get_noise_floor
- * 
  * \brief Should return noise floor in dBm + 200.
  * 
  * \return Floor noise.
@@ -106,8 +94,6 @@ uint8_t ngham_action_get_rssi();
 uint8_t ngham_action_get_noise_floor();
 
 /**
- * \fn ngham_action_handle_packet
- * 
  * \brief Will always be called after packet reception is finished - whether it was successful or not.
  * 
  * This function should also handle reinitialization of your decoder/sync word detector.
@@ -122,8 +108,6 @@ uint8_t ngham_action_get_noise_floor();
 void ngham_action_handle_packet(uint8_t condition, NGHam_RX_Packet *p, uint8_t *msg, uint8_t *msg_len);
 
 /**
- * \fn ngham_action_reception_started
- * 
  * \brief 
  * 
  * Not required: Code to be executed when reception has just started.
@@ -134,8 +118,6 @@ void ngham_action_handle_packet(uint8_t condition, NGHam_RX_Packet *p, uint8_t *
 void ngham_action_reception_started();
 
 /**
- * \fn ngham_action_reception_halfway
- * 
  * \brief Not required: If there is more to do a little after reception start, do it here.
  * 
  * \return None

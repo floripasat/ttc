@@ -1,7 +1,7 @@
 /*
  * isis_antenna_i2c.h
  * 
- * Copyright (C) 2017, Federal University of Santa Catarina
+ * Copyright (C) 2017, Universidade Federal de Santa Catarina
  * 
  * This file is part of FloripaSat-Beacon.
  * 
@@ -21,8 +21,6 @@
  */
 
 /**
- * \file isis_antenna_i2c.h
- * 
  * \brief ISIS antenna driver I2C interface.
  * 
  * \author Gabriel Mariano Marcelino <gabriel.mm8@gmail.com>
@@ -41,8 +39,6 @@
 #include <stdint.h>
 
 /**
- * \fn isis_antenna_i2c_init
- * 
  * \brief I2C interface initialization.
  * 
  * \return None
@@ -50,8 +46,6 @@
 void isis_antenna_i2c_init();
 
 /**
- * \fn isis_antenna_i2c_write_byte
- * 
  * \brief Writes a byte in the I2C bus.
  * 
  * \param byte is the byte to write in the I2C bus.
@@ -61,8 +55,6 @@ void isis_antenna_i2c_init();
 void isis_antenna_i2c_write_byte(uint8_t byte);
 
 /**
- * \fn isis_antenna_i2c_write_data
- * 
  * \brief Writes data in the I2C bus.
  * 
  * \param data is an array of data to write in the I2C bus.
@@ -73,8 +65,6 @@ void isis_antenna_i2c_write_byte(uint8_t byte);
 void isis_antenna_i2c_write_data(uint8_t *data, uint8_t len);
 
 /**
- * \fn isis_antenna_i2c_read_byte
- * 
  * \brief Read a byte from the I2C bus.
  * 
  * \return The byte from the I2C bus.
@@ -82,8 +72,6 @@ void isis_antenna_i2c_write_data(uint8_t *data, uint8_t len);
 uint8_t isis_antenna_i2c_read_byte();
 
 /**
- * \fn isis_antenna_i2c_read_data
- * 
  * \brief Read n bytes from the I2C bus.
  * 
  * \param data is a pointe to write the data from the I2C bus.

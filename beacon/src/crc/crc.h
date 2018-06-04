@@ -21,8 +21,6 @@
  */
 
 /**
- * \file crc.h
- * 
  * \brief CRC functions.
  * 
  * \author Gabriel Mariano Marcelino <gabriel.mm8@gmail.com>
@@ -32,6 +30,7 @@
  * \date 23/03/2017
  * 
  * \defgroup crc CRC
+ * \ingroup src
  * \{
  */
 
@@ -41,8 +40,6 @@
 #include <stdint.h>
 
 /**
- * \fn crc8
- * 
  * \brief CRC8 checksum.
  * 
  * \param initial_value is the initial value of the crc8.
@@ -55,8 +52,6 @@
 uint8_t crc8(uint8_t initial_value, uint8_t polynomial, uint8_t *data, uint8_t len);
 
 /**
- * \fn crc16
- * 
  * \brief Computes the CRC16 value of an array of data.
  * 
  * \param initial_value is the initial value of the CRC16.
@@ -69,8 +64,6 @@ uint8_t crc8(uint8_t initial_value, uint8_t polynomial, uint8_t *data, uint8_t l
 uint16_t crc16(uint16_t initial_value, uint8_t polynomial, uint8_t* data, uint8_t size);
 
 /**
- * \fn crc16_CCITT
- * 
  * \brief Computes the CRC16-CCITT value of an array of data.
  * 
  * \param initial_value is the initial value to compute the crc16 value.

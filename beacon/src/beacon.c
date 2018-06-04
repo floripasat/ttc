@@ -21,8 +21,6 @@
  */
 
 /**
- * \file beacon.c
- * 
  * \brief Beacon implementation.
  * 
  * \author Gabriel Mariano Marcelino <gabriel.mm8@gmail.com>

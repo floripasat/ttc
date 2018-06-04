@@ -21,8 +21,6 @@
  */
 
 /**
- * \file fsat_module.h
- * 
  * \brief Generic FloripaSat module struct.
  * 
  * \author Gabriel Mariano Marcelino <gabriel.mm8@gmail.com>
@@ -45,8 +43,6 @@
 #include <system/buffer/buffer.h>
 
 /**
- * \struct FSatModule
- * 
  * \brief A struct to implement a generic module from the FloripaSat satellite.
  * 
  * This struct can be used only to modules with communication with the Beacon module.

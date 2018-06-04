@@ -22,11 +22,10 @@
  */
 
 /**
- * \file fec.h
- * 
  * \brief Forward error correction.
  * 
- * \author Phil Karn <karn@ka9q.net>; Mods. for FloripaSat-TTC by Gabriel Mariano Marcelino <gabriel.mm8@gmail.com>
+ * \author Phil Karn <karn@ka9q.net>
+ * \author Gabriel Mariano Marcelino <gabriel.mm8@gmail.com>
  * 
  * \version 1.0-dev
  * 
@@ -45,27 +44,23 @@
 #define	MIN(a, b)   ((a) < (b) ? (a) : (b))
 
 /**
- * \struct RS
- * 
  * \brief Reed-Solomon codec control block.
  */
 typedef struct
 {
-    uint16_t mm;            // Bits per symbol
-    uint16_t nn;            // Symbols per block (= (1 << mm)-1)
-    uint8_t *alpha_to;      // log lookup table
-    uint8_t *index_of;      // Antilog lookup table
-    uint8_t *genpoly;       // Generator polynomial
-    uint16_t nroots;        // Number of generator roots = number of parity symbols
-    uint16_t fcr;           // First consecutive root, index form
-    uint16_t prim;          // Primitive element, index form
-    uint16_t iprim;         // prim-th root of 1, index form
-    uint16_t pad;           // Padding bytes in shortened block
+    uint16_t mm;            /**< Bits per symbol. */
+    uint16_t nn;            /**< Symbols per block (= (1 << mm)-1). */
+    uint8_t *alpha_to;      /**< log lookup table. */
+    uint8_t *index_of;      /**< Antilog lookup table. */
+    uint8_t *genpoly;       /**< Generator polynomial. */
+    uint16_t nroots;        /**< Number of generator roots = number of parity symbols. */
+    uint16_t fcr;           /**< First consecutive root, index form. */
+    uint16_t prim;          /**< Primitive element, index form. */
+    uint16_t iprim;         /**< prim-th root of 1, index form. */
+    uint16_t pad;           /**< Padding bytes in shortened block. */
 } RS;
 
 /**
- * \fn free_rs_char
- * 
  * \param rs_ptr
  * 
  * \return None
@@ -73,8 +68,6 @@ typedef struct
 void free_rs_char(RS *rs_ptr);
 
 /**
- * \fn encode_rs_char
- * 
  * \param *rs_ptr
  * \param *data
  * \param *parity
@@ -84,8 +77,6 @@ void free_rs_char(RS *rs_ptr);
 void encode_rs_char(RS *rs_ptr, uint8_t *data, uint8_t *parity);
 
 /**
- * \fn decode_rs_char
- * 
  * \param *rs_ptr
  * \param *data
  * \param *eras_pos
@@ -96,8 +87,6 @@ void encode_rs_char(RS *rs_ptr, uint8_t *data, uint8_t *parity);
 int16_t decode_rs_char(RS *rs_ptr, uint8_t *data, int16_t *eras_pos, int16_t no_eras);
 
 /**
- * \fn modnn
- * 
  * \brief 
  * 
  * \param *rs

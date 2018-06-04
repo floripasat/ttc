@@ -31,7 +31,7 @@
  * 
  * \date 23/03/2017
  * 
- * \defgroup obdh_hal OBDH HAL
+ * \defgroup obdh_hal OBDH
  * \ingroup hal
  * \{
  */
@@ -47,39 +47,31 @@
 #include <system/queue/queue.h>
 
 /**
- * \var obdh_queue
- * 
  * \brief OBDH queue to store all the incoming data.
  */
 extern Queue obdh_queue;
 
 /**
- * \fn obdh_init
- * 
  * \brief Initialization of the OBDH communication.
  * 
  * \return Initialization status. It can be:
- *              -\b TRUE
- *              -\b FALSE
+ *              - TRUE
+ *              - FALSE
  *              .
  */
 bool obdh_init();
 
 /**
- * \fn obdh_hal_spi_init
- * 
  * \brief OBDH HAL SPI initialization.
  * 
  * \return Initialization status. It can be:
- *              -\b TRUE
- *              -\b FALSE
+ *              - TRUE
+ *              - FALSE
  *              .
  */
 static bool obdh_hal_spi_init();
 
 /**
- * \fn obdh_available
- * 
  * \brief Returns the number of bytes available in the OBDH queue.
  * 
  * \return The number of bytes available in the OBDH queue.
@@ -87,19 +79,15 @@ static bool obdh_hal_spi_init();
 uint8_t obdh_available();
 
 /**
- * \fn obdh_push
+ * \brief Pushes a byte to the OBDH queue.
  * 
- * \brief .
+ * \param byte is the new byte to push into the OBDH queue.
  * 
- * \param byte .
- * 
- * \return None
+ * \return None.
  */
 static void obdh_push(uint8_t byte);
 
 /**
- * \fn obdh_pop
- * 
  * \brief Pops a byte from the OBDH queue.
  * 
  * \return The first byte available in the OBDH queue.
@@ -107,35 +95,29 @@ static void obdh_push(uint8_t byte);
 uint8_t obdh_pop();
 
 /**
- * \fn obdh_read
- * 
  * \brief Reads n bytes of data from the OBDH queue.
  * 
  * \param data is a pointer to an array to put the data from the queue.
  * \param bytes is the number of bytes to read from the queue.
  * 
- * \return None
+ * \return None.
  */
 void obdh_read(uint8_t *data, uint8_t bytes);
 
 /**
- * \fn obdh_send
- * 
  * \brief Sends data to the OBDH module.
  * 
  * \param data is the byte to send to the OBDH module.
- * \param len 
+ * \param len is the length of the data (in bytes) to send.
  * 
- * \return None
+ * \return None.
  */
 void obdh_send(uint8_t *data, uint8_t len);
 
 /**
- * \fn obdh_clear
- * 
  * \brief Clears the OBDH queue.
  * 
- * \return None
+ * \return None.
  */
 void obdh_clear();
 

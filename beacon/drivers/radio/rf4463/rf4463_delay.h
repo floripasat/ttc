@@ -1,7 +1,7 @@
 /*
  * rf4463_delay.h
  * 
- * Copyright (C) 2017, Federal University of Santa Catarina
+ * Copyright (C) 2017, Universidade Federal de Santa Catarina.
  * 
  * This file is part of FloripaSat-Beacon.
  * 
@@ -21,8 +21,6 @@
  */
 
 /**
- * \file rf4463_delay.h
- * 
  * \brief RF4463 delay functions.
  * 
  * \author Gabriel Mariano Marcelino <gabriel.mm8@gmail.com>
@@ -41,35 +39,29 @@
 #include <stdint.h>
 
 /**
- * \fn rf4463_delay_s
- * 
  * \brief Seconds delay.
  * 
  * \param s is the delay in seconds.
  * 
- * \return None
+ * \return None.
  */
 void rf4463_delay_s(uint8_t s);
 
 /**
- * \fn rf4463_delay_ms
- * 
  * \brief Milliseconds delay.
  * 
  * \param ms is the delay in milliseconds.
  * 
- * \return None
+ * \return None.
  */
 void rf4463_delay_ms(uint16_t ms);
 
 /**
- * \fn rf4463_delay_us
- * 
  * \brief Microseconds delay
  * 
  * \param us is the delay in microseconds.
  * 
- * \return None
+ * \return None.
  */
 void rf4463_delay_us(uint32_t us);
 

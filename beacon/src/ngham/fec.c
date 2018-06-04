@@ -22,11 +22,10 @@
  */
 
 /**
- * \file fec.c
- * 
  * \brief Forward error correction implementation.
  * 
- * \author Phil Karn <karn@ka9q.net>; Mods. for FloripaSat-TTC by Gabriel Mariano Marcelino <gabriel.mm8@gmail.com>
+ * \author Phil Karn <karn@ka9q.net>
+ * \author Gabriel Mariano Marcelino <gabriel.mm8@gmail.com>
  * 
  * \version 1.0-dev
  * 

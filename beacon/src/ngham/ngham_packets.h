@@ -22,18 +22,17 @@
  */
 
 /**
- * \file ngham_packets.h
- * 
  * \brief Packets.
  * 
- * \author Jon Petter Skagmo <web@skagmo.com>; Mods. for FloripaSat-TTC by Gabriel Mariano Marcelino <gabriel.mm8@gmail.com>
+ * \author Jon Petter Skagmo <web@skagmo.com>
+ * \author Gabriel Mariano Marcelino <gabriel.mm8@gmail.com>
  * 
  * \version 1.0-dev
  * 
  * \date 27/04/2017
  * 
  * \defgroup ngham_packets NGHam Packets
- * \ingroup NGHam
+ * \ingroup ngham
  * \{
  */
 
@@ -42,84 +41,51 @@
 
 #include <stdint.h>
 
-/**
- * \brief Possible packet conditions.
- * 
- * \{
- */
-#define PKT_CONDITION_OK                0   /**< Successfully received packet */
-#define PKT_CONDITION_FAIL              1   /**< Receiption failed after receiving the packet */
-#define PKT_CONDITION_PREFAIL           2   /**< Reception failed before receiving the whole packet */
-//! \}
+// Possible packet conditions.
+#define PKT_CONDITION_OK                0   /**< Successfully received packet. */
+#define PKT_CONDITION_FAIL              1   /**< Receiption failed after receiving the packet. */
+#define PKT_CONDITION_PREFAIL           2   /**< Reception failed before receiving the whole packet. */
 
-/**
- * \brief Packet priority in transmission.
- * 
- * \{
- */
-#define PKT_PRIORITY_NORMAL             0
+// Packet priority in transmission.
+#define PKT_PRIORITY_NORMAL             0   /**< . */
 #define PKT_PRIORITY_FIRST_IN_SLOT      10  /**< Should be put first in the next time slot for timing purposes. */
-//! \}
 
-/**
- * \brief Size of payload in packet struct
- * 
- * \{
- */
-#define PKT_PL_SIZE                     512
-//! \}
+#define PKT_PL_SIZE                     512 /**< Size of payload in packet struct. */
 
-/**
- * \brief Basic "not available"-values.
- * 
- * \{
- */
+// Basic "not available"-values.
 #define RSSI_NA                         0xFF
 #define TIMESTAMP_NA                    0xFFFFFFFF
-//! \}
 
 /**
  * \brief If the following flag is set in a packet, NGHam extensions are used and first byte is type.
- * 
- * \{
  */
 #define NGHAM_FLAG_TYPE_EXTENSION       0x01
-//! \}
 
-#define SPP_PL_MAX                      255 // Not a power of two, so no ring buffers!
+#define SPP_PL_MAX                      255 /**< Not a power of two, so no ring buffers! */
 
 /**
  * \brief NGHam max. lenght of the payload.
- * 
- * \{
  */
 #define NGHAM_PL_MAX                    220
-//! \}
 
 #define ATTRIBUTE_PACKED __attribute__ ((packed))
 
 /**
- * \struct rx_pkt_t
- * 
  * \brief 
- * 
  */
 typedef struct ATTRIBUTE_PACKED
 {
-    uint32_t timestamp_toh_us;      /**< Time stamp of sync word detection */
-    uint8_t noise;                  /**< Same as above */
-    uint8_t rssi;                   /**< In dBm + 200 */
-    uint8_t errors;                 /**< Recovered symbols */
-    uint8_t ngham_flags;
-    uint8_t pl[PKT_PL_SIZE];
-    uint16_t pl_len;
+    uint32_t timestamp_toh_us;      /**< Time stamp of sync word detection. */
+    uint8_t noise;                  /**< Same as above. */
+    uint8_t rssi;                   /**< In dBm + 200. */
+    uint8_t errors;                 /**< Recovered symbols. */
+    uint8_t ngham_flags;            /**< . */
+    uint8_t pl[PKT_PL_SIZE];        /**< . */
+    uint16_t pl_len;                /**< . */
 } NGHam_RX_Packet;
 
 /**
- * \struct tx_pkt_t
- * 
  * \brief 
- * 
  */
 typedef struct ATTRIBUTE_PACKED
 {
@@ -130,10 +96,7 @@ typedef struct ATTRIBUTE_PACKED
 } NGHam_TX_Packet;
 
 /**
- * \struct ngh_spphdr_t
- * 
  * \brief NGHam SPP header.
- * 
  */
 typedef struct ATTRIBUTE_PACKED
 {
@@ -144,8 +107,6 @@ typedef struct ATTRIBUTE_PACKED
 } ngh_spphdr_t;
 
 /**
- * \fn ngham_rx_pkt_init
- * 
  * \brief RX packet initialization.
  * 
  * \param *p is a pointer to a NGHam packet.
@@ -155,8 +116,6 @@ typedef struct ATTRIBUTE_PACKED
 void ngham_rx_pkt_init(NGHam_RX_Packet *p);
 
 /**
- * \fn ngham_tx_pkt_init
- * 
  * \brief TX packet initialization.
  * 
  * \param *p is a pointer to a NGHam packet.
@@ -166,8 +125,6 @@ void ngham_rx_pkt_init(NGHam_RX_Packet *p);
 void ngham_tx_pkt_init(NGHam_TX_Packet *p);
 
 /**
- * \fn ngham_tx_pkt_gen
- * 
  * \brief Generates a TX packet with a given payload.
  * 
  * \param *p is packet to be generated.

@@ -1,7 +1,7 @@
 /*
  * tasks.h
  * 
- * Copyright (C) 2017, Federal University of Santa Catarina.
+ * Copyright (C) 2017, Universidade Federal de Santa Catarina
  * 
  * This file is part of FloripaSat-Beacon.
  * 
@@ -21,8 +21,6 @@
  */
 
 /**
- * \file tasks.h
- * 
  * \brief Tasks handler functions.
  * 
  * \author Gabriel Mariano Marcelino <gabriel.mm8@gmail.com>
@@ -31,7 +29,7 @@
  * 
  * \date 09/06/2017
  * 
- * \defgroup tasks Beacon Tasks
+ * \defgroup tasks Tasks
  * \ingroup system
  * \{
  */
@@ -43,22 +41,16 @@
 #include <stdbool.h>
 
 /**
- * \typedef task_ptr
- * 
  * \brief A pointer to a void function without input parameters.
  */
 typedef void (*task_ptr)();
 
 /**
- * \typedef bool_task_ptr
- * 
  * \brief A pointer to a bool function without input parameters.
  */
 typedef bool (*bool_task_ptr)();
 
 /**
- * \fn task_periodic
- * 
  * \brief Runs a task periodically.
  * 
  * \param task is a pointer to a task (function) without input parameters (void).
@@ -66,13 +58,11 @@ typedef bool (*bool_task_ptr)();
  * \param last_execution_s is a pointer to the last time, in seconds, of the task execution.
  * \param current_time is the current system time in seconds.
  * 
- * \return None
+ * \return None.
  */
 void task_periodic(task_ptr task, uint32_t period_s, uint32_t *last_execution_s, uint32_t current_time_s);
 
 /**
- * \fn task_periodic_no_preemption
- * 
  * \brief Runs a task periodically without preemption during the task execution.
  * 
  * Before the execution of the task, all the interruptions are disabled. After the task execution, all the
@@ -83,13 +73,11 @@ void task_periodic(task_ptr task, uint32_t period_s, uint32_t *last_execution_s,
  * \param last_execution_s is a pointer to the last time, in seconds, of the task execution.
  * \param current_time is the current system time in seconds.
  * 
- * \return None
+ * \return None.
  */
 void task_periodic_no_preemption(task_ptr task, uint32_t period_s, uint32_t *last_execution_s, uint32_t current_time_s);
 
 /**
- * \fn task_aperiodic
- * 
  * \brief Executes an aperiodic task, in agreement of a condition.
  * 
  * For the condition of execution, an unary operator can be used.
@@ -97,13 +85,11 @@ void task_periodic_no_preemption(task_ptr task, uint32_t period_s, uint32_t *las
  * \param task is a pointer to a task (function) without input parameters (void).
  * \param condition is the condition to executer the task (if true, executes, if false, not).
  * 
- * \return None
+ * \return None.
  */
 void task_aperiodic(task_ptr task, bool condition);
 
 /**
- * \fn task_scheduled
- * 
  * \brief Executes an scheduled task, in agreement of a condition.
  * 
  * For the condition of execution, an unary operator can be used.
@@ -114,13 +100,11 @@ void task_aperiodic(task_ptr task, bool condition);
  * \param timeout_s is the timeout, in seconds, to run the task.
  * \param condition is the condition to executer the task (if true, executes, if false, not).
  * 
- * \return None
+ * \return None.
  */
 void task_scheduled(task_ptr task, uint32_t time_to_run_s, uint32_t current_time_s, uint16_t timeout_s, bool condition);
 
 /**
- * \fn task_scheduled_no_preemption
- * 
  * \brief Executes an scheduled task without preemption, in agreement of a condition.
  * 
  * For the condition of execution, an unary operator can be used.
@@ -134,19 +118,17 @@ void task_scheduled(task_ptr task, uint32_t time_to_run_s, uint32_t current_time
  * \param timeout_s is the timeout, in seconds, to run the task.
  * \param condition is the condition to executer the task (if true, executes, if false, not).
  * 
- * \return None
+ * \return None.
  */
 void task_scheduled_no_preemption(task_ptr task, uint32_t time_to_run_s, uint32_t current_time_s, uint16_t timeout_s, bool condition);
 
 /**
- * \fn task_init_with_timeout
- * 
  * \brief Executes a initialization routine with timeout.
  * 
  * \param task is a pointer to a task (function returning a bool type) without input parameters (void).
  * \param timeout_ms is the task timeout in milliseconds.
  * 
- * \return None
+ * \return None.
  */
 void task_init_with_timeout(bool_task_ptr task, uint32_t timeout_s);
 

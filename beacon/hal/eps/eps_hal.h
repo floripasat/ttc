@@ -31,7 +31,7 @@
  * 
  * \date 23/09/2016
  * 
- * \defgroup eps_hal EPS HAL
+ * \defgroup eps_hal EPS
  * \ingroup hal
  * \{
  */
@@ -45,15 +45,11 @@
 #include <system/queue/queue.h>
 
 /**
- * \var eps_queue
- * 
  * \brief EPS queue to store all the incoming data.
  */
 extern Queue eps_queue;
 
 /**
- * \fn eps_init
- * 
  * \brief Initialization of the EPS communication module.
  * 
  * \param eps is a pointer to an EPS object.
@@ -63,8 +59,6 @@ extern Queue eps_queue;
 bool eps_init();
 
 /**
- * \fn eps_available
- * 
  * \brief Returns the number of bytes available in the EPS queue.
  * 
  * \return The number of bytes available in the EPS queue.
@@ -72,8 +66,6 @@ bool eps_init();
 uint8_t eps_available();
 
 /**
- * \fn eps_pop
- * 
  * \brief Pops a byte from the EPS queue.
  * 
  * \return The first byte available in the EPS queue.
@@ -81,48 +73,40 @@ uint8_t eps_available();
 uint8_t eps_pop();
 
 /**
- * \fn eps_read
- * 
  * \brief Reads n bytes of data from the EPS queue.
  * 
  * \param data is a pointer to an array to put the data from the queue.
  * \param bytes is the number of bytes to read from the queue.
  * 
- * \return None
+ * \return None.
  */
 void eps_read(uint8_t *data, uint8_t bytes);
 
 /**
- * \fn eps_clear
- * 
  * \brief Clears the data buffer.
  * 
  * \param eps is a pointer to an EPS object.
  * 
- * \return None
+ * \return None.
  */
 void eps_clear();
 
 /**
- * \fn eps_hal_uart_init
- * 
  * \brief EPS HAL UART initialization.
  * 
  * \return Initialization status. It can be:
- *              -\b TRUE
- *              -\b FALSE
+ *              - TRUE
+ *              - FALSE
  *              .
  */
 static bool eps_hal_uart_init();
 
 /**
- * \fn eps_push
- * 
  * \brief Pushes data into the EPS queue.
  * 
  * \param byte is the byte to be pushed into the EPS queue.
  * 
- * \return None
+ * \return None.
  */
 static void eps_push(uint8_t byte);
 

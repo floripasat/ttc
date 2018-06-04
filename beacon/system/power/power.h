@@ -1,7 +1,7 @@
 /*
  * power.h
  * 
- * Copyright (C) 2017, Federal University of Santa Catarina.
+ * Copyright (C) 2017, Universidade Federal de Santa Catarina
  * 
  * This file is part of FloripaSat-Beacon.
  * 
@@ -21,8 +21,6 @@
  */
 
 /**
- * \file power.h
- * 
  * \brief System power control.
  * 
  * \author Gabriel Mariano Marcelino <gabriel.mm8@gmail.com>
@@ -40,29 +38,23 @@
 #define POWER_H_
 
 /**
- * \fn system_enter_low_power_mode
- * 
  * \brief Makes the MCU enter in low-power mode.
  * 
- * \return None
+ * \return None.
  */
 void system_enter_low_power_mode();
 
 /**
- * \fn system_reset
- * 
  * \brief Resets the system using a software BOR.
  * 
- * \return None
+ * \return None.
  */
 void system_reset();
 
 /**
- * \fn system_shutdown
- * 
  * \brief Shutdowns the system.
  * 
- * \return None
+ * \return None.
  */
 void system_shutdown();
 

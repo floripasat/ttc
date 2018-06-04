@@ -1,7 +1,7 @@
 /*
  * rf4463_registers.h
  * 
- * Copyright (C) 2017, Federal University of Santa Catarina
+ * Copyright (C) 2017, Universidade Federal de Santa Catarina.
  * 
  * This file is part of FloripaSat-Beacon.
  * 
@@ -21,8 +21,6 @@
  */
 
 /**
- * \file rf4463_registers.h
- * 
  * \brief NiceRF RF4463 registers addresses.
  * 
  * This library suits for RF4463PRO and RF4463F30 in FIFO mode.

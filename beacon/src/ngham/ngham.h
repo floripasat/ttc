@@ -22,16 +22,15 @@
  */
 
 /**
- * \file ngham.h
- * 
  * \brief NGHam protocol functions.
  * 
- * \author Jon Petter Skagmo <web@skagmo.com>; Mods. for FloripaSat-TTC by Gabriel Mariano Marcelino <gabriel.mm8@gmail.com>
+ * \author Jon Petter Skagmo <web@skagmo.com>
+ * \author Gabriel Mariano Marcelino <gabriel.mm8@gmail.com>
  * 
  * \date 10/02/2017
  * 
  * \defgroup ngham NGHam
- * \ingroup beacon
+ * \ingroup src
  * \{
  */
 
@@ -62,16 +61,11 @@
  * 
  * There are seven different sizes.
  * Each size has a correlation tag for size, a total size, a maximum payload size and a parity data size.
- * 
- * \{
  */
 #define NGH_SIZES                       7
-//! \}
 
 /**
  * \brief Decoder states.
- * 
- * \{
  */
 #define NGH_STATE_SIZE_TAG              0
 #define NGH_STATE_SIZE_TAG_2            1
@@ -79,56 +73,32 @@
 #define NGH_STATE_SIZE_KNOWN            3
 #define NGH_STATE_STATUS                4
 #define NGH_STATE_STATUS_2              5
-//! \}
 
 /**
  * \brief Maximum number of errors in the size tag.
- * 
- * \{
  */
 #define NGH_SIZE_TAG_MAX_ERROR          6
-//! \}
 
 #define NGH_HAMMING_DISTANCE_GREATER    0x00
 #define NGH_HAMMING_DISTANCE_SMALLER    0x01
 
-/**
- * \brief 
- * 
- * \{
- */
-extern const uint8_t NGH_PL_SIZE[];         /**< Actual payload */
-extern const uint8_t NGH_PL_SIZE_FULL[];    /**< Size with LEN, payload and CRC */
-extern const uint8_t NGH_PL_PAR_SIZE[];     /**< Size with RS parity added */
-extern const uint8_t NGH_PAR_SIZE[];
-//! \}
+extern const uint8_t NGH_PL_SIZE[];             /**< Actual payload. */
+extern const uint8_t NGH_PL_SIZE_FULL[];        /**< Size with LEN, payload and CRC. */
+extern const uint8_t NGH_PL_PAR_SIZE[];         /**< Size with RS parity added. */
+extern const uint8_t NGH_PAR_SIZE[];            /**< . */
 
 extern const uint8_t NGH_SYNC[];
 
 extern const uint32_t NGH_SIZE_TAG[];
 
-/**
- * \brief Preamble and synchronization vector.
- * 
- * \{
- */
-extern const uint8_t NGH_PREAMBLE;
-extern const uint8_t NGH_SYNC[];
-extern const uint8_t NGH_PREAMBLE_FOUR_LEVEL;
-extern const uint8_t NGH_SYNC_FOUR_LEVEL[];
-//! \}
+extern const uint8_t NGH_PREAMBLE;              /**< . */
+extern const uint8_t NGH_SYNC[];                /**< . */
+extern const uint8_t NGH_PREAMBLE_FOUR_LEVEL;   /**< . */
+extern const uint8_t NGH_SYNC_FOUR_LEVEL[];     /**< . */
+
+extern RS rs_cb[NGH_SIZES];                     /**< Reed Solomon control blocks for the different NGHAM sizes. */
 
 /**
- * \brief Reed Solomon control blocks for the different NGHAM sizes.
- * 
- * \{
- */
-extern RS rs_cb[NGH_SIZES];
-//! \}
-
-/**
- * \fn ngham_init
- * 
  * \brief NGHam initialization.
  * 
  * \return None
@@ -136,8 +106,6 @@ extern RS rs_cb[NGH_SIZES];
 void ngham_init();
 
 /**
- * \fn ngham_init_arrays
- * 
  * \brief Generates Reed Solomon tables.
  * 
  * Run only once - generates reed solomon tables for all 7 packet sizes
@@ -148,8 +116,6 @@ void ngham_init();
 void ngham_init_arrays();
 
 /**
- * \fn ngham_deinit_arrays
- * 
  * \brief Free Reed Solomon tables.
  * 
  * \return None
@@ -157,8 +123,6 @@ void ngham_init_arrays();
 void ngham_deinit_arrays();
 
 /**
- * \fn ngham_encode
- * 
  * \brief Packet encoding.
  * 
  * Packets to be transmitted are passed to this function - max. length 220 B
@@ -172,8 +136,6 @@ void ngham_deinit_arrays();
 void ngham_encode(NGHam_TX_Packet *p, uint8_t *pkt, uint16_t *pkt_len);
 
 /**
- * \fn ngham_decode
- * 
  * \brief Packet decoding.
  * 
  * Packet to be decoded (Without preamble and sync. bytes).

@@ -21,12 +21,9 @@
  */
 
 /**
- * \file ax25.c
- * 
  * \brief AX25 functions implementation
  * 
- * This module have all the functions to generate/manipulate packets with
- * the AX25 protocol.
+ * This module have all the functions to generate/manipulate packets with the AX25 protocol.
  * 
  * \author Gabriel Mariano Marcelino <gabriel.mm8@gmail.com>
  * 

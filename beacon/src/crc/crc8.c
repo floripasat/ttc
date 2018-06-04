@@ -21,8 +21,6 @@
  */
 
 /**
- * \file crc8.c
- * 
  * \brief CRC8 implementation.
  * 
  * \author Gabriel Mariano Marcelino <gabriel.mm8@gmail.com>

@@ -22,8 +22,6 @@
  */
 
 /**
- * \file ngham_packets.h
- * 
  * \brief .
  * 
  * \author Jon Petter Skagmo <web@skagmo.com>; Mods. for FloripaSat-TTC by Gabriel Mariano Marcelino <gabriel.mm8@gmail.com>

@@ -1,7 +1,7 @@
 /*
  * config.h
  * 
- * Copyright (C) 2017, Federal University of Santa Catarina.
+ * Copyright (C) 2017, Universidade Federal de Santa Catarina.
  * 
  * This file is part of FloripaSat-Beacon.
  * 
@@ -21,8 +21,6 @@
  */
 
 /**
- * \file config.h
- * 
  * \brief General configuration definitions.
  * 
  * \author Gabriel Mariano Marcelino <gabriel.mm8@gmail.com>
@@ -31,7 +29,7 @@
  * 
  * \date 08/06/2017
  * 
- * \defgroup config General configuration parameters
+ * \defgroup config Configuration
  * \{
  */
 

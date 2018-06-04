@@ -1,7 +1,7 @@
 /* 
  * buffer.h
  * 
- * Copyright (C) 2017, Federal University of Santa Catarina
+ * Copyright (C) 2017, Universidade Federal de Santa Catarina
  * 
  * This file is part of FloripaSat-Beacon.
  * 
@@ -21,8 +21,6 @@
  */
 
 /**
- * \file buffer.h
- * 
  * \brief Basic buffer.
  * 
  * \author Gabriel Mariano Marcelino <gabriel.mm8@gmail.com>
@@ -47,8 +45,6 @@
 #define BUFFER_DEFAULT_BYTE     0xFF
 
 /**
- * \struct Buffer
- * 
  * \brief Buffer implementation as a struct.
  */
 typedef struct
@@ -58,19 +54,15 @@ typedef struct
 } Buffer;
 
 /**
- * \fn buffer_init
- * 
  * \brief Buffer initialization.
  * 
  * \param buffer is a pointer to a Buffer struct.
  * 
- * \return None
+ * \return None.
  */
 void buffer_init(Buffer *buffer);
 
 /**
- * \fn buffer_length
- * 
  * \brief Returns the length (capacity) of a buffer.
  * 
  * \param buffer is a pointer to a Buffer struct.
@@ -80,8 +72,6 @@ void buffer_init(Buffer *buffer);
 uint8_t buffer_length(Buffer *buffer);
 
 /**
- * \fn buffer_fill
- * 
  * \brief Fills the buffer with data.
  * 
  * \param buffer is a pointer to a Buffer struct.
@@ -93,8 +83,6 @@ uint8_t buffer_length(Buffer *buffer);
 bool buffer_fill(Buffer *buffer, uint8_t *data, uint8_t len);
 
 /**
- * \fn buffer_append
- * 
  * \brief Append data to a buffer.
  * 
  * \param buffer is a pointer to a Buffer struct.
@@ -106,8 +94,6 @@ bool buffer_fill(Buffer *buffer, uint8_t *data, uint8_t len);
 bool buffer_append(Buffer *buffer, uint8_t *data, uint8_t len);
 
 /**
- * \fn buffer_clear
- * 
  * \brief Clear a buffer filling it with the dafult byte (\b BUFFER_DEFAULT_BYTE).
  * 
  * \param buffer is a pointer to a Buffer struct.
@@ -117,8 +103,6 @@ bool buffer_append(Buffer *buffer, uint8_t *data, uint8_t len);
 void buffer_clear(Buffer *buffer);
 
 /**
- * \fn buffer_empty
- * 
  * \brief Verifies if the a buffer is empty or not.
  * 
  * \param buffer is a pointer to a Buffer struct.
@@ -128,8 +112,6 @@ void buffer_clear(Buffer *buffer);
 bool buffer_empty(Buffer *buffer);
 
 /**
- * \fn buffer_full
- * 
  * \brief Verifies if the a buffer is full or not.
  * 
  * \param buffer is a pointer to a Buffer struct.
@@ -139,8 +121,6 @@ bool buffer_empty(Buffer *buffer);
 bool buffer_full(Buffer *buffer);
 
 /**
- * \fn buffer_size
- * 
  * \brief Returns the size of a buffer.
  * 
  * \param buffer is a pointer to a Buffer struct.

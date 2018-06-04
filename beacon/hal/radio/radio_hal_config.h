@@ -31,7 +31,8 @@
  * 
  * \date 09/11/2017
  * 
- * \addtogroup radio_hal
+ * \defgroup radio_hal_config Config
+ * \ingroup radio_hal
  * \{
  */
 
