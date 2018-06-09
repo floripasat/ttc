@@ -204,6 +204,19 @@ void beacon_process_eps_pkt();
  */
 void beacon_antenna_deployment();
 
+/**
+ * \brief Delay in seconds.
+ *
+ * This delay puts the system in low power mode. When the time increases a second, the low power mode is
+ * disabled and the system goes back to normal mode. An n-seconds delay is achieved by repeating this
+ * process n times.
+ *
+ * \param delay_sec is the desired delay in seconds.
+ *
+ * \return None.
+ */
+static void beacon_delay_sec(uint8_t delay_sec);
+
 #endif // BEACON_H_
 
 //! \} End of beacon group

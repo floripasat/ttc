@@ -56,7 +56,7 @@ void beacon_init()
 #endif // DEBUG_MODE
     
     cpu_init();
-    
+
     flash_init();
     
 #if BEACON_MODE != FLIGHT_MODE
@@ -64,7 +64,9 @@ void beacon_init()
 #endif // FLIGHT_MODE
     
     time_init();
-    
+
+    beacon_delay_sec(BEACON_BOOT_DELAY_SEC);
+
     task_init_with_timeout(&antenna_init, BEACON_ANTENNA_INIT_TIMEOUT_MS);
     
     task_init_with_timeout(&eps_init, EPS_INIT_TIMEOUT_MS);
@@ -656,6 +658,19 @@ void beacon_antenna_deployment()
     }
     
     antenna_deploy();
+}
+
+void beacon_delay_sec(uint8_t delay_sec)
+{
+    uint8_t i = 0;
+    for(i=0; i<delay_sec; i++)
+    {
+        system_enter_low_power_mode();
+
+#if BEACON_MODE != DEBUG_MODE
+        watchdog_reset_timer();
+#endif // BEACON_MODE
+    }
 }
 
 //! \} End of beacon group

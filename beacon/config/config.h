@@ -83,6 +83,9 @@
 
 #define BEACON_TIMEOUT_RADIO_SHUTDOWN       1000000UL
 
+#define BEACON_BOOT_DELAY_SEC               2
+#define BEACON_BOOT_DELAY_MS                (BEACON_BOOT_DELAY_SEC*1000)
+
 //########################################################
 //-- BEACON PACKETS --------------------------------------
 //########################################################
