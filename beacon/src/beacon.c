@@ -67,7 +67,9 @@ void beacon_init()
 
     time_timer_start();
 
+    __enable_interrupt();
     beacon_delay_sec(BEACON_BOOT_DELAY_SEC);
+    __disable_interrupt();
 
     task_init_with_timeout(&antenna_init, BEACON_ANTENNA_INIT_TIMEOUT_MS);
     
