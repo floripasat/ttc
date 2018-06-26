@@ -65,6 +65,8 @@ void beacon_init()
     
     time_init();
 
+    time_timer_start();
+
     beacon_delay_sec(BEACON_BOOT_DELAY_SEC);
 
     task_init_with_timeout(&antenna_init, BEACON_ANTENNA_INIT_TIMEOUT_MS);
@@ -113,8 +115,6 @@ void beacon_deinit()
 
 void beacon_run()
 {
-    time_timer_start();
-    
 #if BEACON_MODE == DEBUG_MODE
     debug_print_msg("Running...\n");
 #elif BEACON_MODE == FLIGHT_MODE
