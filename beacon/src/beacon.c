@@ -385,6 +385,8 @@ void beacon_process_obdh_pkt()
     
     uint8_t fsp_state;
     
+    fsp_reset();
+
     while(obdh_available())
     {
         fsp_state = fsp_decode(obdh_pop(), &obdh_pkt);
@@ -507,6 +509,8 @@ void beacon_process_eps_pkt()
     
     uint8_t fsp_state;
     
+    fsp_reset();
+
     while(eps_available())
     {
         fsp_state = fsp_decode(eps_pop(), &eps_pkt);
