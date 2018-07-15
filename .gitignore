@@ -46,3 +46,5 @@
 *.gz
 *.toc
 
+# Text editor files
+*.swp
