@@ -4,7 +4,7 @@
 % Author:            Gabriel Mariano Marcelino
 % 
 % Created on:        13/12/2017
-% Last modification: 15/02/2018
+% Last modification: 21/07/2018
 %*********************************************************
 
 \documentclass[12pt]{book}
@@ -901,9 +901,93 @@ The decodification of the packets data are done automatically by the GRS softwar
 
 \lettrine{T}{his}...
 
+\section{RF Signal Frequency}
+
+\subsection{Beacon}
+
+\begin{itemize}
+    \item Target: 145,9 MHz
+    \item Measurement: $\cong$ 145,9 MHz
+\end{itemize}
+
+\begin{figure}[H]
+    \begin{center}
+        \includegraphics[width=0.8\textwidth]{figures/tests/beacon_frequency.jpg}
+        \caption{Beacon output frequency.}
+        \label{fig:beacon-frequency}
+    \end{center}
+\end{figure}
+
+\subsection{Downlink}
+
+\begin{itemize}
+    \item Target: 437,9 MHz
+    \item Measurement: $\cong$ 437,9 MHz
+\end{itemize}
+
+\begin{figure}[H]
+    \begin{center}
+        \includegraphics[width=0.8\textwidth]{figures/tests/downlink_frequency.jpg}
+        \caption{Downlink output frequency.}
+        \label{fig:downlink-frequency}
+    \end{center}
+\end{figure}
+
 \section{RF Signal Power}
 
-P...
+\subsection{Beacon}
+
+\begin{itemize}
+    \item Target: 30 dBm
+    \item Measurement: $\cong$ 22 dBm (+3 dBm including the cable and connectors loss)
+\end{itemize}
+
+\begin{figure}[H]
+    \begin{center}
+        \includegraphics[width=0.8\textwidth]{figures/tests/beacon_output_power.jpg}
+        \caption{Beacon output power.}
+        \label{fig:beacon-output-power}
+    \end{center}
+\end{figure}
+
+\subsection{Downlink}
+
+\begin{itemize}
+    \item Target: 30 dBm
+    \item Measurement: $\cong$ 27 dBm (+3 dBm including the cable and connectors loss)
+\end{itemize}
+
+The output power of the downlink radio can be seen in \autoref{fig:downlink-frequency}.
+
+\section{Harmonics}
+
+\subsection{Beacon}
+
+\begin{figure}[H]
+    \begin{center}
+        \includegraphics[width=0.8\textwidth]{figures/tests/beacon_harmonics.jpg}
+        \caption{Beacon signal harmonics.}
+        \label{fig:beacon-harmonics}
+    \end{center}
+\end{figure}
+
+\begin{figure}[H]
+    \begin{center}
+        \includegraphics[width=0.8\textwidth]{figures/tests/beacon_harmonics_analysis.jpg}
+        \caption{Analysis of the beacon signal harmonics.}
+        \label{fig:beacon-harmonics-analysis}
+    \end{center}
+\end{figure}
+
+\subsection{Downlink}
+
+\begin{figure}[H]
+    \begin{center}
+        \includegraphics[width=0.8\textwidth]{figures/tests/downlink_harmonics.jpg}
+        \caption{Downlink signal harmonics.}
+        \label{fig:downlink-harmonics}
+    \end{center}
+\end{figure}
 
 %****************************************************
 %****************************************************
