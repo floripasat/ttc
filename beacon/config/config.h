@@ -60,11 +60,11 @@
 
 #define BEACON_MODE                         TEST_MODE
 
-#define BEACON_TX_PERIOD_SEC_L1             10
-#define BEACON_TX_PERIOD_SEC_L2             10
-#define BEACON_TX_PERIOD_SEC_L3             20
-#define BEACON_TX_PERIOD_SEC_L4             30
-#define BEACON_TX_PERIOD_SEC_L5             30
+#define BEACON_TX_PERIOD_SEC_L1             60
+#define BEACON_TX_PERIOD_SEC_L2             60
+#define BEACON_TX_PERIOD_SEC_L3             60
+#define BEACON_TX_PERIOD_SEC_L4             60
+#define BEACON_TX_PERIOD_SEC_L5             60
 
 #define BEACON_HIBERNATION_PERIOD_SECONDS   (24*60*60*1UL)
 #define BEACON_HIBERNATION_PERIOD_MINUTES   (24*60)
