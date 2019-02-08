@@ -21,8 +21,6 @@
  */
 
 /**
- * \file obdh_hal.c
- * 
  * \brief OBDH HAL functions.
  * 
  * \author Gabriel Mariano Marcelino <gabriel.mm8@gmail.com>
@@ -49,11 +47,11 @@ bool obdh_init()
 #if BEACON_MODE == DEBUG_MODE
     debug_print_msg("OBDH communication initialization... ");
 #endif // BEACON_MODE
-    
+
     if (obdh_hal_spi_init() == true)
     {
         queue_init(&obdh_queue);
-        
+
 #if BEACON_MODE == DEBUG_MODE
         debug_print_msg("SUCCESS!\n");
 #endif // BEACON_MODE
@@ -65,7 +63,7 @@ bool obdh_init()
 #if BEACON_MODE == DEBUG_MODE
         debug_print_msg("FAIL!\n");
 #endif // BEACON_MODE
-        
+
         return false;
     }
 }
@@ -74,21 +72,21 @@ static bool obdh_hal_spi_init()
 {
     // SPI pins init.
     GPIO_setAsPeripheralModuleFunctionInputPin(OBDH_SPI_PORT, OBDH_SPI_MOSI_PIN + OBDH_SPI_MISO_PIN + OBDH_SPI_SCLK_PIN + OBDH_SPI_NSEL_PIN);
-    
+
     if (USCI_A_SPI_initSlave(OBDH_SPI_BASE_ADDRESS, USCI_A_SPI_MSB_FIRST,
                              USCI_A_SPI_PHASE_DATA_CHANGED_ONFIRST_CAPTURED_ON_NEXT,
                              USCI_A_SPI_CLOCKPOLARITY_INACTIVITY_LOW) == STATUS_SUCCESS)
     {
         // Set SPI Mode 2 (The initSlave function from DriverLib, only initializes in Mode 0)
         HWREG8(OBDH_SPI_BASE_ADDRESS + OFS_UCAxCTL0) |= UCMODE_2;
-        
+
         // Enable SPI Module
         USCI_A_SPI_enable(OBDH_SPI_BASE_ADDRESS);
-        
+
         // Enable Receive interrupt
         USCI_A_SPI_clearInterrupt(OBDH_SPI_BASE_ADDRESS, USCI_A_SPI_RECEIVE_INTERRUPT);
         USCI_A_SPI_enableInterrupt(OBDH_SPI_BASE_ADDRESS, USCI_A_SPI_RECEIVE_INTERRUPT);
-        
+
         return true;
     }
     else
@@ -131,7 +129,7 @@ void obdh_send(uint8_t *data, uint8_t len)
         {
             
         }
-        
+
         // Transmit data to master
         USCI_A_SPI_transmitData(OBDH_SPI_BASE_ADDRESS, data[i]);
     }

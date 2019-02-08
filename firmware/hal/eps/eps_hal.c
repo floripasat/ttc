@@ -21,8 +21,6 @@
  */
 
 /**
- * \file eps_hal.c
- * 
  * \brief EPS HAL functions implementation.
  * 
  * \author Gabriel Mariano Marcelino <gabriel.mm8@gmail.com>
@@ -47,16 +45,16 @@ bool eps_init()
 #if BEACON_MODE == DEBUG_MODE
     debug_print_msg("EPS communication initialization... ");
 #endif // DEBUG_MODE
-    
+
     // UART initialization
     if (eps_hal_uart_init())
     {
         queue_init(&eps_queue);
-        
+
 #if BEACON_MODE == DEBUG_MODE
         debug_print_msg("SUCCESS!\n");
 #endif // DEBUG_MODE
-        
+
         return true;
     }
     else
@@ -64,7 +62,7 @@ bool eps_init()
 #if BEACON_MODE == DEBUG_MODE
         debug_print_msg("FAIL!\n");
 #endif // DEBUG_MODE
-        
+
         return false;
     }
 }
@@ -100,7 +98,7 @@ static bool eps_hal_uart_init()
 {
     // UART pins init.
     GPIO_setAsPeripheralModuleFunctionInputPin(EPS_UART_RX_PORT, EPS_UART_RX_PIN);
-    
+
     USCI_A_UART_initParam uart_params = {0};
     uart_params.selectClockSource   = EPS_HAL_CLOCK_SOURCE;
     uart_params.clockPrescalar      = EPS_HAL_UART_CLOCK_PRESCALAR;
@@ -111,17 +109,17 @@ static bool eps_hal_uart_init()
     uart_params.numberofStopBits    = EPS_HAL_UART_STOP_BITS;
     uart_params.uartMode            = EPS_HAL_UART_MODE;
     uart_params.overSampling        = EPS_HAL_UART_OVERSAMPLING;
-    
+
     // UART initialization
     if (USCI_A_UART_init(EPS_UART_BASE_ADDRESS, &uart_params) == STATUS_SUCCESS)
     {
         // Enable UART module
         USCI_A_UART_enable(EPS_UART_BASE_ADDRESS);
-        
+
         // Enable Receive Interrupt
         USCI_A_UART_clearInterrupt(EPS_UART_BASE_ADDRESS, USCI_A_UART_RECEIVE_INTERRUPT);
         USCI_A_UART_enableInterrupt(EPS_UART_BASE_ADDRESS, USCI_A_UART_RECEIVE_INTERRUPT);
-        
+
         return true;
     }
     else

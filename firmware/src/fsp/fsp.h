@@ -110,7 +110,7 @@ typedef struct
 extern uint8_t fsp_my_adr;
 
 /**
- * \brief Decode byte position (From the internal "state machine"),
+ * \brief Decode byte position (From the internal "state machine").
  */
 extern uint8_t fsp_decode_pos;
 

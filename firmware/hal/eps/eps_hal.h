@@ -21,8 +21,6 @@
  */
 
 /**
- * \file eps_hal.h
- * 
  * \brief EPS HAL functions.
  * 
  * \author Gabriel Mariano Marcelino <gabriel.mm8@gmail.com>

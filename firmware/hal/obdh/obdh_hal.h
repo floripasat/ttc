@@ -21,8 +21,6 @@
  */
 
 /**
- * \file obdh_hal.h
- * 
  * \brief OBDH HAL functions.
  * 
  * \author Gabriel Mariano Marcelino <gabriel.mm8@gmail.com>
