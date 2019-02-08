@@ -25,26 +25,19 @@
  * 
  * \author Gabriel Mariano Marcelino <gabriel.mm8@gmail.com>
  * 
- * \version 1.0-dev
+ * \version 0.1.0
  * 
  * \date 10/06/2016
  * 
- * \addtogroup cc11xx
+ * \defgroup cc11xx_regs Registers
+ * \ingroup cc11xx
  * \{
  */
 
 #ifndef CC11XX_REGISTERS_H_
 #define CC11XX_REGISTERS_H_
 
-/**
- * \defgroup adr_space CC1175 SPI Address Space
- * \ingroup cc1175
- * 
- * \brief Addresses of CC1175 SPI Address Space
- * 
- * \see CC112X/CC1175 User's Guide Table 4
- * \{
- */
+// Addresses of CC1175 SPI Address Space (CC112X/CC1175 User's Guide Table 4)
 #define CC11XX_IOCFG3                   0x0000      /**< GPIO3 IO Pin Configuration */
 #define CC11XX_IOCFG2                   0x0001      /**< GPIO2 IO Pin Configuration */ 
 #define CC11XX_IOCFG1                   0x0002      /**< GPIO1 IO Pin Configuration */
@@ -92,17 +85,8 @@
 #define CC11XX_PA_CFG1                  0x002C      /**< Power Amplifier Configuration Reg 1 */
 #define CC11XX_PA_CFG0                  0x002D      /**< Power Amplifier Configuration Reg 0 */
 #define CC11XX_PKT_LEN                  0x002E      /**< Packet Length Configuration */
-//! \} End of adr_space
 
-/**
- * \defgroup ext_reg CC1175 Extended Register Space Mapping
- * \ingroup cc1175
- * 
- * \brief Addresses of CC1175 Extended Register Space Mapping
- * 
- * \see CC112X/CC1175 User's Guide Table 5
- * \{
- */
+// Addresses of CC1175 Extended Register Space Mapping (CC112X/CC1175 User's Guide Table 5)
 #define CC11XX_IF_MIX_CFG               0x2F00      /**< IF Mix Configuration */
 #define CC11XX_FREQOFF_CFG              0x2F01      /**< Frequency Offset Correction Configuration */
 #define CC11XX_TOC_CFG                  0x2F02      /**< IF Mix Configuration */
@@ -234,7 +218,6 @@
 #define CC11XX_NUM_RXBYTES              0x2FD7      /**< RX FIFO Status */
 #define CC11XX_FIFO_NUM_TXBYTES         0x2FD8      /**< TX FIFO Status */
 #define CC11XX_FIFO_NUM_RXBYTES         0x2FD9      /**< RX FIFO Status */
-//! \} End of ext_reg
 
 #endif // CC11XX_REGISTERS_H_
 

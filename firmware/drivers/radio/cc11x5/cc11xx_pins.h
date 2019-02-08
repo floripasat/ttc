@@ -25,11 +25,12 @@
  * 
  * \author Gabriel Mariano Marcelino <gabriel.mm8@gmail.com>
  * 
- * \version 1.0-dev
+ * \version 0.1.0
  * 
  * \date 10/06/2016
  * 
- * \addtogroup cc11xx
+ * \defgroup cc11xx_pins Pins
+ * \ingroup cc11xx
  * \{
  */
 

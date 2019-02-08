@@ -50,4 +50,4 @@
 *.swp
 
 # Doxygen output files
-firmware/doc/ttc
+doc/doxygen

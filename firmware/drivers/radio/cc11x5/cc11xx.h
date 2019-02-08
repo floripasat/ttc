@@ -47,16 +47,7 @@
 #define CC11XX_MODEL_LABEL              "CC1175"                /**< cc11xx model label */
 #define CC11XX_SPI_CLK                  BEACON_RADIO_SPI_CLK    /**< SPI clock frequency in Hz. */
 
-/**
- * \defgroup cmd_strobe CC1175 Command Strobes
- * \ingroup cc11xx
- * 
- * \brief CC1175 command strobes values
- * 
- * \see CC112x/CC1175 User's Guide Table 6
- * 
- * \{
- */
+// CC1175 command strobes values (CC112x/CC1175 User's Guide Table 6)
 #define CC11XX_SRES                     0x30        /**< Reset chip */
 #define CC11XX_SFSTXON                  0x31        /**< Enable and calibrate frequency synthesizer (if SETTLING_CFG.FS_AUTOCAL = 1). If in RX and PKT_CFG2.CCA_MODE ≠ 0: Go to a wait state where only the synthesizer is running (for quick RX/TX turnaround). */
 #define CC11XX_SXOFF                    0x32        /**< Enter XOFF state when CSn is de-asserted */
@@ -71,58 +62,22 @@
 #define CC11XX_SFTX                     0x3B        /**< Flush the TX FIFO. Only issue SFTX in IDLE or TX_FIFO_ERR states */
 #define CC11XX_SWORRST                  0x3C        /**< Reset the eWOR timer to the Event1 value */
 #define CC11XX_SNOP                     0x3D        /**< No operation. May be used to get access to the chip status byte */
-//! \} End of cmd_strobe
 
 #define CC11XX_DIRECT_MEMORY_ACCESS 0x3F
 
-/**
- * \defgroup fifo_acs CC1175 FIFO access
- * \ingroup cc1175
- * 
- * \brief FIFO access addresses
- * 
- * \see CC112x/CC1175 User's Guide Table 4
- * 
- * \{
- */
+// FIFO access addresses (CC112x/CC1175 User's Guide Table 4)
 #define CC11XX_SINGLE_TXFIFO            0x003F      /**< Single access to Transmit FIFO (0x3F + 0x00 = 0x003F) */
 #define CC11XX_BURST_TXFIFO             0x007F      /**< Burst access to Transmit FIFO  (0x3F + 0x40 = 0x007F) */
 #define CC11XX_SINGLE_RXFIFO            0x00BF      /**< Single access to Receive FIFO  (0x3F + 0x80 = 0x00BF) */
 #define CC11XX_BURST_RXFIFO             0x00FF      /**< Burst access to Receive FIFO   (0x3F + 0xC0 = 0x00FF) */
-//! \} End of fifo_acs
 
-/**
- * \defgroup acs_modes CC1175 Access Modes
- * \ingroup cc1175
- * 
- * \brief CC1175 access modes values
- * 
- * \see CC112x/CC1175 User's Guide Table 3
- * 
- * \{
- */
+// CC1175 access modes values (CC112x/CC1175 User's Guide Table 3)
 #define CC11XX_BURST_ACCESS             0x40        /**< [R/W 1 A5 A4 A3 A2 A1 A0] = 0100 0000 = 0x40 */
 #define CC11XX_SINGLE_ACCESS            0x00        /**< [R/W 0 A5 A4 A3 A2 A1 A0] = 0000 0000 = 0x00 */
 #define CC11XX_READ_ACCESS              0x80        /**< [1 B/S A5 A4 A3 A2 A1 A0] = 1000 0000 = 0x80 */
 #define CC11XX_WRITE_ACCESS             0x00        /**< [0 B/S A5 A4 A3 A2 A1 A0] = 0000 0000 = 0x00 */
-//! \} End of acs_modes
 
-/**
- * \defgroup status_byte CC1175 Status Byte
- * \ingroup cc1175
- * 
- * \brief CC1175 Status Byte possible values
- * 
- * Basic structure:
- *      - STATUS_CHIP_RDYn = bit  7
- *      - STATE            = bits 6:4
- *      - Reserved         = bits 3:0
- *      .
- * 
- * \see CC112x/CC1175 User's Guide Table 2
- * 
- * \{
- */
+// CC1175 Status Byte possible values (CC112x/CC1175 User's Guide Table 2)
 #define CC11XX_STATUS_CHIP_RDYn_L       0x00    /**< Should always be low when using the SPI interface */
 #define CC11XX_STATUS_CHIP_RDYn_H       0x80    /**< Stays high until power and crystal have stabilized */
 #define CC11XX_STATE_IDLE               0x00    /**< Idle state */
@@ -133,34 +88,14 @@
 #define CC11XX_STATE_SETTLING           0x50    /**< PLL is settling */
 #define CC11XX_STATE_RX_FIFO_ERROR      0x60    /**< RX FIFO has over/underflowed. Read out any useful data, then flush the FIFO with an SFRX strobe */
 #define CC11XX_STATE_TX_FIFO_ERROR      0x70    /**< TX FIFO has over/underflowed. Flush the FIFO with an SFTX strobe */
-//! \} End of status_byte
 
-/**
- * \defgroup cal_macros Calibration macros
- * \ingroup cc1175
- * 
- * \brief Calibration const.
- * 
- * \see CC112X, CC1175 Silicon Errata
- * 
- * \{
- */
+// Calibration const (CC112X, CC1175 Silicon Errata)
 #define CC11XX_VCDAC_START_OFFSET       2
 #define CC11XX_FS_VCO2_INDEX            0
 #define CC11XX_FS_VCO4_INDEX            1
 #define CC11XX_FS_CHP_INDEX             2
-//! \} End of cal_macros
 
-/**
- * \defgroup gpio_signals GPIO signals
- * \ingroup cc1175
- * 
- * \brief GPIO signals.
- * 
- * \see CC112x/CC1175 User's Guide Table 10
- * 
- * \{
- */
+// GPIO signals (CC112x/CC1175 User's Guide Table 10)
 #define CC11XX_GPIOX_ATRAN_STD_DIG_PAD  0x00    /**< Analog transfer enable: Standard digital pad. */
 #define CC11XX_GPIOX_ATRAN_PAD_ANL_MODE 0x80    /**< Analog transfer enable: Pad in analog mode (digital GPIO input and output disabled). */
 #define CC11XX_GPIOX_INV_DISABLE        0x00    /**< Invert output enable: Invert output disabled. */
@@ -244,7 +179,6 @@
 #define CC11XX_XOSC_STABLE              0x3B    /**< XOSC is stable (has finished settling). */
 #define CC11XX_EXT_OSC_EN               0x3C    /**< External oscillator enable (used to control e.g. a TCXO). Note that this signal is only asserted is a TCXO is present. */
 // 0x3D - 0x3F = Reserved (used for test)
-//! \} End of gpio_signals
 
 /**
  * \brief cc11xx initialization
@@ -256,9 +190,11 @@
  *      .
  * 
  * \return Initialization status. It can be:
+ * \parblock
  *      - STATUS_SUCCESS
  *      - STATUS_FAIL
  *      .
+ * \endparblock
  */
 uint8_t cc11xx_Init();
 

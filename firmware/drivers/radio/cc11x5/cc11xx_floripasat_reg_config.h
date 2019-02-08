@@ -29,7 +29,8 @@
  * 
  * \date 23/09/2016
  * 
- * \addtogroup cc1175
+ * \defgroup cc11xx_reg_config Register Values
+ * \ingroup cc11xx
  * \{
  */
 
