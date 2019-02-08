@@ -48,3 +48,6 @@
 
 # Text editor files
 *.swp
+
+# Doxygen output files
+firmware/doc/ttc
