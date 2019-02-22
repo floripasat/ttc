@@ -51,3 +51,6 @@
 
 # Doxygen output files
 doc/doxygen
+
+# CCS output
+firmware/fsat_beacon_msp430/Debug
