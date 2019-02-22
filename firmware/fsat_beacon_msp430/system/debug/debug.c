@@ -1,7 +1,7 @@
 /*
  * debug.c
  * 
- * Copyright (C) 2017, Universidade Federal de Santa Catarina
+ * Copyright (C) 2017-2019, Universidade Federal de Santa Catarina
  * 
  * This file is part of FloripaSat-Beacon.
  * 
@@ -25,7 +25,7 @@
  * 
  * \author Gabriel Mariano Marcelino <gabriel.mm8@gmail.com>
  * 
- * \version 1.0-dev
+ * \version 0.1.2
  * 
  * \date 23/09/2016
  * 
@@ -33,8 +33,12 @@
  * \{
  */
 
+#include <math.h>
+
 #include <config/config.h>
 #include <drivers/driverlib/driverlib.h>
+#include <system/time/time.h>
+#include <version.h>
 
 #include "debug.h"
 
@@ -42,20 +46,25 @@ bool debug_init()
 {
     if (debug_uart_init())
     {
-        char debug_msg[] = "FloripaSat-Beacon Copyright (C) 2017, Federal University of Santa Catarina;\n"
-                           "This program comes with ABSOLUTELY NO WARRANTY.\n"
-                           "This is free software, and you are welcome to redistribute it\n"
-                           "under certain conditions.\n\n"
-                           "Source code: https://github.com/floripasat/ttc\n"
-                           "Documentation: http://fsat-server.duckdns.org:8000/ttc\n\n"
-                           "FloripaSat Beacon debug mode:\n"
-                           "*************************************\n\n";
-        uint16_t i = 0;
-        for(i=0;i<sizeof(debug_msg)-1;i++)
-        {
-            USCI_A_UART_transmitData(DEBUG_UART_BASE_ADDRESS, debug_msg[i]);
-        }
-        
+        debug_print_license_msg();
+
+        debug_print_splash_screen();
+
+        debug_print_msg("Version:\t");
+        debug_print_firmware_version();
+        debug_print_msg("\n\r");
+
+        debug_print_msg("Status:\t\t");
+        debug_print_msg(FIRMWARE_STATUS);
+        debug_print_msg("\n\r");
+
+        debug_print_msg("Author:\t\t");
+        debug_print_msg(FIRMWARE_AUTHOR_NAME);
+        debug_print_msg(" <");
+        debug_print_msg(FIRMWARE_AUTHOR_EMAIL);
+        debug_print_msg(">");
+        debug_print_msg("\n\n\n\r");
+
         return true;
     }
     else
@@ -90,6 +99,32 @@ void debug_print_digit(uint8_t digit)
     }
 }
 
+void debug_print_dec(uint32_t dec)
+{
+    if (dec == 0)
+    {
+        debug_print_digit(0);
+    }
+    else
+    {
+        uint8_t dec_str[10];                        // 32-bits = decimal with 10 digits
+
+        uint8_t digits = log10(dec) + 1;
+
+        uint8_t i = 0;
+        for(i=0; i<digits; ++i, dec /= 10)
+        {
+            dec_str[i] = dec % 10;
+        }
+
+        uint8_t j = 0;
+        for(j=i; j>0; j--)
+        {
+            debug_print_digit(dec_str[j-1]);
+        }
+    }
+}
+
 void debug_print_int8(uint8_t int8)
 {
     debug_print_msg("0x");
@@ -111,6 +146,49 @@ void debug_print_int16(uint16_t int16)
 void debug_print_byte(uint8_t byte)
 {
     USCI_A_UART_transmitData(DEBUG_UART_BASE_ADDRESS, byte);
+}
+
+void debug_print_system_time()
+{
+    debug_print_msg("[ ");
+    debug_print_dec(1000*time_get_seconds());
+    debug_print_msg(" ]");
+}
+
+void debug_print_license_msg()
+{
+    debug_print_msg("FloripaSat-Beacon Copyright (C) 2017-2019, Universidade Federal de Santa Catarina;\n\r");
+    debug_print_msg("This program comes with ABSOLUTELY NO WARRANTY.\n\r");
+    debug_print_msg("This is free software, and you are welcome to redistribute it\n\r");
+    debug_print_msg("under certain conditions.\n\n\r");
+    debug_print_msg("Source code: https://github.com/floripasat/ttc\n\r");
+    debug_print_msg("Documentation: https://github.com/floripasat/ttc/wiki\n\r");
+}
+
+void debug_print_splash_screen()
+{
+    debug_print_msg("                                                         \n\r");
+    debug_print_msg("                                                         \n\r");
+    debug_print_msg(".........................................................\n\r");
+    debug_print_msg(".........................................................\n\r");
+    debug_print_msg(".........................................................\n\r");
+    debug_print_msg("......  _____ ____        _      _____ _____ ____  ......\n\r");
+    debug_print_msg("...... |  ___/ ___|  __ _| |_   |_   _|_   _/ ___| ......\n\r");
+    debug_print_msg("...... | |_  \\___ \\ / _` | __|____| |   | || |     ......\n\r");
+    debug_print_msg("...... |  _|  ___) | (_| | ||_____| |   | || |___  ......\n\r");
+    debug_print_msg("...... |_|   |____/ \\__,_|\\__|    |_|   |_| \\____| ......\n\r");
+    debug_print_msg("......                                             ......\n\r");
+    debug_print_msg(".........................................................\n\r");
+    debug_print_msg(".........................................................\n\r");
+    debug_print_msg("                                                         \n\r");
+    debug_print_msg("                                                         \n\r");
+}
+
+void debug_print_firmware_version()
+{
+    debug_print_msg("[ ");
+    debug_print_msg(FIRMWARE_VERSION);
+    debug_print_msg(" ]");
 }
 
 void debug_abort()

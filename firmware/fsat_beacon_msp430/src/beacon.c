@@ -25,7 +25,7 @@
  * 
  * \author Gabriel Mariano Marcelino <gabriel.mm8@gmail.com>
  * 
- * \version 1.0-dev
+ * \version 0.1.2
  * 
  * \date 08/06/2017
  * 
@@ -50,7 +50,6 @@ void beacon_init()
 {
 #if BEACON_MODE == DEBUG_MODE
     watchdog_hold();    // Disable watchdog for debug
-    task_init_with_timeout(&debug_init, DEBUG_INIT_TIMEOUT_MS);
 #else
     watchdog_init();
 #endif // DEBUG_MODE
@@ -70,6 +69,10 @@ void beacon_init()
     __enable_interrupt();
     beacon_delay_sec(BEACON_BOOT_DELAY_SEC);
     __disable_interrupt();
+
+#if BEACON_MODE == DEBUG_MODE
+    task_init_with_timeout(&debug_init, DEBUG_INIT_TIMEOUT_MS);
+#endif // DEBUG_MODE
 
     task_init_with_timeout(&antenna_init, BEACON_ANTENNA_INIT_TIMEOUT_MS);
     

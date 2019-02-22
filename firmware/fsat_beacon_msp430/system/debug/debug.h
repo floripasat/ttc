@@ -1,7 +1,7 @@
 /*
  * debug.h
  * 
- * Copyright (C) 2017, Universidade Federal de Santa Catarina
+ * Copyright (C) 2017-2019, Universidade Federal de Santa Catarina
  * 
  * This file is part of FloripaSat-Beacon.
  * 
@@ -25,7 +25,7 @@
  * 
  * \author Gabriel Mariano Marcelino <gabriel.mm8@gmail.com>
  * 
- * \version 1.0-dev
+ * \version 0.1.2
  * 
  * \date 23/09/2016
  * 
@@ -83,6 +83,15 @@ void debug_print_msg(const char *msg);
 void debug_print_digit(uint8_t d);
 
 /**
+ * \brief Prints a decimal number over the debug UART.
+ *
+ * \param[in] dec is the decimal number to print.
+ *
+ * \return None.
+ */
+void debug_print_dec(uint32_t dec);
+
+/**
  * \brief Prints a 8 bits unsigned integer over the UART.
  * 
  * Example:
@@ -120,6 +129,34 @@ void debug_print_int16(uint16_t int16);
  * \return None.
  */
 void debug_print_byte(uint8_t byte);
+
+/**
+ * \brief Prints the system time in milliseconds.
+ *
+ * \return None.
+ */
+void debug_print_system_time();
+
+/**
+ * \brief Prints the license text and genreal firmware information.
+ *
+ * \return None.
+ */
+void debug_print_license_msg();
+
+/**
+ * \brief Prints the splash screen of the firmware.
+ *
+ * \return None.
+ */
+void debug_print_splash_screen();
+
+/**
+ * \brief Writes the current firmware version.
+ *
+ * \return None.
+ */
+void debug_print_firmware_version();
 
 /**
  * \brief Puts the program in an infinite loop.
