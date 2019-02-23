@@ -25,7 +25,7 @@
  * 
  * \author Gabriel Mariano Marcelino <gabriel.mm8@gmail.com>
  * 
- * \version 0.1.2
+ * \version 0.1.4
  * 
  * \date 23/09/2016
  * 
@@ -43,24 +43,7 @@
 /**
  * \brief Initialization of the debug mode.
  * 
- * After the UART initialization, to show if the debug mode is
- * working, the follow message is transmitted:
- * 
- * FloripaSat-TTC Copyright (C) 2017, Universidade Federal de Santa Catarina;
- * This program comes with ABSOLUTELY NO WARRANTY.
- * This is free software, and you are welcome to redistribute it
- * under certain conditions.
- * 
- * Source code: https://github.com/floripasat/ttc
- * Documentation: http://fsat-server.duckdns.org:8000/ttc
- * 
- * FloripaSat debug mode:
- * *************************************
- * 
- * \return UART initialization status. It can be:
- *      - TRUE
- *      - FALSE
- *      .
+ * \return TRUE/FALSE if successful or not:
  */
 bool debug_init();
 
@@ -92,7 +75,7 @@ void debug_print_digit(uint8_t d);
 void debug_print_dec(uint32_t dec);
 
 /**
- * \brief Prints a 8 bits unsigned integer over the UART.
+ * \brief Prints a hexadecimal value over the UART port.
  * 
  * Example:
  *      - Integer   = 0x65
@@ -100,26 +83,11 @@ void debug_print_dec(uint32_t dec);
  * 
  * \note The integer is printed in ASCII code.
  * 
- * \param int8 is the integer to be written.
+ * \param hex is the hexadecimal to be written.
  * 
  * \return None.
  */
-void debug_print_int8(uint8_t int8);
-
-/**
- * \brief Prints a 16 bits unsigned integer over the UART.
- * 
- * Example:
- *      - Integer   = 0x1865
- *      - Output    = "0x1865"
- * 
- * \note The unsigned integer is printed in ASCII code.
- * 
- * \param int16 is the unsigned integer to be written.
- * 
- * \return None.
- */
-void debug_print_int16(uint16_t int16);
+void debug_print_hex(uint32_t hex);
 
 /**
  * \brief Prints a raw byte over the UART.
@@ -178,12 +146,18 @@ void debug_abort();
  *      - Stop bits     = 1
  *      .
  * 
- * \return Initialization status. It can be:
- *      - TRUE
- *      - FALSE
- *      .
+ * \return TRUE/FALSE if successful or not.
  */
 bool debug_uart_init();
+
+/**
+ * \brief Writes a byte over the UART port.
+ *
+ * \param[in] byte is the byte to be written.
+ *
+ * \return None.
+ */
+void debug_uart_write_byte(uint8_t byte);
 
 #endif // DEBUG_H_
 

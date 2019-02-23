@@ -25,7 +25,7 @@
  * 
  * \author Gabriel Mariano Marcelino <gabriel.mm8@gmail.com>
  * 
- * \version 0.1.3
+ * \version 0.1.4
  * 
  * \date 23/09/2016
  * 
@@ -35,7 +35,6 @@
 
 #include <math.h>
 
-#include <drivers/driverlib/driverlib.h>
 #include <system/time/time.h>
 #include <version.h>
 
@@ -78,7 +77,7 @@ void debug_print_msg(const char *msg)
     uint8_t i = 0;
     while(msg[i] != '\0')
     {
-        USCI_A_UART_transmitData(DEBUG_UART_BASE_ADDRESS, msg[i]);
+        debug_print_byte(msg[i]);
         i++;
     }
 }
@@ -87,15 +86,15 @@ void debug_print_digit(uint8_t digit)
 {
     if (digit < 0x0A)
     {
-        USCI_A_UART_transmitData(DEBUG_UART_BASE_ADDRESS, digit + 0x30);  // 0x30 = ascii 0
+        debug_print_byte(digit + 0x30);    // 0x30 = ascii 0
     }
     else if (digit <= 0x0F)
     {
-        USCI_A_UART_transmitData(DEBUG_UART_BASE_ADDRESS, digit + 0x37);  // 0x37 = ascii 7
+        debug_print_byte(digit + 0x37);    // 0x37 = ascii 7
     }
     else
     {
-        USCI_A_UART_transmitData(DEBUG_UART_BASE_ADDRESS, 'N');
+        debug_print_byte('N');
     }
 }
 
@@ -125,27 +124,35 @@ void debug_print_dec(uint32_t dec)
     }
 }
 
-void debug_print_int8(uint8_t int8)
+void debug_print_hex(uint32_t hex)
 {
     debug_print_msg("0x");
     
-    debug_print_digit((uint8_t)(int8 >> 4));
-    debug_print_digit((uint8_t)(int8 & 0x0F));
-}
+    if (hex > 0x00FFFFFF)
+    {
+        debug_print_digit((uint8_t)(hex >> 28) & 0x0F);
+        debug_print_digit((uint8_t)(hex >> 24) & 0x0F);
+    }
 
-void debug_print_int16(uint16_t int16)
-{
-    debug_print_msg("0x");
-    
-    debug_print_digit((uint8_t)(int16 >> 12));
-    debug_print_digit((uint8_t)(int16 >> 8) & 0x0F);
-    debug_print_digit((uint8_t)(int16 >> 4) & 0x0F);
-    debug_print_digit((uint8_t)(int16 & 0x0F));
+    if (hex > 0x0000FFFF)
+    {
+        debug_print_digit((uint8_t)(hex >> 20) & 0x0F);
+        debug_print_digit((uint8_t)(hex >> 16) & 0x0F);
+    }
+
+    if (hex > 0x000000FF)
+    {
+        debug_print_digit((uint8_t)(hex >> 12) & 0x0F);
+        debug_print_digit((uint8_t)(hex >> 8) & 0x0F);
+    }
+
+    debug_print_digit((uint8_t)(hex >> 4) & 0x0F);
+    debug_print_digit((uint8_t)(hex & 0x0F));
 }
 
 void debug_print_byte(uint8_t byte)
 {
-    USCI_A_UART_transmitData(DEBUG_UART_BASE_ADDRESS, byte);
+    debug_uart_write_byte(byte);
 }
 
 void debug_print_system_time()
@@ -196,38 +203,6 @@ void debug_abort()
     while(1)
     {
         
-    }
-}
-
-bool debug_uart_init()
-{
-    // UART pins init.
-    GPIO_setAsPeripheralModuleFunctionInputPin(DEBUG_UART_PORT, DEBUG_UART_TX_PIN + DEBUG_UART_RX_PIN);
-
-    // Config UART (115200 bps, no parity, 1 stop bit, LSB first)
-    USCI_A_UART_initParam uart_params = {0};
-
-    uart_params.selectClockSource   = DEBUG_UART_CLOCK_SOURCE;
-    uart_params.clockPrescalar      = DEBUG_UART_CLOCK_PRESCALAR;   // Clock = 4 MHz, Baudrate = 115200 bps	([1] http://software-dl.ti.com/msp430/msp430_public_sw/mcu/msp430/MSP430BaudRateConverter/index.html)
-    uart_params.firstModReg         = DEBUG_UART_FIRST_MOD_REG;     // Clock = 4 MHz, Baudrate = 115200 bps (See [1])
-    uart_params.secondModReg        = DEBUG_UART_SECONDS_MOD_REG;   // Clock = 4 MHz, Baudrate = 115200 bps (See [1])
-    uart_params.parity              = DEBUG_UART_PARITY;
-    uart_params.msborLsbFirst       = DEBUG_UART_ENDIANESS;
-    uart_params.numberofStopBits    = DEBUG_UART_STOP_BITS;
-    uart_params.uartMode            = DEBUG_UART_MODE;
-    uart_params.overSampling        = DEBUG_UART_OVER_SAMPLING;     // Clock = 4 MHz, Baudrate = 115200 bps (See [1])
-
-    // UART initialization
-    if (USCI_A_UART_init(DEBUG_UART_BASE_ADDRESS, &uart_params) == STATUS_SUCCESS)
-    {
-        // Enable UART module
-        USCI_A_UART_enable(DEBUG_UART_BASE_ADDRESS);
-
-        return true;
-    }
-    else
-    {
-        return false;
     }
 }
 
