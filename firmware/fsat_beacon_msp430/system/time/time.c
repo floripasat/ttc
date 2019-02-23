@@ -25,7 +25,7 @@
  * 
  * \author Gabriel Mariano Marcelino <gabriel.mm8@gmail.com>
  * 
- * \version 0.1.6
+ * \version 0.1.7
  * 
  * \date 10/06/2017
  * 
@@ -38,6 +38,7 @@
 #include <system/debug/debug.h>
 
 #include "time.h"
+#include "time_config.h"
 
 Time time;
 
@@ -45,13 +46,11 @@ Time time_backup;
 
 void time_init()
 {
-    debug_print_msg("Time control initialization... ");
+    debug_print_event_from_module(DEBUG_INFO, TIME_MODULE_NAME, "Time control initialization...\n\r");
 
     time_reset();
     
     time_timer_init();
-
-    debug_print_msg("SUCCESS!\n\r");
 }
 
 static void time_timer_init()

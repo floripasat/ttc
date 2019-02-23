@@ -25,7 +25,7 @@
  * 
  * \author Gabriel Mariano Marcelino <gabriel.mm8@gmail.com>
  * 
- * \version 0.1.6
+ * \version 0.1.7
  * 
  * \date 08/06/2017
  * 
@@ -112,7 +112,7 @@ void beacon_deinit()
 
 void beacon_run()
 {
-    debug_print_msg("Running...\n\r");
+    debug_print_event(DEBUG_INFO, "Running...\n\r");
 
 //    if (!antenna_is_released())
 //    {
@@ -161,27 +161,23 @@ void beacon_enter_hibernation()
 {
     if (!beacon.hibernation)
     {
-        debug_print_msg("Entering in hibernation mode... ");
+        debug_print_event(DEBUG_INFO, "Entering in hibernation mode...\n\r");
 
         radio_sleep();
 
         beacon.hibernation = true;
 
         beacon.hibernation_mode_initial_time = time_get_seconds();
-
-        debug_print_msg("DONE!\n\r");
     }
 }
 
 void beacon_leave_hibernation()
 {
-    debug_print_msg("Leaving hibernation mode... ");
+    debug_print_event(DEBUG_INFO, "Leaving hibernation mode...\n\r");
 
     radio_wake_up();
 
     beacon.hibernation = false;
-
-    debug_print_msg("DONE!\n\r");
 }
 
 uint8_t beacon_get_tx_period()
@@ -253,7 +249,7 @@ void beacon_check_devices_status()
 
 void beacon_gen_pkt_payload()
 {
-    debug_print_msg("Generating packet payload from ");
+    debug_print_event(DEBUG_INFO, "Generating packet payload from ");
 
     if (!buffer_empty(&beacon.pkt_payload))
     {
@@ -267,7 +263,7 @@ void beacon_gen_pkt_payload()
     if ((beacon.obdh.errors == 0) && (!beacon.obdh.is_dead))
     {
 #if BEACON_PACKET_PAYLOAD_CONTENT & PAYLOAD_OBDH_DATA
-        debug_print_msg("OBDH data... ");
+        debug_print_msg("OBDH data...\n\r");
 
         buffer_append(&beacon.pkt_payload, beacon.obdh.buffer.data, beacon.obdh.buffer.size);
         
@@ -276,7 +272,7 @@ void beacon_gen_pkt_payload()
     else if ((beacon.eps.errors == 0) && (!beacon.eps.is_dead))
     {
 #if BEACON_PACKET_PAYLOAD_CONTENT & PAYLOAD_EPS_DATA
-        debug_print_msg("EPS data... ");
+        debug_print_msg("EPS data...\n\r");
 
         buffer_append(&beacon.pkt_payload, beacon.eps.buffer.data, beacon.eps.buffer.size);
         
@@ -284,10 +280,8 @@ void beacon_gen_pkt_payload()
     }
     else
     {
-        debug_print_msg("the satellite ID... ");
+        debug_print_msg("the satellite ID...\n\r");
     }
-    
-    debug_print_msg("DONE!\n\r");
 }
 
 void beacon_gen_ngham_pkt(uint8_t *ngham_pkt_str, uint16_t *ngham_pkt_str_len)
@@ -562,7 +556,7 @@ void beacon_process_radio_pkt()
             {
                 uint8_t i = 0;
 
-                debug_print_msg("Shutdown command received from ");
+                debug_print_event(DEBUG_INFO, "Shutdown command received from ");
                 for(i=0; i<6; i++)
                 {
                     debug_print_byte(data[i]);

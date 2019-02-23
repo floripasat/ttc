@@ -25,7 +25,7 @@
  * 
  * \author Gabriel Mariano Marcelino <gabriel.mm8@gmail.com>
  * 
- * \version 0.1.6
+ * \version 0.1.7
  * 
  * \date 23/09/2016
  * 
@@ -74,6 +74,48 @@ bool debug_init()
 #else
     return true;
 #endif // BEACON_DEBUG_MESSAGES
+}
+
+void debug_print_event(uint8_t type, const char *event)
+{
+    debug_print_system_time();
+    debug_print_msg(" ");
+
+    switch(type)
+    {
+        case DEBUG_INFO:
+            break;
+        case DEBUG_WARNING:
+            break;
+        case DEBUG_ERROR:
+            break;
+        default:
+            break;
+    }
+
+    debug_print_msg(event);
+}
+
+void debug_print_event_from_module(uint8_t type, const char *module, const char *event)
+{
+    debug_print_system_time();
+    debug_print_msg(" ");
+    debug_print_msg(module);
+    debug_print_msg(": ");
+
+    switch(type)
+    {
+        case DEBUG_INFO:
+            break;
+        case DEBUG_WARNING:
+            break;
+        case DEBUG_ERROR:
+            break;
+        default:
+            break;
+    }
+
+    debug_print_msg(event);
 }
 
 void debug_print_msg(const char *msg)

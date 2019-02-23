@@ -1,7 +1,7 @@
 /*
- * version.h
+ * time.h
  * 
- * Copyright (C) 2019, Universidade Federal de Santa Catarina.
+ * Copyright (C) 2017-2019, Universidade Federal de Santa Catarina.
  * 
  * This file is part of FloripaSat-TTC.
  * 
@@ -21,28 +21,24 @@
  */
 
 /**
- * \brief Version control.
+ * \brief Time control configuration.
  * 
  * \author Gabriel Mariano Marcelino <gabriel.mm8@gmail.com>
  * 
  * \version 0.1.7
  * 
- * \date 08/02/2019
+ * \date 23/02/2019
  * 
- * \defgroup version_control Version Control
+ * \defgroup time_config Configuration
+ * \ingroup time
  * \{
  */
 
-#ifndef VERSION_H_
-#define VERSION_H_
+#ifndef TIME_CONFIG_H_
+#define TIME_CONFIG_H_
 
-#define FIRMWARE_VERSION        "0.1.7"
+#define TIME_MODULE_NAME                "Time Control"
 
-#define FIRMWARE_STATUS         "Development"
+#endif // TIME_CONFIG_H_
 
-#define FIRMWARE_AUTHOR_NAME    "Gabriel Mariano Marcelino"
-#define FIRMWARE_AUTHOR_EMAIL   "gabriel.mm8@gmail.com"
-
-#endif // VERSION_H_
-
-//! \} End of version_control group
+//! \} End of time_config group

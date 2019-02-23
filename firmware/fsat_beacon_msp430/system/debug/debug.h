@@ -25,7 +25,7 @@
  * 
  * \author Gabriel Mariano Marcelino <gabriel.mm8@gmail.com>
  * 
- * \version 0.1.4
+ * \version 0.1.7
  * 
  * \date 23/09/2016
  * 
@@ -41,11 +41,54 @@
 #include <stdbool.h>
 
 /**
+ * \brief Event types.
+ */
+typedef enum
+{
+    DEBUG_INFO,         /**< Information message. */
+    DEBUG_WARNING,      /**< Warning message. */
+    DEBUG_ERROR         /**< Error message. */
+} debug_event_type_e;
+
+/**
  * \brief Initialization of the debug mode.
  * 
  * \return TRUE/FALSE if successful or not:
  */
 bool debug_init();
+
+/**
+ * \brief Prints a general event.
+ *
+ * \param[in] type is the type of event. It can be:
+ * \parblock
+ *      - DEBUG_INFO
+ *      - DEBUG_WARNING
+ *      - DEBUG_ERROR
+ *      .
+ * \endparblock
+ * \param[in] event is the event text.
+ *
+ * \return None.
+ */
+void debug_print_event(uint8_t type, const char *event);
+
+/**
+ * \brief Prints an event from a system module.
+ *
+ * \param[in] type is the type of event. It can be:
+ * \parblock
+ *      - DEBUG_INFO
+ *      - DEBUG_WARNING
+ *      - DEBUG_ERROR
+ *      .
+ * \endparblock
+ * \param[in] module is the module name.
+ * \param[in] event is the event text.
+ *
+ * \return None.
+ */
+void debug_print_event_from_module(uint8_t type, const char *module, const char *event);
 
 /**
  * \brief Prints a message over the UART.

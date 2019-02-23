@@ -1,5 +1,5 @@
 /*
- * version.h
+ * antenna.h
  * 
  * Copyright (C) 2019, Universidade Federal de Santa Catarina.
  * 
@@ -21,28 +21,24 @@
  */
 
 /**
- * \brief Version control.
+ * \brief Antenna module configuration.
  * 
  * \author Gabriel Mariano Marcelino <gabriel.mm8@gmail.com>
  * 
  * \version 0.1.7
  * 
- * \date 08/02/2019
+ * \date 23/02/2019
  * 
- * \defgroup version_control Version Control
+ * \defgroup antenna_config Configuration
+ * \ingroup antenna
  * \{
  */
 
-#ifndef VERSION_H_
-#define VERSION_H_
+#ifndef ANTENNA_CONFIG_H_
+#define ANTENNA_CONFIG_H_
 
-#define FIRMWARE_VERSION        "0.1.7"
+#define ANTENNA_MODULE_NAME             "Antenna"
 
-#define FIRMWARE_STATUS         "Development"
+#endif // ANTENNA_CONFIG_H_
 
-#define FIRMWARE_AUTHOR_NAME    "Gabriel Mariano Marcelino"
-#define FIRMWARE_AUTHOR_EMAIL   "gabriel.mm8@gmail.com"
-
-#endif // VERSION_H_
-
-//! \} End of version_control group
+//! \} End of antenna_config group

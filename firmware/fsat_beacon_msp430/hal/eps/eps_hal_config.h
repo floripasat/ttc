@@ -1,37 +1,35 @@
 /*
  * eps_hal_config.h
  * 
- * Copyright (C) 2017, Federal University of Santa Catarina
+ * Copyright (C) 2017-2019, Universidade Federal de Santa Catarina.
  * 
- * This file is part of FloripaSat-Beacon.
+ * This file is part of FloripaSat-TTC.
  * 
- * FloripaSat-Beacon is free software: you can redistribute it and/or modify
+ * FloripaSat-TTC is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
  * 
- * FloripaSat-Beacon is distributed in the hope that it will be useful,
+ * FloripaSat-TTC is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
  * 
  * You should have received a copy of the GNU General Public License
- * along with FloripaSat-Beacon. If not, see <http://www.gnu.org/licenses/>.
+ * along with FloripaSat-TTC. If not, see <http://www.gnu.org/licenses/>.
  * 
  */
 
 /**
- * \file eps_hal_config.h
- * 
  * \brief EPS communication configuration parameters.
  * 
  * \author Gabriel Mariano Marcelino <gabriel.mm8@gmail.com>
  * 
- * \version 1.0-dev
+ * \version 0.1.7
  * 
  * \date 13/07/2017
  * 
- * \defgroup eps_hal_config Config
+ * \defgroup eps_hal_config Configuration
  * \ingroup eps_hal
  * \{
  */
@@ -40,6 +38,8 @@
 #define EPS_HAL_CONFIG_H_
 
 #include <config/config.h>
+
+#define EPS_HAL_MODULE_NAME                 "EPS"
 
 // Timeout timer base address
 #define EPS_HAL_TIMEOUT_TIMER_BASE          TIMER_A0_BASE
@@ -58,4 +58,4 @@
 
 #endif // EPS_CONFIG_H_
 
-//! \} End of eps_hal group
+//! \} End of eps_hal_config group

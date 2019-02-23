@@ -21,11 +21,11 @@
  */
 
 /**
- * \brief EPS HAL functions implementation.
+ * \brief EPS HAL implementation.
  * 
  * \author Gabriel Mariano Marcelino <gabriel.mm8@gmail.com>
  * 
- * \version 0.1.6
+ * \version 0.1.7
  * 
  * \date 23/09/2016
  * 
@@ -42,7 +42,7 @@ Queue eps_queue;
 
 bool eps_init()
 {
-    debug_print_msg("EPS communication initialization... ");
+    debug_print_event_from_module(DEBUG_INFO, EPS_HAL_MODULE_NAME, "EPS communication initialization... ");
 
     // UART initialization
     if (eps_hal_uart_init())

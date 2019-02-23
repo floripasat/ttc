@@ -21,11 +21,11 @@
  */
 
 /**
- * \brief OBDH HAL functions.
+ * \brief OBDH HAL implementation.
  * 
  * \author Gabriel Mariano Marcelino <gabriel.mm8@gmail.com>
  * 
- * \version 0.1.6
+ * \version 0.1.7
  * 
  * \date 23/03/2017
  * 
@@ -36,6 +36,7 @@
 #include <stdbool.h>
 
 #include <config/config.h>
+#include <system/debug/debug.h>
 
 #include "obdh_hal.h"
 #include "obdh_hal_config.h"
@@ -44,7 +45,7 @@ Queue obdh_queue;
 
 bool obdh_init()
 {
-    debug_print_msg("OBDH communication initialization... ");
+    debug_print_event_from_module(DEBUG_INFO, OBDH_COM_MODULE_NAME, "OBDH communication initialization... ");
 
     if (obdh_hal_spi_init() == true)
     {

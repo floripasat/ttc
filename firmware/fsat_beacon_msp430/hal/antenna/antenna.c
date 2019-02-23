@@ -25,7 +25,7 @@
  * 
  * \author Gabriel Mariano Marcelino <gabriel.mm8@gmail.com>
  * 
- * \version 0.1.6
+ * \version 0.1.7
  * 
  * \date 15/06/2017
  * 
@@ -41,53 +41,38 @@
 #endif // ISIS_ANTENNA
 
 #include "antenna.h"
+#include "antenna_config.h"
 
 bool antenna_init()
 {
-    debug_print_msg("Antenna initialization... ");
+    debug_print_event_from_module(DEBUG_INFO, ANTENNA_MODULE_NAME, "Antenna initialization...\n\r");
 
 #if BEACON_ANTENNA == ISIS_ANTENNA
-    
     isis_antenna_init();
 
-    debug_print_msg("SUCCESS!\n\r");
-
     return true;
-    
 #elif BEACON_ANTENNA == PASSIVE_ANTENNA
-
-    debug_print_msg("SUCCESS!\n\r");
-    
     return  true;
-    
 #endif // BEACON_ANTENNA
 }
 
 bool antenna_is_released()
 {
 #if BEACON_ANTENNA == ISIS_ANTENNA
-
     return isis_antenna_is_released();
-
 #elif BEACON_ANTENNA == PASSIVE_ANTENNA
-
     return true;
-
 #endif // BEACON_ANTENNA
 }
 
 bool antenna_deploy()
 {
 #if BEACON_ANTENNA == ISIS_ANTENNA
-    
     isis_antenna_release();
-    
-    return isis_antenna_is_released();
-    
-#elif BEACON_ANTENNA == PASSIVE_ANTENNA
-    
-    return true;
 
+    return isis_antenna_is_released();
+#elif BEACON_ANTENNA == PASSIVE_ANTENNA
+    return true;
 #endif // BEACON_ANTENNA
 }
 
