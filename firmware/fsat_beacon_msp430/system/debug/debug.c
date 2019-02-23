@@ -25,7 +25,7 @@
  * 
  * \author Gabriel Mariano Marcelino <gabriel.mm8@gmail.com>
  * 
- * \version 0.1.2
+ * \version 0.1.3
  * 
  * \date 23/09/2016
  * 
@@ -35,12 +35,12 @@
 
 #include <math.h>
 
-#include <config/config.h>
 #include <drivers/driverlib/driverlib.h>
 #include <system/time/time.h>
 #include <version.h>
 
 #include "debug.h"
+#include "debug_config.h"
 
 bool debug_init()
 {
@@ -203,18 +203,19 @@ bool debug_uart_init()
 {
     // UART pins init.
     GPIO_setAsPeripheralModuleFunctionInputPin(DEBUG_UART_PORT, DEBUG_UART_TX_PIN + DEBUG_UART_RX_PIN);
-    
+
     // Config UART (115200 bps, no parity, 1 stop bit, LSB first)
     USCI_A_UART_initParam uart_params = {0};
-    uart_params.selectClockSource   = USCI_A_UART_CLOCKSOURCE_SMCLK;
-    uart_params.clockPrescalar      = 2;		// Clock = 4 MHz, Baudrate = 115200 bps	([1] http://software-dl.ti.com/msp430/msp430_public_sw/mcu/msp430/MSP430BaudRateConverter/index.html)
-    uart_params.firstModReg         = 2;		// Clock = 4 MHz, Baudrate = 115200 bps (See [1])
-    uart_params.secondModReg        = 3;		// Clock = 4 MHz, Baudrate = 115200 bps (See [1])
-    uart_params.parity              = USCI_A_UART_NO_PARITY;
-    uart_params.msborLsbFirst       = USCI_A_UART_LSB_FIRST;
-    uart_params.numberofStopBits    = USCI_A_UART_ONE_STOP_BIT;
-    uart_params.uartMode            = USCI_A_UART_MODE;
-    uart_params.overSampling        = USCI_A_UART_OVERSAMPLING_BAUDRATE_GENERATION;     // Clock = 1 MHz, Baudrate = 115200 bps (See [1])
+
+    uart_params.selectClockSource   = DEBUG_UART_CLOCK_SOURCE;
+    uart_params.clockPrescalar      = DEBUG_UART_CLOCK_PRESCALAR;   // Clock = 4 MHz, Baudrate = 115200 bps	([1] http://software-dl.ti.com/msp430/msp430_public_sw/mcu/msp430/MSP430BaudRateConverter/index.html)
+    uart_params.firstModReg         = DEBUG_UART_FIRST_MOD_REG;     // Clock = 4 MHz, Baudrate = 115200 bps (See [1])
+    uart_params.secondModReg        = DEBUG_UART_SECONDS_MOD_REG;   // Clock = 4 MHz, Baudrate = 115200 bps (See [1])
+    uart_params.parity              = DEBUG_UART_PARITY;
+    uart_params.msborLsbFirst       = DEBUG_UART_ENDIANESS;
+    uart_params.numberofStopBits    = DEBUG_UART_STOP_BITS;
+    uart_params.uartMode            = DEBUG_UART_MODE;
+    uart_params.overSampling        = DEBUG_UART_OVER_SAMPLING;     // Clock = 4 MHz, Baudrate = 115200 bps (See [1])
 
     // UART initialization
     if (USCI_A_UART_init(DEBUG_UART_BASE_ADDRESS, &uart_params) == STATUS_SUCCESS)

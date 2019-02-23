@@ -25,7 +25,7 @@
  * 
  * \author Gabriel Mariano Marcelino <gabriel.mm8@gmail.com>
  * 
- * \version 1.0-dev
+ * \version 0.1.3
  * 
  * \date 08/06/2017
  * 
@@ -164,14 +164,14 @@
 //-- DEBUG -----------------------------------------
 //##################################################
 
-#define DEBUG_UART_BASE_ADDRESS     USCI_A1_BASE
-#define DEBUG_UART_PORT             GPIO_PORT_P8
+#define SYS_DEBUG_UART_BASE_ADDRESS     USCI_A1_BASE
+#define SYS_DEBUG_UART_PORT             GPIO_PORT_P8
 
-#define DEBUG_UART_TX_PORT          GPIO_PORT_P8
-#define DEBUG_UART_TX_PIN           GPIO_PIN2
+#define SYS_DEBUG_UART_TX_PORT          GPIO_PORT_P8
+#define SYS_DEBUG_UART_TX_PIN           GPIO_PIN2
 
-#define DEBUG_UART_RX_PORT          GPIO_PORT_P8
-#define DEBUG_UART_RX_PIN           GPIO_PIN3
+#define SYS_DEBUG_UART_RX_PORT          GPIO_PORT_P8
+#define SYS_DEBUG_UART_RX_PIN           GPIO_PIN3
 
 #endif // PINMAP_H_
 

@@ -25,7 +25,7 @@
  * 
  * \author Gabriel Mariano Marcelino <gabriel.mm8@gmail.com>
  * 
- * \version 1.0-dev
+ * \version 0.1.3
  * 
  * \date 08/06/2017
  * 
@@ -217,6 +217,16 @@
 //########################################################
 //-- DEBUG -----------------------------------------------
 //########################################################
+
+#define SYS_DEBUG_UART_CLOCK_SOURCE         USCI_A_UART_CLOCKSOURCE_SMCLK
+#define SYS_DEBUG_UART_CLOCK_PRESCALAR      2
+#define SYS_DEBUG_UART_FIRST_MOD_REG        2
+#define SYS_DEBUG_UART_SECONDS_MOD_REG      3
+#define SYS_DEBUG_UART_PARITY               USCI_A_UART_NO_PARITY
+#define SYS_DEBUG_UART_ENDIANESS            USCI_A_UART_LSB_FIRST
+#define SYS_DEBUG_UART_STOP_BITS            USCI_A_UART_ONE_STOP_BIT
+#define SYS_DEBUG_UART_MODE                 USCI_A_UART_MODE
+#define SYS_DEBUG_UART_OVER_SAMPLING        USCI_A_UART_OVERSAMPLING_BAUDRATE_GENERATION
 
 #define DEBUG_INIT_TIMEOUT_MS               100
 
