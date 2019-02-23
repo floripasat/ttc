@@ -27,7 +27,7 @@
  * 
  * \author Gabriel Mariano Marcelino <gabriel.mm8@gmail.com>
  * 
- * \version 0.1.5
+ * \version 0.1.6
  * 
  * \date 16/12/2016
  *
@@ -43,9 +43,7 @@
 
 void ax25_beacon_pkt_gen(AX25_Packet *ax25_packet, uint8_t *data, uint16_t data_size)
 {
-#if BEACON_MODE == DEBUG_MODE
     debug_print_msg("Generating AX25 packet... ");
-#endif // DEBUG_MODE
 
     AX25_Transfer_Frame_Header destination;
     AX25_Transfer_Frame_Header source;
@@ -78,17 +76,13 @@ void ax25_beacon_pkt_gen(AX25_Packet *ax25_packet, uint8_t *data, uint16_t data_
     ax25_packet->payload.len    = data_size;
     ax25_packet->fcs            = crc16_CCITT(0x0000, data, data_size);
     ax25_packet->end_flag       = AX25_FLAG;
-    
-#if BEACON_MODE == DEBUG_MODE
+
     debug_print_msg("DONE!\n\r");
-#endif // DEBUG_MODE
 }
 
 void ax25_update_data_from_pkt(AX25_Packet *ax25_packet, uint8_t *new_data, uint16_t new_data_size)
 {
-#if BEACON_MODE == DEBUG_MODE
     debug_print_msg("Updating an existing AX25 packet... ");
-#endif // DEBUG_MODE
 
     if (new_data_size > 256)
     {
@@ -104,9 +98,7 @@ void ax25_update_data_from_pkt(AX25_Packet *ax25_packet, uint8_t *new_data, uint
     
     ax25_packet->fcs = crc16_CCITT(0x0000, new_data, new_data_size);
 
-#if BEACON_MODE == DEBUG_MODE
     debug_print_msg("DONE!\n\r");
-#endif // DEBUG_MODE
 }
 
 void ax25_pkt_2_str(AX25_Packet *ax25_packet, uint8_t *str_pkt, uint16_t *str_pkt_len)

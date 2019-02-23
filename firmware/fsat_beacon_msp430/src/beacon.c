@@ -25,7 +25,7 @@
  * 
  * \author Gabriel Mariano Marcelino <gabriel.mm8@gmail.com>
  * 
- * \version 0.1.5
+ * \version 0.1.6
  * 
  * \date 08/06/2017
  * 
@@ -48,18 +48,13 @@ Beacon beacon;
 
 void beacon_init()
 {
-#if BEACON_MODE == DEBUG_MODE
-    watchdog_hold();    // Disable watchdog for debug
-#else
     watchdog_init();
     
     cpu_init();
 
     flash_init();
     
-#if BEACON_MODE != FLIGHT_MODE
     status_led_init();
-#endif // FLIGHT_MODE
     
     time_init();
 
@@ -69,9 +64,7 @@ void beacon_init()
     beacon_delay_sec(BEACON_BOOT_DELAY_SEC);
     __disable_interrupt();
 
-#if BEACON_MODE == DEBUG_MODE
     task_init_with_timeout(&debug_init, DEBUG_INIT_TIMEOUT_MS);
-#endif // DEBUG_MODE
 
     task_init_with_timeout(&antenna_init, BEACON_ANTENNA_INIT_TIMEOUT_MS);
     
@@ -119,15 +112,13 @@ void beacon_deinit()
 
 void beacon_run()
 {
-#if BEACON_MODE == DEBUG_MODE
     debug_print_msg("Running...\n\r");
-#elif BEACON_MODE == FLIGHT_MODE
-    if (!antenna_is_released())
-    {
-        task_antenna_deployment();
-    }
-#endif // BEACON_MODE
-    
+
+//    if (!antenna_is_released())
+//    {
+//        task_antenna_deployment();
+//    }
+
     __enable_interrupt();
     
     while(1)
@@ -158,15 +149,11 @@ void beacon_run()
         
         task_periodic(&system_reset, BEACON_SYSTEM_RESET_PERIOD_SEC, &beacon.last_system_reset_time, time_get_seconds());
         
-    #if BEACON_MODE != FLIGHT_MODE
         status_led_toggle();                // Heartbeat
-    #endif // BEACON_MODE
         
         system_enter_low_power_mode();      // Wait until the time timer execution (When the system leaves low-power mode)
         
-    #if BEACON_MODE != DEBUG_MODE
         watchdog_reset_timer();
-    #endif // BEACON_MODE
     }
 }
 
@@ -174,35 +161,27 @@ void beacon_enter_hibernation()
 {
     if (!beacon.hibernation)
     {
-    #if BEACON_MODE == DEBUG_MODE
         debug_print_msg("Entering in hibernation mode... ");
-    #endif // DEBUG_MODE
-        
+
         radio_sleep();
-        
+
         beacon.hibernation = true;
-        
+
         beacon.hibernation_mode_initial_time = time_get_seconds();
-        
-    #if BEACON_MODE == DEBUG_MODE
+
         debug_print_msg("DONE!\n\r");
-    #endif // DEBUG_MODE
     }
 }
 
 void beacon_leave_hibernation()
 {
-#if BEACON_MODE == DEBUG_MODE
     debug_print_msg("Leaving hibernation mode... ");
-#endif // DEBUG_MODE
-    
+
     radio_wake_up();
-    
+
     beacon.hibernation = false;
-    
-#if BEACON_MODE == DEBUG_MODE
+
     debug_print_msg("DONE!\n\r");
-#endif // DEBUG_MODE
 }
 
 uint8_t beacon_get_tx_period()
@@ -274,15 +253,13 @@ void beacon_check_devices_status()
 
 void beacon_gen_pkt_payload()
 {
-#if BEACON_MODE == DEBUG_MODE
     debug_print_msg("Generating packet payload from ");
-#endif // DEBUG_MODE
-    
+
     if (!buffer_empty(&beacon.pkt_payload))
     {
         buffer_clear(&beacon.pkt_payload);
     }
-    
+
 #if BEACON_PACKET_PAYLOAD_CONTENT & PAYLOAD_SAT_ID
     buffer_fill(&beacon.pkt_payload, SATELLITE_ID, sizeof(SATELLITE_ID)-1);
 #endif // PAYLOAD_SAT_ID
@@ -290,10 +267,8 @@ void beacon_gen_pkt_payload()
     if ((beacon.obdh.errors == 0) && (!beacon.obdh.is_dead))
     {
 #if BEACON_PACKET_PAYLOAD_CONTENT & PAYLOAD_OBDH_DATA
-    #if BEACON_MODE == DEBUG_MODE
         debug_print_msg("OBDH data... ");
-    #endif // DEBUG_MODE
-        
+
         buffer_append(&beacon.pkt_payload, beacon.obdh.buffer.data, beacon.obdh.buffer.size);
         
 #endif // PAYLOAD_OBDH_DATA
@@ -301,24 +276,18 @@ void beacon_gen_pkt_payload()
     else if ((beacon.eps.errors == 0) && (!beacon.eps.is_dead))
     {
 #if BEACON_PACKET_PAYLOAD_CONTENT & PAYLOAD_EPS_DATA
-    #if BEACON_MODE == DEBUG_MODE
         debug_print_msg("EPS data... ");
-    #endif // DEBUG_MODE
-        
+
         buffer_append(&beacon.pkt_payload, beacon.eps.buffer.data, beacon.eps.buffer.size);
         
 #endif // PAYLOAD_EPS_DATA
     }
     else
     {
-#if BEACON_MODE == DEBUG_MODE
         debug_print_msg("the satellite ID... ");
-#endif // DEBUG_MODE
     }
     
-#if BEACON_MODE == DEBUG_MODE
     debug_print_msg("DONE!\n\r");
-#endif // DEBUG_MODE
 }
 
 void beacon_gen_ngham_pkt(uint8_t *ngham_pkt_str, uint16_t *ngham_pkt_str_len)
@@ -592,16 +561,14 @@ void beacon_process_radio_pkt()
             if ((data[6] == 's') && (data[7] == 'd'))
             {
                 uint8_t i = 0;
-                
-            #if BEACON_MODE == DEBUG_MODE
+
                 debug_print_msg("Shutdown command received from ");
                 for(i=0; i<6; i++)
                 {
                     debug_print_byte(data[i]);
                 }
-                debug_print_msg("!\n");
-            #endif // DEBUG_MODE
-                
+                debug_print_msg("!\n\r");
+
                 uint8_t ngham_pkt_str[100];
                 uint16_t ngham_pkt_str_len;
                 
@@ -658,10 +625,8 @@ void beacon_antenna_deployment()
     
     while((time_get_seconds() - time_marker) <= BEACON_ANTENNA_DEPLOY_SLEEP_SEC)
     {
-#if BEACON_MODE != DEBUG_MODE
         watchdog_reset_timer();
-#endif // BEACON_MODE
-        
+
         system_enter_low_power_mode();
     }
     
@@ -675,9 +640,7 @@ void beacon_delay_sec(uint8_t delay_sec)
     {
         system_enter_low_power_mode();
 
-#if BEACON_MODE != DEBUG_MODE
         watchdog_reset_timer();
-#endif // BEACON_MODE
     }
 }
 

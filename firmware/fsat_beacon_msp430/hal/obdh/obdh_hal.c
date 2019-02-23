@@ -25,7 +25,7 @@
  * 
  * \author Gabriel Mariano Marcelino <gabriel.mm8@gmail.com>
  * 
- * \version 0.1.5
+ * \version 0.1.6
  * 
  * \date 23/03/2017
  * 
@@ -44,25 +44,19 @@ Queue obdh_queue;
 
 bool obdh_init()
 {
-#if BEACON_MODE == DEBUG_MODE
     debug_print_msg("OBDH communication initialization... ");
-#endif // BEACON_MODE
 
     if (obdh_hal_spi_init() == true)
     {
         queue_init(&obdh_queue);
 
-#if BEACON_MODE == DEBUG_MODE
         debug_print_msg("SUCCESS!\n\r");
-#endif // BEACON_MODE
-        
+
         return true;
     }
     else
     {
-#if BEACON_MODE == DEBUG_MODE
         debug_print_msg("FAIL!\n\r");
-#endif // BEACON_MODE
 
         return false;
     }

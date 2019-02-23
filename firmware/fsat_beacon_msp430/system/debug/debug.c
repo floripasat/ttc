@@ -3,20 +3,20 @@
  * 
  * Copyright (C) 2017-2019, Universidade Federal de Santa Catarina
  * 
- * This file is part of FloripaSat-Beacon.
+ * This file is part of FloripaSat-TTC.
  * 
- * FloripaSat-Beacon is free software: you can redistribute it and/or modify
+ * FloripaSat-TTC is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
  * 
- * FloripaSat-Beacon is distributed in the hope that it will be useful,
+ * FloripaSat-TTC is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
  * 
  * You should have received a copy of the GNU General Public License
- * along with FloripaSat-Beacon. If not, see <http://www.gnu.org/licenses/>.
+ * along with FloripaSat-TTC. If not, see <http://www.gnu.org/licenses/>.
  * 
  */
 
@@ -25,7 +25,7 @@
  * 
  * \author Gabriel Mariano Marcelino <gabriel.mm8@gmail.com>
  * 
- * \version 0.1.4
+ * \version 0.1.6
  * 
  * \date 23/09/2016
  * 
@@ -43,6 +43,7 @@
 
 bool debug_init()
 {
+#if BEACON_DEBUG_MESSAGES == 1
     if (debug_uart_init())
     {
         debug_print_license_msg();
@@ -70,6 +71,9 @@ bool debug_init()
     {
         return false;
     }
+#else
+    return true;
+#endif // BEACON_DEBUG_MESSAGES
 }
 
 void debug_print_msg(const char *msg)
@@ -152,7 +156,9 @@ void debug_print_hex(uint32_t hex)
 
 void debug_print_byte(uint8_t byte)
 {
+#if BEACON_DEBUG_MESSAGES == 1
     debug_uart_write_byte(byte);
+#endif // BEACON_DEBUG_MESSAGES
 }
 
 void debug_print_system_time()
@@ -200,10 +206,12 @@ void debug_print_firmware_version()
 
 void debug_abort()
 {
+#if BEACON_DEBUG_MESSAGES == 1
     while(1)
     {
         
     }
+#endif // BEACON_DEBUG_MESSAGES
 }
 
 //! \} End of debug group

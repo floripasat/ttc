@@ -25,7 +25,7 @@
  * 
  * \author Gabriel Mariano Marcelino <gabriel.mm8@gmail.com>
  * 
- * \version 0.1.5
+ * \version 0.1.6
  * 
  * \date 15/06/2017
  * 
@@ -44,25 +44,19 @@
 
 bool antenna_init()
 {
-#if BEACON_MODE == DEBUG_MODE
     debug_print_msg("Antenna initialization... ");
-#endif // DEBUG_MODE
 
 #if BEACON_ANTENNA == ISIS_ANTENNA
     
     isis_antenna_init();
-    
-    #if BEACON_MODE == DEBUG_MODE
-        debug_print_msg("SUCCESS!\n\r");
-    #endif // DEBUG_MODE
-    
+
+    debug_print_msg("SUCCESS!\n\r");
+
     return true;
     
 #elif BEACON_ANTENNA == PASSIVE_ANTENNA
-    
-    #if BEACON_MODE == DEBUG_MODE
-        debug_print_msg("SUCCESS!\n\r");
-    #endif // DEBUG_MODE
+
+    debug_print_msg("SUCCESS!\n\r");
     
     return  true;
     

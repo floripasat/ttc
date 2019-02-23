@@ -25,7 +25,7 @@
  * 
  * \author Gabriel Mariano Marcelino <gabriel.mm8@gmail.com>
  * 
- * \version 0.1.5
+ * \version 0.1.6
  * 
  * \date 10/06/2017
  * 
@@ -35,10 +35,7 @@
 
 #include <config/config.h>
 #include <drivers/driverlib/driverlib.h>
-
-#if BEACON_MODE == DEBUG_MODE
-    #include <system/debug/debug.h>
-#endif // DEBUG_MODE
+#include <system/debug/debug.h>
 
 #include "time.h"
 
@@ -48,17 +45,13 @@ Time time_backup;
 
 void time_init()
 {
-#if BEACON_MODE == DEBUG_MODE
     debug_print_msg("Time control initialization... ");
-#endif // DEBUG_MODE
-    
+
     time_reset();
     
     time_timer_init();
-    
-#if BEACON_MODE == DEBUG_MODE
+
     debug_print_msg("SUCCESS!\n\r");
-#endif // DEBUG_MODE
 }
 
 static void time_timer_init()

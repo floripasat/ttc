@@ -25,7 +25,7 @@
  * 
  * \author Gabriel Mariano Marcelino <gabriel.mm8@gmail.com>
  * 
- * \version 0.1.5
+ * \version 0.1.6
  * 
  * \date 23/09/2016
  * 
@@ -42,26 +42,20 @@ Queue eps_queue;
 
 bool eps_init()
 {
-#if BEACON_MODE == DEBUG_MODE
     debug_print_msg("EPS communication initialization... ");
-#endif // DEBUG_MODE
 
     // UART initialization
     if (eps_hal_uart_init())
     {
         queue_init(&eps_queue);
 
-#if BEACON_MODE == DEBUG_MODE
         debug_print_msg("SUCCESS!\n\r");
-#endif // DEBUG_MODE
 
         return true;
     }
     else
     {
-#if BEACON_MODE == DEBUG_MODE
         debug_print_msg("FAIL!\n\r");
-#endif // DEBUG_MODE
 
         return false;
     }
