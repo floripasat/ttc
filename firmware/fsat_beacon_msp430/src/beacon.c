@@ -1,22 +1,22 @@
 /*
  * beacon.c
  * 
- * Copyright (C) 2017, Federal University of Santa Catarina.
+ * Copyright (C) 2017-2019, Universidade Federal de Santa Catarina.
  * 
- * This file is part of FloripaSat-Beacon.
+ * This file is part of FloripaSat-TTC.
  * 
- * FloripaSat-Beacon is free software: you can redistribute it and/or modify
+ * FloripaSat-TTC is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
  * 
- * FloripaSat-Beacon is distributed in the hope that it will be useful,
+ * FloripaSat-TTC is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
  * 
  * You should have received a copy of the GNU General Public License
- * along with FloripaSat-Beacon. If not, see <http://www.gnu.org/licenses/>.
+ * along with FloripaSat-TTC. If not, see <http://www.gnu.org/licenses/>.
  * 
  */
 
@@ -25,7 +25,7 @@
  * 
  * \author Gabriel Mariano Marcelino <gabriel.mm8@gmail.com>
  * 
- * \version 0.1.2
+ * \version 0.1.5
  * 
  * \date 08/06/2017
  * 
@@ -52,7 +52,6 @@ void beacon_init()
     watchdog_hold();    // Disable watchdog for debug
 #else
     watchdog_init();
-#endif // DEBUG_MODE
     
     cpu_init();
 
@@ -121,7 +120,7 @@ void beacon_deinit()
 void beacon_run()
 {
 #if BEACON_MODE == DEBUG_MODE
-    debug_print_msg("Running...\n");
+    debug_print_msg("Running...\n\r");
 #elif BEACON_MODE == FLIGHT_MODE
     if (!antenna_is_released())
     {
@@ -186,7 +185,7 @@ void beacon_enter_hibernation()
         beacon.hibernation_mode_initial_time = time_get_seconds();
         
     #if BEACON_MODE == DEBUG_MODE
-        debug_print_msg("DONE!\n");
+        debug_print_msg("DONE!\n\r");
     #endif // DEBUG_MODE
     }
 }
@@ -202,7 +201,7 @@ void beacon_leave_hibernation()
     beacon.hibernation = false;
     
 #if BEACON_MODE == DEBUG_MODE
-    debug_print_msg("DONE!\n");
+    debug_print_msg("DONE!\n\r");
 #endif // DEBUG_MODE
 }
 
@@ -318,7 +317,7 @@ void beacon_gen_pkt_payload()
     }
     
 #if BEACON_MODE == DEBUG_MODE
-    debug_print_msg("DONE!\n");
+    debug_print_msg("DONE!\n\r");
 #endif // DEBUG_MODE
 }
 
