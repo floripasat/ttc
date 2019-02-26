@@ -25,7 +25,7 @@
  * 
  * \author Gabriel Mariano Marcelino <gabriel.mm8@gmail.com>
  * 
- * \version 0.1.7
+ * \version 0.1.9
  * 
  * \date 23/09/2016
  * 
@@ -46,10 +46,13 @@ bool debug_init()
 #if BEACON_DEBUG_MESSAGES == 1
     if (debug_uart_init())
     {
+        debug_print_msg("\n\r");
+
         debug_print_license_msg();
 
         debug_print_splash_screen();
 
+        debug_print_msg("=========================================================\n\r");
         debug_print_msg("Version:\t");
         debug_print_firmware_version();
         debug_print_msg("\n\r");
@@ -62,8 +65,9 @@ bool debug_init()
         debug_print_msg(FIRMWARE_AUTHOR_NAME);
         debug_print_msg(" <");
         debug_print_msg(FIRMWARE_AUTHOR_EMAIL);
-        debug_print_msg(">");
-        debug_print_msg("\n\n\n\r");
+        debug_print_msg(">\n\r");
+        debug_print_msg("=========================================================\n\r");
+        debug_print_msg("\n\n\r");
 
         return true;
     }
@@ -206,7 +210,7 @@ void debug_print_byte(uint8_t byte)
 void debug_print_system_time()
 {
     debug_print_msg("[ ");
-    debug_print_dec(1000*time_get_seconds());
+    debug_print_dec(time_get_seconds());
     debug_print_msg(" ]");
 }
 
@@ -226,7 +230,7 @@ void debug_print_splash_screen()
     debug_print_msg("                                                         \n\r");
     debug_print_msg(".........................................................\n\r");
     debug_print_msg(".........................................................\n\r");
-    debug_print_msg(".........................................................\n\r");
+    debug_print_msg("......                                             ......\n\r");
     debug_print_msg("......  _____ ____        _      _____ _____ ____  ......\n\r");
     debug_print_msg("...... |  ___/ ___|  __ _| |_   |_   _|_   _/ ___| ......\n\r");
     debug_print_msg("...... | |_  \\___ \\ / _` | __|____| |   | || |     ......\n\r");
