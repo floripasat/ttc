@@ -1,48 +1,44 @@
 /*
- * version.h
+ * power_config.h
  * 
  * Copyright (C) 2019, Universidade Federal de Santa Catarina.
  * 
  * This file is part of FloripaSat-TTC.
  * 
  * FloripaSat-TTC is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
+ * it under the terms of the GNU Lesser General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
  * 
  * FloripaSat-TTC is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * GNU Lesser General Public License for more details.
  * 
- * You should have received a copy of the GNU General Public License
+ * You should have received a copy of the GNU Lesser General Public License
  * along with FloripaSat-TTC. If not, see <http://www.gnu.org/licenses/>.
  * 
  */
 
 /**
- * \brief Version control.
+ * \brief System power control configuration parameters.
  * 
  * \author Gabriel Mariano Marcelino <gabriel.mm8@gmail.com>
  * 
  * \version 0.1.8
  * 
- * \date 08/02/2019
+ * \date 26/02/2019
  * 
- * \defgroup version_control Version Control
+ * \defgroup power_config Configuration
+ * \ingroup power
  * \{
  */
 
-#ifndef VERSION_H_
-#define VERSION_H_
+#ifndef POWER_CONFIG_H_
+#define POWER_CONFIG_H_
 
-#define FIRMWARE_VERSION        "0.1.8"
+#define POWER_MODULE_NAME           "System"
 
-#define FIRMWARE_STATUS         "Development"
+#endif // POWER_CONFIG_H_
 
-#define FIRMWARE_AUTHOR_NAME    "Gabriel Mariano Marcelino"
-#define FIRMWARE_AUTHOR_EMAIL   "gabriel.mm8@gmail.com"
-
-#endif // VERSION_H_
-
-//! \} End of version_control group
+//! \} End of power_config group

@@ -1,9 +1,9 @@
 /*
  * radio_hal_config.h
  * 
- * Copyright (C) 2017, Federal University of Santa Catarina.
+ * Copyright (C) 2017-2019, Universidade Federal de Santa Catarina.
  * 
- * This file is part of FloripaSat-Beacon.
+ * This file is part of FloripaSat-TTC.
  * 
  * FloripaSat-Beacon is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -21,13 +21,11 @@
  */
 
 /**
- * \file radio_hal_config.h
- * 
  * \brief Radio HAL configuration parameters.
  * 
  * \author Gabriel Mariano Marcelino <gabriel.mm8@gmail.com>
  * 
- * \version 1.0-dev
+ * \version 0.1.8
  * 
  * \date 09/11/2017
  * 
@@ -40,6 +38,8 @@
 #define RADIO_HAL_CONFIG_H_
 
 #include <config/config.h>
+
+#define RADIO_HAL_MODULE_NAME               "Radio"
 
 #define RADIO_HAL_RX_ISR_PORT_VECTOR        RADIO_GPIO_nIRQ_ISR_VECTOR
 

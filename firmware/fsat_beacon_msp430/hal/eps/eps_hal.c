@@ -25,7 +25,7 @@
  * 
  * \author Gabriel Mariano Marcelino <gabriel.mm8@gmail.com>
  * 
- * \version 0.1.7
+ * \version 0.1.8
  * 
  * \date 23/09/2016
  * 
@@ -42,21 +42,17 @@ Queue eps_queue;
 
 bool eps_init()
 {
-    debug_print_event_from_module(DEBUG_INFO, EPS_HAL_MODULE_NAME, "EPS communication initialization... ");
+    debug_print_event_from_module(DEBUG_INFO, EPS_HAL_MODULE_NAME, "Initialization communication...\n\r");
 
     // UART initialization
     if (eps_hal_uart_init())
     {
         queue_init(&eps_queue);
 
-        debug_print_msg("SUCCESS!\n\r");
-
         return true;
     }
     else
     {
-        debug_print_msg("FAIL!\n\r");
-
         return false;
     }
 }
@@ -90,6 +86,8 @@ void eps_clear()
 
 static bool eps_hal_uart_init()
 {
+    debug_print_event_from_module(DEBUG_INFO, EPS_HAL_MODULE_NAME, "Initializing UART bus...");
+
     // UART pins init.
     GPIO_setAsPeripheralModuleFunctionInputPin(EPS_UART_RX_PORT, EPS_UART_RX_PIN);
 
@@ -114,10 +112,14 @@ static bool eps_hal_uart_init()
         USCI_A_UART_clearInterrupt(EPS_UART_BASE_ADDRESS, USCI_A_UART_RECEIVE_INTERRUPT);
         USCI_A_UART_enableInterrupt(EPS_UART_BASE_ADDRESS, USCI_A_UART_RECEIVE_INTERRUPT);
 
+        debug_print_msg("SUCCESS!\n\r");
+
         return true;
     }
     else
-    {        
+    {
+        debug_print_msg("FAILURE!\n\r");
+
         return false;
     }
 }

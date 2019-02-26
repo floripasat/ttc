@@ -25,7 +25,7 @@
  * 
  * \author Gabriel Mariano Marcelino <gabriel.mm8@gmail.com>
  * 
- * \version 0.1.7
+ * \version 0.1.8
  * 
  * \date 23/03/2017
  * 
@@ -45,26 +45,24 @@ Queue obdh_queue;
 
 bool obdh_init()
 {
-    debug_print_event_from_module(DEBUG_INFO, OBDH_COM_MODULE_NAME, "OBDH communication initialization... ");
+    debug_print_event_from_module(DEBUG_INFO, OBDH_COM_MODULE_NAME, "Initializing communication...\n\r");
 
     if (obdh_hal_spi_init() == true)
     {
         queue_init(&obdh_queue);
 
-        debug_print_msg("SUCCESS!\n\r");
-
         return true;
     }
     else
     {
-        debug_print_msg("FAIL!\n\r");
-
         return false;
     }
 }
 
 static bool obdh_hal_spi_init()
 {
+    debug_print_event_from_module(DEBUG_INFO, OBDH_COM_MODULE_NAME, "Initializing SPI bus...");
+
     // SPI pins init.
     GPIO_setAsPeripheralModuleFunctionInputPin(OBDH_SPI_PORT, OBDH_SPI_MOSI_PIN + OBDH_SPI_MISO_PIN + OBDH_SPI_SCLK_PIN + OBDH_SPI_NSEL_PIN);
 
@@ -82,10 +80,14 @@ static bool obdh_hal_spi_init()
         USCI_A_SPI_clearInterrupt(OBDH_SPI_BASE_ADDRESS, USCI_A_SPI_RECEIVE_INTERRUPT);
         USCI_A_SPI_enableInterrupt(OBDH_SPI_BASE_ADDRESS, USCI_A_SPI_RECEIVE_INTERRUPT);
 
+        debug_print_msg("SUCCESS!\n\r");
+
         return true;
     }
     else
     {
+        debug_print_msg("FAILURE!\n\r");
+
         return false;
     }
 }

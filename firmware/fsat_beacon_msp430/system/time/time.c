@@ -25,7 +25,7 @@
  * 
  * \author Gabriel Mariano Marcelino <gabriel.mm8@gmail.com>
  * 
- * \version 0.1.7
+ * \version 0.1.8
  * 
  * \date 10/06/2017
  * 
@@ -103,6 +103,8 @@ static uint8_t time_crc8(uint32_t time_counter)
 
 void time_timer_start()
 {
+    debug_print_event_from_module(DEBUG_INFO, TIME_MODULE_NAME, "Initializing timer...\n\r");
+
     Timer_A_startCounter(TIME_TIMER_BASE_ADDRESS, TIME_TIMER_MODE);
 }
 

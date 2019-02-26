@@ -25,7 +25,7 @@
  * 
  * \author Gabriel Mariano Marcelino <gabriel.mm8@gmail.com>
  * 
- * \version 0.1.7
+ * \version 0.1.8
  * 
  * \date 15/06/2017
  * 
@@ -45,7 +45,7 @@
 
 bool antenna_init()
 {
-    debug_print_event_from_module(DEBUG_INFO, ANTENNA_MODULE_NAME, "Antenna initialization...\n\r");
+    debug_print_event_from_module(DEBUG_INFO, ANTENNA_MODULE_NAME, "Initialization...\n\r");
 
 #if BEACON_ANTENNA == ISIS_ANTENNA
     isis_antenna_init();
@@ -67,6 +67,8 @@ bool antenna_is_released()
 
 bool antenna_deploy()
 {
+    debug_print_event_from_module(DEBUG_INFO, ANTENNA_MODULE_NAME, "Releasing the antenna...\n\r");
+
 #if BEACON_ANTENNA == ISIS_ANTENNA
     isis_antenna_release();
 

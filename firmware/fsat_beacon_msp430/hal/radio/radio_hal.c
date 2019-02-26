@@ -1,7 +1,7 @@
 /*
  * radio_hal.c
  * 
- * Copyright (C) 2017, Federal University of Santa Catarina.
+ * Copyright (C) 2017-2019, Federal University of Santa Catarina.
  * 
  * This file is part of FloripaSat-Beacon.
  * 
@@ -21,13 +21,11 @@
  */
 
 /**
- * \file radio_hal.c
- * 
  * \brief Radio HAL implementation.
  * 
  * \author Gabriel Mariano Marcelino <gabriel.mm8@gmail.com>
  * 
- * \version 1.0-dev
+ * \version 0.1.8
  * 
  * \date 09/06/2017
  * 
@@ -36,6 +34,7 @@
  */
 
 #include <config/config.h>
+#include <system/debug/debug.h>
 
 #if BEACON_RADIO == CC1175 || BEACON_RADIO == CC1125
     #include <drivers/radio/cc11x5/cc11xx.h>
@@ -62,6 +61,8 @@ Queue radio_rx_queue;
 
 bool radio_init()
 {
+    debug_print_event_from_module(DEBUG_INFO, RADIO_HAL_MODULE_NAME, "Initializing communication...\n\r");
+
 #if BEACON_RADIO == CC1175 || BEACON_RADIO == CC1125
     uint8_t init_status = cc11xx_init();
     if (init_status == STATUS_SUCCESS)
@@ -94,6 +95,8 @@ bool radio_init()
 
 void radio_reset()
 {
+    debug_print_event_from_module(DEBUG_INFO, RADIO_HAL_MODULE_NAME, "Reseting...\n\r");
+
 #if BEACON_RADIO == CC1175 || BEACON_RADIO == CC1125
     
 #elif BEACON_RADIO == SI4063
