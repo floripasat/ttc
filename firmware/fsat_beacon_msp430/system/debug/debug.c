@@ -25,7 +25,7 @@
  * 
  * \author Gabriel Mariano Marcelino <gabriel.mm8@gmail.com>
  * 
- * \version 0.1.9
+ * \version 0.1.10
  * 
  * \date 23/09/2016
  * 
@@ -80,6 +80,44 @@ bool debug_init()
 #endif // BEACON_DEBUG_MESSAGES
 }
 
+void debug_set_color(uint8_t color)
+{
+    switch(color)
+    {
+        case DEBUG_COLOR_BLACK:
+            debug_print_msg("\033[1;30m");
+            break;
+        case DEBUG_COLOR_RED:
+            debug_print_msg("\033[1;31m");
+            break;
+        case DEBUG_COLOR_GREEN:
+            debug_print_msg("\033[1;32m");
+            break;
+        case DEBUG_COLOR_YELLOW:
+            debug_print_msg("\033[1;33m");
+            break;
+        case DEBUG_COLOR_BLUE:
+            debug_print_msg("\033[1;34m");
+            break;
+        case DEBUG_COLOR_MAGENTA:
+            debug_print_msg("\033[1;35m");
+            break;
+        case DEBUG_COLOR_CYAN:
+            debug_print_msg("\033[1;36m");
+            break;
+        case DEBUG_COLOR_WHITE:
+            debug_print_msg("\033[1;37m");
+            break;
+        default:
+            debug_reset_color();
+    }
+}
+
+void debug_reset_color()
+{
+    debug_print_msg("\033[0m");
+}
+
 void debug_print_event(uint8_t type, const char *event)
 {
     debug_print_system_time();
@@ -90,8 +128,10 @@ void debug_print_event(uint8_t type, const char *event)
         case DEBUG_INFO:
             break;
         case DEBUG_WARNING:
+            debug_set_color(DEBUG_WARNING_COLOR);
             break;
         case DEBUG_ERROR:
+            debug_set_color(DEBUG_ERROR_COLOR);
             break;
         default:
             break;
@@ -103,8 +143,11 @@ void debug_print_event(uint8_t type, const char *event)
 void debug_print_event_from_module(uint8_t type, const char *module, const char *event)
 {
     debug_print_system_time();
+
+    debug_set_color(DEBUG_MODULE_NAME_COLOR);
     debug_print_msg(" ");
     debug_print_msg(module);
+    debug_reset_color();
     debug_print_msg(": ");
 
     switch(type)
@@ -112,8 +155,10 @@ void debug_print_event_from_module(uint8_t type, const char *module, const char 
         case DEBUG_INFO:
             break;
         case DEBUG_WARNING:
+            debug_set_color(DEBUG_WARNING_COLOR);
             break;
         case DEBUG_ERROR:
+            debug_set_color(DEBUG_ERROR_COLOR);
             break;
         default:
             break;
@@ -127,6 +172,11 @@ void debug_print_msg(const char *msg)
     uint8_t i = 0;
     while(msg[i] != '\0')
     {
+        if (msg[i] == '\n')
+        {
+            debug_reset_color();
+        }
+
         debug_print_byte(msg[i]);
         i++;
     }
@@ -209,9 +259,13 @@ void debug_print_byte(uint8_t byte)
 
 void debug_print_system_time()
 {
+    debug_set_color(DEBUG_SYSTEM_TIME_COLOR);
+
     debug_print_msg("[ ");
     debug_print_dec(time_get_seconds());
     debug_print_msg(" ]");
+
+    debug_reset_color();
 }
 
 void debug_print_license_msg()

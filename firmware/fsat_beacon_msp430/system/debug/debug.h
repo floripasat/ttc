@@ -25,7 +25,7 @@
  * 
  * \author Gabriel Mariano Marcelino <gabriel.mm8@gmail.com>
  * 
- * \version 0.1.7
+ * \version 0.1.10
  * 
  * \date 23/09/2016
  * 
@@ -51,11 +51,55 @@ typedef enum
 } debug_event_type_e;
 
 /**
+ * \brief Debug text colors list.
+ */
+typedef enum
+{
+    DEBUG_COLOR_BLACK = 0,      /**< Color black. */
+    DEBUG_COLOR_RED,            /**< Color red. */
+    DEBUG_COLOR_GREEN,          /**< Color green. */
+    DEBUG_COLOR_YELLOW,         /**< Color yellow. */
+    DEBUG_COLOR_BLUE,           /**< Color blue. */
+    DEBUG_COLOR_MAGENTA,        /**< Color magenta. */
+    DEBUG_COLOR_CYAN,           /**< Color cyan. */
+    DEBUG_COLOR_WHITE           /**< Color white. */
+} debug_colors_e;
+
+/**
  * \brief Initialization of the debug mode.
  * 
  * \return TRUE/FALSE if successful or not:
  */
 bool debug_init();
+
+/**
+ * \brief Sets the foreground color for the next debug message.
+ *
+ * This function uses the ANSI color code to output color debug messages.
+ *
+ * \param[in] color is the foreground color of text to select. It can be:
+ * \parblock
+ *      - DEBUG_COLOR_BLACK
+ *      - DEBUG_COLOR_RED
+ *      - DEBUG_COLOR_GREEN
+ *      - DEBUG_COLOR_YELLOW
+ *      - DEBUG_COLOR_BLUE
+ *      - DEBUG_COLOR_MAGENTA
+ *      - DEBUG_COLOR_CYAN
+ *      - DEBUG_COLOR_WHITE
+ *      .
+ * \endparblock
+ *
+ * \return None.
+ */
+void debug_set_color(uint8_t color);
+
+/**
+ * \brief Resets the color back to normal.
+ *
+ * \return None.
+ */
+void debug_reset_color();
 
 /**
  * \brief Prints a general event.

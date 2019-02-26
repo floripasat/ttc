@@ -25,7 +25,7 @@
  * 
  * \author Gabriel Mariano Marcelino <gabriel.mm8@gmail.com>
  * 
- * \version 0.1.3
+ * \version 0.1.10
  * 
  * \date 22/02/2019
  * 
@@ -39,6 +39,8 @@
 
 #include <config/config.h>
 #include <config/pinmap.h>
+
+#include "debug.h"
 
 // UART
 #define DEBUG_UART_BASE_ADDRESS         SYS_DEBUG_UART_BASE_ADDRESS
@@ -55,6 +57,12 @@
 #define DEBUG_UART_STOP_BITS            SYS_DEBUG_UART_STOP_BITS
 #define DEBUG_UART_MODE                 SYS_DEBUG_UART_MODE
 #define DEBUG_UART_OVER_SAMPLING        SYS_DEBUG_UART_OVER_SAMPLING
+
+// Debug messages colors
+#define DEBUG_SYSTEM_TIME_COLOR         DEBUG_COLOR_GREEN
+#define DEBUG_MODULE_NAME_COLOR         DEBUG_COLOR_MAGENTA
+#define DEBUG_WARNING_COLOR             DEBUG_COLOR_YELLOW
+#define DEBUG_ERROR_COLOR               DEBUG_COLOR_RED
 
 #endif // DEBUG_CONFIG_H_
 
