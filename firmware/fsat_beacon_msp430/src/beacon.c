@@ -25,7 +25,7 @@
  * 
  * \author Gabriel Mariano Marcelino <gabriel.mm8@gmail.com>
  * 
- * \version 0.1.7
+ * \version 0.1.11
  * 
  * \date 08/06/2017
  * 
@@ -112,7 +112,7 @@ void beacon_deinit()
 
 void beacon_run()
 {
-    debug_print_event(DEBUG_INFO, "Running...\n\r");
+    debug_print_event_from_module(DEBUG_INFO, BEACON_MODULE_NAME, "Running main loop...\n\r");
 
 //    if (!antenna_is_released())
 //    {
@@ -161,7 +161,7 @@ void beacon_enter_hibernation()
 {
     if (!beacon.hibernation)
     {
-        debug_print_event(DEBUG_INFO, "Entering in hibernation mode...\n\r");
+        debug_print_event_from_module(DEBUG_INFO, BEACON_MODULE_NAME, "Entering in hibernation mode...\n\r");
 
         radio_sleep();
 
@@ -173,7 +173,7 @@ void beacon_enter_hibernation()
 
 void beacon_leave_hibernation()
 {
-    debug_print_event(DEBUG_INFO, "Leaving hibernation mode...\n\r");
+    debug_print_event_from_module(DEBUG_INFO, BEACON_MODULE_NAME, "Leaving hibernation mode...\n\r");
 
     radio_wake_up();
 
@@ -201,6 +201,8 @@ uint8_t beacon_get_tx_period()
 
 void beacon_set_energy_level()
 {
+    uint8_t last_energy_level = beacon.energy_level;
+
     if ((beacon.obdh.errors == 0) && (!beacon.obdh.is_dead))
     {
         beacon.energy_level = beacon.obdh.buffer.data[OBDH_PKT_ENERGY_LEVEL_POS];
@@ -213,10 +215,22 @@ void beacon_set_energy_level()
     {
         beacon.energy_level = SATELLITE_ENERGY_LEVEL_5;
     }
+
+    if (last_energy_level != beacon.energy_level)
+    {
+        debug_print_event_from_module(DEBUG_INFO, BEACON_MODULE_NAME, "Changing energy level from ");
+        debug_print_dec(last_energy_level);
+        debug_print_msg(" to ");
+        debug_print_dec(beacon.energy_level);
+        debug_print_msg("!\n\r");
+    }
 }
 
 void beacon_check_devices_status()
 {
+    bool last_obdh_status = beacon.obdh.is_dead;
+    bool last_eps_status = beacon.eps.is_dead;
+
     if ((time_get_seconds() - beacon.obdh.time_last_valid_pkt) <= OBDH_TIMEOUT_SEC)
     {
         beacon.obdh.is_dead = false;
@@ -245,11 +259,21 @@ void beacon_check_devices_status()
     
     // Antenna connection status
     // Radio status
+
+    if (last_obdh_status != beacon.obdh.is_dead)
+    {
+        debug_print_event_from_module(DEBUG_ERROR, BEACON_MODULE_NAME, "The OBDH module is not responding!\n\r");
+    }
+
+    if (last_eps_status != beacon.eps.is_dead)
+    {
+        debug_print_event_from_module(DEBUG_ERROR, BEACON_MODULE_NAME, "The EPS module is not responding!\n\r");
+    }
 }
 
 void beacon_gen_pkt_payload()
 {
-    debug_print_event(DEBUG_INFO, "Generating packet payload from ");
+    debug_print_event_from_module(DEBUG_INFO, BEACON_MODULE_NAME, "Generating packet payload from ");
 
     if (!buffer_empty(&beacon.pkt_payload))
     {
@@ -286,20 +310,24 @@ void beacon_gen_pkt_payload()
 
 void beacon_gen_ngham_pkt(uint8_t *ngham_pkt_str, uint16_t *ngham_pkt_str_len)
 {
+    debug_print_event_from_module(DEBUG_INFO, BEACON_MODULE_NAME, "Generating a NGHam packet...\n\r");
+
     beacon_gen_pkt_payload();
-    
+
     NGHam_TX_Packet ngham_packet;
-    
+
     ngham_tx_pkt_gen(&ngham_packet, beacon.pkt_payload.data, beacon.pkt_payload.size);
     ngham_encode(&ngham_packet, ngham_pkt_str, ngham_pkt_str_len);
 }
 
 void beacon_gen_ax25_pkt(uint8_t *ax25_pkt_str, uint16_t *ax25_pkt_str_len)
 {
+    debug_print_event_from_module(DEBUG_INFO, BEACON_MODULE_NAME, "Generating a AX.25 packet...\n\r");
+
     beacon_gen_pkt_payload();
-    
+
     AX25_Packet ax25_packet;
-    
+
     ax25_beacon_pkt_gen(&ax25_packet, beacon.pkt_payload.data, beacon.pkt_payload.size);
     ax25_encode(&ax25_packet, ax25_pkt_str, ax25_pkt_str_len);
 }
@@ -310,15 +338,17 @@ void beacon_send_ngham_pkt()
     {
         if (beacon.can_transmit)
         {
+            debug_print_event_from_module(DEBUG_INFO, BEACON_MODULE_NAME, "Transmitting a NGHam packet...\n\r");
+
             uint8_t ngham_pkt_str[256];
             uint16_t ngham_pkt_str_len;
-            
+
             beacon_gen_ngham_pkt(ngham_pkt_str, &ngham_pkt_str_len);
-            
+
             beacon.transmitting = true;
-            
+
             radio_write(ngham_pkt_str+8, ngham_pkt_str_len-8);  // 8: Removing preamble and sync word from the NGHam packet
-            
+
             beacon.transmitting = false;
         }
     }
@@ -330,15 +360,17 @@ void beacon_send_ax25_pkt()
     {
         if (beacon.can_transmit)
         {
-            beacon.transmitting = true;
-            
+            debug_print_event_from_module(DEBUG_INFO, BEACON_MODULE_NAME, "Transmitting a AX.25 packet...\n\r");
+
             uint8_t ax25_pkt_str[256];
             uint16_t ax25_pkt_str_len;
-            
+
             beacon_gen_ax25_pkt(ax25_pkt_str, &ax25_pkt_str_len);
-            
+
+            beacon.transmitting = true;
+
             radio_write(ax25_pkt_str, ax25_pkt_str_len);
-            
+
             beacon.transmitting = false;
         }
     }
@@ -556,7 +588,7 @@ void beacon_process_radio_pkt()
             {
                 uint8_t i = 0;
 
-                debug_print_event(DEBUG_INFO, "Shutdown command received from ");
+                debug_print_event_from_module(DEBUG_INFO, BEACON_MODULE_NAME, "Shutdown command received from ");
                 for(i=0; i<6; i++)
                 {
                     debug_print_byte(data[i]);

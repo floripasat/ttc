@@ -27,6 +27,8 @@
  * \author Jon Petter Skagmo <web@skagmo.com>
  * \author Gabriel Mariano Marcelino <gabriel.mm8@gmail.com>
  * 
+ * \version 0.1.11
+ *
  * \date 10/02/2017
  * 
  * \defgroup ngham NGHam
@@ -81,6 +83,8 @@
 
 #define NGH_HAMMING_DISTANCE_GREATER    0x00
 #define NGH_HAMMING_DISTANCE_SMALLER    0x01
+
+#define NGHAM_MODULE_NAME               "NGHam"
 
 extern const uint8_t NGH_PL_SIZE[];             /**< Actual payload. */
 extern const uint8_t NGH_PL_SIZE_FULL[];        /**< Size with LEN, payload and CRC. */

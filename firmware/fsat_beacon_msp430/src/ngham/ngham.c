@@ -27,6 +27,8 @@
  * \author Jon Petter Skagmo <web@skagmo.com>
  * \author Gabriel Mariano Marcelino <gabriel.mm8@gmail.com>
  * 
+ * \version 0.1.11
+ *
  * \date 10/02/2017
  *
  * \addtogroup ngham
@@ -42,6 +44,8 @@
 #include "platform/platform.h"
 
 #include <stdio.h>
+
+#include <system/system.h>
 
 // There are seven different sizes.
 // Each size has a correlation tag for size, a total size, a maximum payload size and a parity data size.
@@ -72,6 +76,8 @@ RS rs_cb[NGH_SIZES];
 
 void ngham_init()
 {
+    debug_print_event_from_module(DEBUG_INFO, NGHAM_MODULE_NAME, "Initializing...\n\r");
+
     decoder_state = NGH_STATE_SIZE_TAG;
     
     ngham_init_arrays();
@@ -79,6 +85,8 @@ void ngham_init()
 
 void ngham_init_arrays()
 {
+    debug_print_event_from_module(DEBUG_INFO, NGHAM_MODULE_NAME, "Initializing arrays...\n\r");
+
     uint8_t i;
     for(i=0;i<NGH_SIZES;i++)
     {
@@ -97,6 +105,8 @@ void ngham_init_arrays()
 
 void ngham_deinit_arrays()
 {
+    debug_print_event_from_module(DEBUG_INFO, NGHAM_MODULE_NAME, "Deinitializing arrays...\n\r");
+
     free_rs_char(&rs_cb[0]);    // Free memory for nroots = 16
     free_rs_char(&rs_cb[3]);    // Free memory for nroots = 32
 }
@@ -146,6 +156,19 @@ static uint8_t ngham_tag_check(uint32_t x, uint32_t y)
 void ngham_encode(NGHam_TX_Packet *p, uint8_t *pkt, uint16_t *pkt_len)
 {
     uint16_t j;
+
+    debug_print_event_from_module(DEBUG_INFO, NGHAM_MODULE_NAME, "Encoding a new packet: ");
+    for(j=0; j<p->pl_len; j++)
+    {
+        debug_print_hex(p->pl[j]);
+
+        if (j < p->pl_len-1)
+        {
+            debug_print_msg(", ");
+        }
+    }
+    debug_print_msg("\n\r");
+
     uint16_t crc;
     uint8_t size_nr = 0;
     uint8_t d[NGH_MAX_TOT_SIZE];
@@ -222,6 +245,8 @@ void ngham_encode(NGHam_TX_Packet *p, uint8_t *pkt, uint16_t *pkt_len)
 
 uint8_t ngham_decode(uint8_t d, uint8_t *msg, uint8_t *msg_len)
 {
+    debug_print_event_from_module(DEBUG_INFO, NGHAM_MODULE_NAME, "Decoding an incoming packet...\n\r");
+
     static uint8_t size_nr;
     static uint32_t size_tag;
     static uint16_t length;
@@ -299,11 +324,27 @@ uint8_t ngham_decode(uint8_t d, uint8_t *msg, uint8_t *msg_len)
                     rx_pkt.noise = ngham_action_get_noise_floor();
                     rx_pkt.rssi = ngham_action_get_rssi();
                     ngham_action_handle_packet(PKT_CONDITION_OK, &rx_pkt, msg, msg_len);
+
+                    debug_print_event_from_module(DEBUG_INFO, NGHAM_MODULE_NAME, "Decoded packat: ");
+                    uint16_t i;
+                    for(i; i<*msg_len; i++)
+                    {
+                        debug_print_hex(msg[i]);
+
+                        if (i < *msg_len-1)
+                        {
+                            debug_print_msg(", ");
+                        }
+                    }
+                    debug_print_msg("\n\r");
+
                     return PKT_CONDITION_OK;
                 }
                 // If packet decoding not was successful, count this as an error
                 else
                 {
+                    debug_print_event_from_module(DEBUG_ERROR, NGHAM_MODULE_NAME, "Error during packet decoding! Maybe the packet is corrupted!\n\r");
+
                     ngham_action_handle_packet(PKT_CONDITION_FAIL, NULL, NULL, NULL);
                     return PKT_CONDITION_FAIL;
                 }
