@@ -25,7 +25,7 @@
  * 
  * \author Gabriel Mariano Marcelino <gabriel.mm8@gmail.com>
  * 
- * \version 0.1.11
+ * \version 0.2.0
  * 
  * \date 08/06/2017
  * 
@@ -120,39 +120,39 @@ void beacon_run()
 //    }
 
     __enable_interrupt();
-    
+
     while(1)
     {
         task_periodic(&beacon_check_devices_status, 1, &beacon.last_devices_verification, time_get_seconds());
-        
+
     #if BEACON_PACKET_PROTOCOL & PACKET_NGHAM
         task_periodic_no_preemption(&beacon_send_ngham_pkt, beacon_get_tx_period(), &beacon.last_ngham_pkt_transmission, time_get_seconds());
     #endif // PACKET_NGHAM
-        
+
     #if BEACON_PACKET_PROTOCOL & PACKET_AX25
         task_scheduled_no_preemption(&beacon_send_ax25_pkt, beacon.last_ngham_pkt_transmission + 1, time_get_seconds(), 0, ((beacon.last_ngham_pkt_transmission + 1) == time_get_seconds())? true : false);
     #endif // PACKET_AX25
-        
+
         task_aperiodic(&beacon_process_obdh_pkt, obdh_available()? true : false);
-        
+
         task_aperiodic(&beacon_process_eps_pkt, eps_available()? true : false);
-        
-        task_aperiodic(&beacon_process_radio_pkt, (radio_available()? true : false) && (beacon.obdh.is_dead? true : false));
-        
+
+        task_aperiodic(&beacon_process_radio_pkt, ((radio_available() > 0)? true : false) && (beacon.obdh.is_dead? true : false));
+
         task_aperiodic(&radio_enable_rx, beacon.obdh.is_dead? true : false);
-        
+
         task_scheduled(&beacon_leave_hibernation, beacon.hibernation_mode_initial_time + BEACON_HIBERNATION_PERIOD_SECONDS, time_get_seconds(), 5, beacon.hibernation? true : false);
-        
+
         task_periodic(&beacon_set_energy_level, BEACON_TX_PERIOD_SEC_L1, &beacon.last_energy_level_set, time_get_seconds());
-        
+
         task_periodic(&radio_init, BEACON_RADIO_RESET_PERIOD_SEC, &beacon.last_radio_reset_time, time_get_seconds());
-        
+
         task_periodic(&system_reset, BEACON_SYSTEM_RESET_PERIOD_SEC, &beacon.last_system_reset_time, time_get_seconds());
-        
+
         status_led_toggle();                // Heartbeat
-        
+
         system_enter_low_power_mode();      // Wait until the time timer execution (When the system leaves low-power mode)
-        
+
         watchdog_reset_timer();
     }
 }
@@ -561,13 +561,13 @@ void beacon_process_radio_pkt()
     {
         uint8_t data[100];
         uint8_t data_len;
-        
+
         uint8_t ngham_state;
-        
-        while(radio_available())
+
+        while(radio_available() > 0)
         {
             ngham_state = ngham_decode(radio_pop(), data, &data_len);
-            
+
             if (ngham_state == PKT_CONDITION_OK)
             {
                 break;
@@ -581,7 +581,7 @@ void beacon_process_radio_pkt()
                 continue;
             }
         }
-        
+
         if (ngham_state == PKT_CONDITION_OK)
         {        
             if ((data[6] == 's') && (data[7] == 'd'))
@@ -597,48 +597,48 @@ void beacon_process_radio_pkt()
 
                 uint8_t ngham_pkt_str[100];
                 uint16_t ngham_pkt_str_len;
-                
+
                 uint8_t pkt_payload_len = 0;
                 uint8_t pkt_payload[60];
-                
+
                 uint8_t shutdown_ack_start[] = "Shutdown received from ";
-                
+
                 for(i=0; i<sizeof(shutdown_ack_start); i++)
                 {
                     pkt_payload[pkt_payload_len++] = shutdown_ack_start[i];
                 }
-                
+
                 for(i=0; i<6; i++)
                 {
                     pkt_payload[pkt_payload_len++] = data[i];
                 }
-                
+
                 uint8_t shutdown_ack_end[] = ". Wake up time in 24 hours.";
                 for(i=0; i<sizeof(shutdown_ack_end); i++)
                 {
                     pkt_payload[pkt_payload_len++] = shutdown_ack_end[i];
                 }
-                
+
                 NGHam_TX_Packet ngham_packet;
                 ngham_tx_pkt_gen(&ngham_packet, pkt_payload, pkt_payload_len);
                 ngham_encode(&ngham_packet, ngham_pkt_str, &ngham_pkt_str_len);
-                
+
                 uint32_t timeout_radio_shutdown_ack = BEACON_TIMEOUT_RADIO_SHUTDOWN;
-                
+
                 while(timeout_radio_shutdown_ack--)
                 {
                     if (beacon.can_transmit)
                     {
                         beacon.transmitting = true;
-                        
+
                         radio_write(ngham_pkt_str, ngham_pkt_str_len);
-                        
+
                         beacon.transmitting = false;
-                        
+
                         break;
                     }
                 }
-                
+
                 beacon_enter_hibernation();
             }
         }

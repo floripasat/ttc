@@ -27,7 +27,7 @@
  * \author Jon Petter Skagmo <web@skagmo.com>
  * \author Gabriel Mariano Marcelino <gabriel.mm8@gmail.com>
  * 
- * \version 0.1.11
+ * \version 0.2.0
  *
  * \date 10/02/2017
  *
@@ -245,8 +245,6 @@ void ngham_encode(NGHam_TX_Packet *p, uint8_t *pkt, uint16_t *pkt_len)
 
 uint8_t ngham_decode(uint8_t d, uint8_t *msg, uint8_t *msg_len)
 {
-    debug_print_event_from_module(DEBUG_INFO, NGHAM_MODULE_NAME, "Decoding an incoming packet...\n\r");
-
     static uint8_t size_nr;
     static uint32_t size_tag;
     static uint16_t length;
