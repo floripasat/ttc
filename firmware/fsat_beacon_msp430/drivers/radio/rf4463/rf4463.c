@@ -1,22 +1,22 @@
 /*
  * rf4463.c
  * 
- * Copyright (C) 2017, Universidade Federal de Santa Catarina.
+ * Copyright (C) 2017-2019, Universidade Federal de Santa Catarina.
  * 
- * This file is part of FloripaSat-Beacon.
+ * This file is part of FloripaSat-TTC.
  * 
- * FloripaSat-Beacon is free software: you can redistribute it and/or modify
+ * FloripaSat-TTC is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
  * 
- * FloripaSat-Beacon is distributed in the hope that it will be useful,
+ * FloripaSat-TTCn is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
  * 
  * You should have received a copy of the GNU General Public License
- * along with FloripaSat-Beacon. If not, see <http://www.gnu.org/licenses/>.
+ * along with FloripaSat-TTC. If not, see <http://www.gnu.org/licenses/>.
  * 
  */
 
@@ -27,7 +27,7 @@
  * 
  * \author Gabriel Mariano Marcelino <gabriel.mm8@gmail.com>
  * 
- * \version 1.0-dev
+ * \version 0.1.12
  * 
  * \date 01/06/2017
  * 
@@ -36,6 +36,7 @@
  */
 
 #include <drivers/driverlib/driverlib.h>
+#include <system/debug/debug.h>
 
 #include "rf4463.h"
 #include "rf4463_pinmap.h"
@@ -49,22 +50,24 @@ const uint8_t RF4463_CONFIGURATION_DATA[] = RADIO_CONFIGURATION_DATA_ARRAY;
 
 uint8_t rf4463_init()
 {
+    debug_print_event_from_module(DEBUG_INFO, RF4463_MODULE_NAME, "Initializing...\n\r");
+
     rf4463_gpio_init();
-    
+
     if (rf4463_spi_init() == STATUS_FAIL)
     {
         return STATUS_FAIL;
     }
-    
+
     // Reset the RF4463
     rf4463_power_on_reset();
-    
+
     // Registers configuration
     rf4463_reg_config();
-    
+
     // Set max. TX power
     rf4463_set_tx_power(127);
-    
+
     // Check if the RF4463 is working
     if (rf4463_check_device())
     {
@@ -78,21 +81,25 @@ uint8_t rf4463_init()
 
 static void rf4463_gpio_init()
 {
+    debug_print_event_from_module(DEBUG_INFO, RF4463_MODULE_NAME, "Configuring the GPIO pins...\n\r");
+
     GPIO_setAsOutputPin(RF4463_POWER_ENABLE_PORT, RF4463_POWER_ENABLE_PIN);
     GPIO_setOutputHighOnPin(RF4463_POWER_ENABLE_PORT, RF4463_POWER_ENABLE_PIN);     // Enable RF4463 power
-    
+
     GPIO_setAsOutputPin(RF4463_SDN_PORT, RF4463_SDN_PIN);
     GPIO_setAsInputPin(RF4463_nIRQ_PORT, RF4463_nIRQ_PIN);
-    
+
     GPIO_setAsOutputPin(RF4463_GPIO0_PORT, RF4463_GPIO0_PIN);
     GPIO_setAsInputPin(RF4463_GPIO1_PORT, RF4463_GPIO1_PIN);
-    
+
     // Set SDN to low
     GPIO_setOutputHighOnPin(RF4463_SDN_PORT, RF4463_SDN_PIN);
 }
 
 static void rf4463_reg_config()
 {
+    debug_print_event_from_module(DEBUG_INFO, RF4463_MODULE_NAME, "Loading registers values...\n\r");
+
     // Set RF parameter like frequency, data rate, etc.
     rf4463_set_config(RF4463_CONFIGURATION_DATA, sizeof(RF4463_CONFIGURATION_DATA));
     
@@ -110,47 +117,55 @@ static void rf4463_reg_config()
 
 void rf4463_power_on_reset()
 {
+    debug_print_event_from_module(DEBUG_INFO, RF4463_MODULE_NAME, "Powering on reset...\n\r");
+
     uint8_t buffer[8] = {RF_POWER_UP};
-    
+
     GPIO_setOutputHighOnPin(RF4463_SDN_PORT, RF4463_SDN_PIN);
     rf4463_delay_ms(100);
     GPIO_setOutputLowOnPin(RF4463_SDN_PORT, RF4463_SDN_PIN);
     rf4463_delay_ms(20);           // Wait for RF4463 stabilization
-    
+
     // Send power-up command
     GPIO_setOutputLowOnPin(RF4463_NSEL_PORT, RF4463_NSEL_PIN);
     rf4463_spi_write(buffer, 7);
     GPIO_setOutputHighOnPin(RF4463_NSEL_PORT, RF4463_NSEL_PIN);
-    
+
     rf4463_delay_ms(200);
 }
 
 bool rf4463_tx_packet(uint8_t *data, uint8_t len)
 {
+    debug_print_event_from_module(DEBUG_INFO, RF4463_MODULE_NAME, "Transmitting a packet...\n\r");
+
     // Setting packet size
     rf4463_set_properties(RF4463_PROPERTY_PKT_FIELD_1_LENGTH_7_0, &len, 1);
-    
+
     rf4463_fifo_reset();        // Clear FIFO
     rf4463_write_tx_fifo(data, len);
     rf4463_clear_interrupts();
-    
+
     uint16_t tx_timer = RF4463_TX_TIMEOUT;
-    
+
     rf4463_enter_tx_mode();
-    
+
     while(tx_timer--)
     {
         if (rf4463_wait_nIRQ())         // Wait packet sent interruption
         {
+            debug_print_event_from_module(DEBUG_INFO, RF4463_MODULE_NAME, "Packet transmitted!\n\r");
+
             return true;
         }
-        
+
         rf4463_delay_us(100);
     }
-    
+
+    debug_print_event_from_module(DEBUG_ERROR, RF4463_MODULE_NAME, "Timeout reached during the transmission!\n\r");
+
     // If the packet tranmission takes longer than expected, resets the radio.
     rf4463_init();
-    
+
     return false;
 }
 
@@ -257,17 +272,27 @@ bool rf4463_rx_init()
 
 bool rf4463_check_device()
 {
+    debug_print_event_from_module(DEBUG_INFO, RF4463_MODULE_NAME, "Checking the device...\n\r");
+
     uint8_t buffer[10];
     uint16_t part_info;
-    
+
     if (!rf4463_get_cmd(RF4463_CMD_PART_INFO, buffer, 9))
     {
+        debug_print_event_from_module(DEBUG_ERROR, RF4463_MODULE_NAME, "Error reading the part info register!\n\r");
+
         return false;
     }
-    
+
     part_info = (buffer[2] << 8) | buffer[3];
     if (part_info != RF4463_PART_INFO)
     {
+        debug_print_event_from_module(DEBUG_ERROR, RF4463_MODULE_NAME, "Error checking the device! (read=");
+        debug_print_hex(part_info);
+        debug_print_msg("expected=");
+        debug_print_hex(RF4463_PART_INFO);
+        debug_print_msg(")\n\r");
+
         return false;
     }
     else
@@ -327,15 +352,21 @@ bool rf4463_set_tx_power(uint8_t pwr)
 {
     if (pwr > 127)      // Max. value is 127
     {
+        debug_print_event_from_module(DEBUG_ERROR, RF4463_MODULE_NAME, "Error configuring the output power! (out-of-range value)\n\r");
+
         return false;
     }
-    
+
     uint8_t buffer[5];
     buffer[0] = 0x08;
     buffer[1] = pwr;
     buffer[2] = 0x00;
     buffer[3] = 0x3D;
-    
+
+    debug_print_event_from_module(DEBUG_INFO, RF4463_MODULE_NAME, "Configuring the output power to ");
+    debug_print_hex(pwr);
+    debug_print_msg("...\n\r");
+
     return rf4463_set_properties(RF4463_PROPERTY_PA_MODE, buffer, 4);
 }
 
@@ -495,9 +526,24 @@ bool rf4463_clear_interrupts()
 
 void rf4463_write_tx_fifo(uint8_t *data, uint8_t len)
 {
+    debug_print_event_from_module(DEBUG_INFO, RF4463_MODULE_NAME, "Writing data to FIFO: ");
+
+    uint16_t i;
+    for(i=0; i<len; i++)
+    {
+        debug_print_hex(data[i]);
+
+        if (i < len-1)
+        {
+            debug_print_msg(", ");
+        }
+    }
+
+    debug_print_msg("\n\r");
+
     uint8_t buffer[RF4463_TX_FIFO_LEN];
     memcpy(buffer, data, len);
-    
+
     rf4463_set_cmd(RF4463_CMD_TX_FIFO_WRITE, buffer, len);
 }
 
@@ -518,27 +564,33 @@ bool rf4463_read_rx_fifo(uint8_t *data, uint8_t len)
 
 void rf4463_fifo_reset()
 {
+    debug_print_event_from_module(DEBUG_INFO, RF4463_MODULE_NAME, "Reseting FIFO...\n\r");
+
     uint8_t data = 0x03;
-    
+
     rf4463_set_cmd(RF4463_CMD_FIFO_INFO, &data, 1);
 }
 
 void rf4463_enter_tx_mode()
 {
+    debug_print_event_from_module(DEBUG_INFO, RF4463_MODULE_NAME, "Entering TX mode...\n\r");
+
     uint8_t buffer[5];
-    
+
     buffer[0] = RF4463_FREQ_CHANNEL;
-    buffer[1] = 0x30;                   // TXCOMPLETE_STATE = Ready State; RETRANSMIT = 0 = No re-transmition; START = 0 = Start TX immediately
-    buffer[2] = 0x00;                   // TX packet length MSB (If equal zero, default length)
-    buffer[3] = 0x00;                   // TX packet length LSB (If equal zero, default length)
-    
+    buffer[1] = 0x30;   // TXCOMPLETE_STATE = Ready State; RETRANSMIT = 0 = No re-transmition; START = 0 = Start TX immediately
+    buffer[2] = 0x00;   // TX packet length MSB (If equal zero, default length)
+    buffer[3] = 0x00;   // TX packet length LSB (If equal zero, default length)
+
     rf4463_set_cmd(RF4463_CMD_START_TX, buffer, 4);
 }
 
 void rf4463_enter_rx_mode()
 {
+    debug_print_event_from_module(DEBUG_INFO, RF4463_MODULE_NAME, "Entering RX mode...\n\r");
+
     uint8_t buffer[8];
-    
+
     buffer[0] = RF4463_FREQ_CHANNEL;
     buffer[1] = 0x00;
     buffer[2] = 0x00;
@@ -546,14 +598,16 @@ void rf4463_enter_rx_mode()
     buffer[4] = 0x00;
     buffer[5] = 0x08;
     buffer[6] = 0x08;
-    
+
     rf4463_set_cmd(RF4463_CMD_START_RX, buffer, 7);
 }
 
 bool rf4463_enter_standby_mode()
 {
+    debug_print_event_from_module(DEBUG_INFO, RF4463_MODULE_NAME, "Entering standby mode...\n\r");
+
     uint8_t data = 0x01;
-    
+
     return rf4463_set_cmd(RF4463_CMD_CHANGE_STATE, &data, 1);
 }
 

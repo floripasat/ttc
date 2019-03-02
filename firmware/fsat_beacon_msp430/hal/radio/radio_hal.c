@@ -1,22 +1,22 @@
 /*
  * radio_hal.c
  * 
- * Copyright (C) 2017-2019, Federal University of Santa Catarina.
+ * Copyright (C) 2017-2019, Universidade Federal de Santa Catarina.
  * 
- * This file is part of FloripaSat-Beacon.
+ * This file is part of FloripaSat-TTC.
  * 
- * FloripaSat-Beacon is free software: you can redistribute it and/or modify
+ * FloripaSat-TTC is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
  * 
- * FloripaSat-Beacon is distributed in the hope that it will be useful,
+ * FloripaSat-TTC is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
  * 
  * You should have received a copy of the GNU General Public License
- * along with FloripaSat-Beacon. If not, see <http://www.gnu.org/licenses/>.
+ * along with FloripaSat-TTC. If not, see <http://www.gnu.org/licenses/>.
  * 
  */
 
@@ -25,7 +25,7 @@
  * 
  * \author Gabriel Mariano Marcelino <gabriel.mm8@gmail.com>
  * 
- * \version 0.1.8
+ * \version 0.1.12
  * 
  * \date 09/06/2017
  * 
@@ -61,14 +61,14 @@ Queue radio_rx_queue;
 
 bool radio_init()
 {
-    debug_print_event_from_module(DEBUG_INFO, RADIO_HAL_MODULE_NAME, "Initializing communication...\n\r");
+    debug_print_event_from_module(DEBUG_INFO, RADIO_HAL_MODULE_NAME, "Initializing device...\n\r");
 
 #if BEACON_RADIO == CC1175 || BEACON_RADIO == CC1125
     uint8_t init_status = cc11xx_init();
     if (init_status == STATUS_SUCCESS)
     {
         cc11xx_ManualCalibration();
-        
+
         return true;
     }
     else
@@ -98,9 +98,9 @@ void radio_reset()
     debug_print_event_from_module(DEBUG_INFO, RADIO_HAL_MODULE_NAME, "Reseting...\n\r");
 
 #if BEACON_RADIO == CC1175 || BEACON_RADIO == CC1125
-    
+
 #elif BEACON_RADIO == SI4063
-    
+
 #elif BEACON_RADIO == RF4463F30
     rf4463_init();
 #elif BEACON_RADIO == UART_SIM
@@ -110,6 +110,10 @@ void radio_reset()
 
 void radio_write(uint8_t *data, uint16_t len)
 {
+    debug_print_event_from_module(DEBUG_INFO, RADIO_HAL_MODULE_NAME, "Writing ");
+    debug_print_dec(len);
+    debug_print_msg(" bytes to the buffer...\n\r");
+
 #if BEACON_RADIO == CC1175 || BEACON_RADIO == CC1125
     #if BEACON_RF_SWITCH != HW_NONE
         rf_switch_enable_beacon();
@@ -141,20 +145,24 @@ void radio_write(uint8_t *data, uint16_t len)
 
 void radio_read(uint8_t len)
 {
+    debug_print_event_from_module(DEBUG_INFO, RADIO_HAL_MODULE_NAME, "Reading ");
+    debug_print_dec(len);
+    debug_print_msg(" bytes from buffer...\n\r");
+
 #if BEACON_RADIO == CC1175 || BEACON_RADIO == CC1125
-    
+
 #elif BEACON_RADIO == SI4063
-    
+
 #elif BEACON_RADIO == RF4463F30
     uint8_t data[128];
     rf4463_rx_packet(data, len);
-    
+
     uint8_t i = 0;
     for(i=0; i<len; i++)
     {
         radio_push(data[i]);
     }
-    
+
 #elif BEACON_RADIO == UART_SIM
     return;
 #endif // BEACON_RADIO
@@ -162,10 +170,12 @@ void radio_read(uint8_t len)
 
 void radio_sleep()
 {
+    debug_print_event_from_module(DEBUG_INFO, RADIO_HAL_MODULE_NAME, "Entering sleep mode...\n\r");
+
 #if BEACON_RADIO == CC1175 || BEACON_RADIO == CC1125
-    
+
 #elif BEACON_RADIO == SI4063
-    
+
 #elif BEACON_RADIO == RF4463F30
     GPIO_disableInterrupt(RADIO_GPIO_nIRQ_PORT, RADIO_GPIO_nIRQ_PIN);
     rf4463_enter_standby_mode();
@@ -177,9 +187,9 @@ void radio_sleep()
 void radio_wake_up()
 {
 #if BEACON_RADIO == CC1175 || BEACON_RADIO == CC1125
-    
+
 #elif BEACON_RADIO == SI4063
-    
+
 #elif BEACON_RADIO == RF4463F30
     return;
 #elif BEACON_RADIO == UART_SIM
@@ -189,6 +199,8 @@ void radio_wake_up()
 
 void radio_enable_rx()
 {
+    debug_print_event_from_module(DEBUG_INFO, RADIO_HAL_MODULE_NAME, "Enabling RX...\n\r");
+
 #if BEACON_RADIO == CC1175 || BEACON_RADIO == CC1125
     return;
 #elif BEACON_RADIO == SI4063
@@ -256,7 +268,7 @@ __attribute__((interrupt(RADIO_HAL_RX_ISR_PORT_VECTOR)))
 void radio_rx_isr()
 {
     radio_read(50);
-    
+
     // P3.1 IFG cleared
     GPIO_clearInterrupt(RADIO_GPIO_nIRQ_PORT, RADIO_GPIO_nIRQ_PIN);
 }

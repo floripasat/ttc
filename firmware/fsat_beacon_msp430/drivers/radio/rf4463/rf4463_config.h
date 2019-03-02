@@ -1,33 +1,31 @@
 /*
  * rf4463_config.h
  * 
- * Copyright (C) 2017, Universidade Federal de Santa Catarina.
+ * Copyright (C) 2017-2019, Universidade Federal de Santa Catarina.
  * 
- * This file is part of FloripaSat-Beacon.
+ * This file is part of FloripaSat-TTC.
  * 
- * FloripaSat-Beacon is free software: you can redistribute it and/or modify
+ * FloripaSat-TTC is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
  * 
- * FloripaSat-Beacon is distributed in the hope that it will be useful,
+ * FloripaSat-TTC is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
  * 
  * You should have received a copy of the GNU General Public License
- * along with FloripaSat-Beacon. If not, see <http://www.gnu.org/licenses/>.
+ * along with FloripaSat-TTC. If not, see <http://www.gnu.org/licenses/>.
  * 
  */
 
 /**
  * \brief NiceRF RF4463 configuration.
  * 
- * This library suits for RF4463PRO and RF4463F30 in FIFO mode.
- * 
  * \author Gabriel Mariano Marcelino <gabriel.mm8@gmail.com>
  * 
- * \version 1.0-dev
+ * \version 0.1.12
  * 
  * \date 16/06/2017
  * 
@@ -39,6 +37,8 @@
 #define RF4463_CONFIG_H_
 
 #include <config/config.h>
+
+#define RF4463_MODULE_NAME                      "RF4463"
 
 #define RF4463_SPI_CLK                          BEACON_RADIO_SPI_CLK
 

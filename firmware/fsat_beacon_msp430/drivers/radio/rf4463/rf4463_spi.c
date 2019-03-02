@@ -1,42 +1,42 @@
 /*
  * rf4463_spi.c
  * 
- * Copyright (C) 2017, Universidade Federal de Santa Catarina.
+ * Copyright (C) 2017-2019, Universidade Federal de Santa Catarina.
  * 
- * This file is part of FloripaSat-Beacon.
+ * This file is part of FloripaSat-TTC.
  * 
- * FloripaSat-Beacon is free software: you can redistribute it and/or modify
+ * FloripaSat-TTC is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
  * 
- * FloripaSat-Beacon is distributed in the hope that it will be useful,
+ * FloripaSat-TTC is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
  * 
  * You should have received a copy of the GNU General Public License
- * along with FloripaSat-Beacon. If not, see <http://www.gnu.org/licenses/>.
+ * along with FloripaSat-TTC. If not, see <http://www.gnu.org/licenses/>.
  * 
  */
 
 /**
  * \brief NiceRF RF4463 driver (SPI communication functions implementation).
  * 
- * This library suits for RF4463PRO and RF4463F30 in FIFO mode.
- * 
  * \author Gabriel Mariano Marcelino <gabriel.mm8@gmail.com>
  * 
- * \version 1.0-dev
+ * \version 0.1.12
  * 
  * \date 29/07/2017
  * 
- * \addtogroup rf4463
+ * \defgroup rf4463_spi SPI
+ * \ingroup rf4463
  * \{
  */
 
 #include <stdint.h>
 #include <drivers/driverlib/driverlib.h>
+#include <system/debug/debug.h>
 
 #include "rf4463_spi.h"
 #include "rf4463_pinmap.h"
@@ -45,13 +45,15 @@
 
 uint8_t rf4463_spi_init()
 {
+    debug_print_event_from_module(DEBUG_INFO, RF4463_MODULE_NAME, "Configuring the GPIO pins...\n\r");
+
     // MISO, MOSI and SCLK init.
     GPIO_setAsPeripheralModuleFunctionInputPin(RF4463_SPI_PORT, RF4463_SDI_PIN + RF4463_SDO_PIN + RF4463_SCLK_PIN);
-    
+
     // CSn init.
     GPIO_setAsOutputPin(RF4463_NSEL_PORT, RF4463_NSEL_PIN);
 	GPIO_setOutputHighOnPin(RF4463_NSEL_PORT, RF4463_NSEL_PIN);
-    
+
     // Config. SPI as Master
 #if RF4463_SPI_USCI == USCI_A
     USCI_A_SPI_initMasterParam spi_params = {0};
@@ -128,7 +130,7 @@ static uint8_t rf4463_spi_read_byte()
         
     }
     USCI_A_SPI_clearInterrupt(RF4463_SPI_BASE_ADDRESS, USCI_A_SPI_RECEIVE_INTERRUPT);
-    
+
     return USCI_A_SPI_receiveData(RF4463_SPI_BASE_ADDRESS);
 #elif RF4463_SPI_USCI == USCI_B
     // Wait until new data was written into RX buffer
@@ -137,7 +139,7 @@ static uint8_t rf4463_spi_read_byte()
         
     }
     USCI_B_SPI_clearInterrupt(RF4463_SPI_BASE_ADDRESS, USCI_B_SPI_RECEIVE_INTERRUPT);
-    
+
     return USCI_B_SPI_receiveData(RF4463_SPI_BASE_ADDRESS);
 #endif // RF4463_SPI_USCI
 }
@@ -156,4 +158,4 @@ uint8_t rf4463_spi_transfer(uint8_t byte)
     return rf4463_spi_read_byte();
 }
 
-//! \} End of rf4463 group
+//! \} End of rf4463_spi group
