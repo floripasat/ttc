@@ -1,22 +1,22 @@
 /*
  * isis_antenna_i2c.c
  * 
- * Copyright (C) 2017, Universidade Federal de Santa Catarina
+ * Copyright (C) 2017-2019, Universidade Federal de Santa Catarina.
  * 
- * This file is part of FloripaSat-Beacon.
+ * This file is part of FloripaSat-TTC.
  * 
- * FloripaSat-Beacon is free software: you can redistribute it and/or modify
+ * FloripaSat-TTC is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
  * 
- * FloripaSat-Beacon is distributed in the hope that it will be useful,
+ * FloripaSat-TTC is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
  * 
  * You should have received a copy of the GNU General Public License
- * along with FloripaSat-Beacon. If not, see <http://www.gnu.org/licenses/>.
+ * along with FloripaSat-TTC. If not, see <http://www.gnu.org/licenses/>.
  * 
  */
 
@@ -25,24 +25,27 @@
  * 
  * \author Gabriel Mariano Marcelino <gabriel.mm8@gmail.com>
  * 
- * \version 1.0-dev
+ * \version 0.2.1
  * 
  * \date 21/09/2017
  * 
- * \addtogroup isis_antenna
+ * \addtogroup isis_antenna_i2c
  * \{
  */
 
 #include <drivers/driverlib/driverlib.h>
+#include <system/debug/debug.h>
 
-#include "isis_antenna_i2c.h"
+#include "isis_antenna.h"
 #include "isis_antenna_pinmap.h"
 #include "isis_antenna_config.h"
 
 void isis_antenna_i2c_init()
 {
+    debug_print_event_from_module(DEBUG_INFO, ISIS_ANTENNA_MODULE_NAME, "Configuring I2C port...\n\r");
+
     GPIO_setAsPeripheralModuleFunctionInputPin(ISIS_ANTENNA_I2C_PORT, ISIS_ANTENNA_I2C_SDA_PIN + ISIS_ANTENNA_I2C_SCL_PIN);
-    
+
 #if ISIS_ANTENNA_I2C_USCI == USCI_A
     USCI_A_I2C_initMasterParam i2c_params = {0};
     
