@@ -48,11 +48,11 @@
 
 #define SATELLITE_ID                        "FLORIPASAT"
 
-#define SATELLITE_ENERGY_LEVEL_1            0
-#define SATELLITE_ENERGY_LEVEL_2            1
-#define SATELLITE_ENERGY_LEVEL_3            2
-#define SATELLITE_ENERGY_LEVEL_4            3
-#define SATELLITE_ENERGY_LEVEL_5            4
+#define SATELLITE_ENERGY_LEVEL_1            0x01
+#define SATELLITE_ENERGY_LEVEL_2            0x02
+#define SATELLITE_ENERGY_LEVEL_3            0x03
+#define SATELLITE_ENERGY_LEVEL_4            0x04
+#define SATELLITE_ENERGY_LEVEL_5            0x05
 
 //########################################################
 //-- BEACON OPERATION ------------------------------------
