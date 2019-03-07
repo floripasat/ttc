@@ -25,7 +25,7 @@
  * 
  * \author Gabriel Mariano Marcelino <gabriel.mm8@gmail.com>
  * 
- * \version 0.1.7
+ * \version 0.2.3
  * 
  * \date 23/02/2019
  * 
@@ -37,7 +37,11 @@
 #ifndef ANTENNA_CONFIG_H_
 #define ANTENNA_CONFIG_H_
 
-#define ANTENNA_MODULE_NAME             "Antenna"
+#define ANTENNA_MODULE_NAME                 "Antenna"
+
+#define ANTENNA_MEM_ADR_DEPLOY_STATUS_0     0x10
+#define ANTENNA_MEM_ADR_DEPLOY_STATUS_1     0x20
+#define ANTENNA_MEM_ADR_DEPLOY_STATUS_2     0x40
 
 #endif // ANTENNA_CONFIG_H_
 
