@@ -25,7 +25,7 @@
  * 
  * \author Gabriel Mariano Marcelino <gabriel.mm8@gmail.com>
  * 
- * \version 0.2.0
+ * \version 0.2.2
  * 
  * \date 08/06/2017
  * 
@@ -52,8 +52,6 @@ void beacon_init()
     
     cpu_init();
 
-    flash_init();
-    
     status_led_init();
     
     time_init();

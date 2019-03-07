@@ -1,33 +1,31 @@
 /*
  * flash.c
  * 
- * Copyright (C) 2017, Federal University of Santa Catarina.
+ * Copyright (C) 2017, Universidade Federal de Santa Catarina.
  * 
- * This file is part of FloripaSat-Beacon.
+ * This file is part of FloripaSat-TTC.
  * 
- * FloripaSat-Beacon is free software: you can redistribute it and/or modify
+ * FloripaSat-TTC is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
  * 
- * FloripaSat-Beacon is distributed in the hope that it will be useful,
+ * FloripaSat-TTC is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
  * 
  * You should have received a copy of the GNU General Public License
- * along with FloripaSat-Beacon. If not, see <http://www.gnu.org/licenses/>.
+ * along with FloripaSat-TTC. If not, see <http://www.gnu.org/licenses/>.
  * 
  */
 
 /**
- * \file flash.c
- * 
  * \brief Flash memory control functions implementation.
  * 
  * \author Gabriel Mariano Marcelino <gabriel.mm8@gmail.com>
  * 
- * \version 1.0-dev
+ * \version 0.2.2
  * 
  * \date 10/06/2017
  * 
@@ -35,55 +33,115 @@
  * \{
  */
 
-#include <drivers/driverlib/driverlib.h>
+#include <msp430.h>
 
 #include "flash.h"
 
-uint8_t *flash_ptr;
+char *flash_ptr;
 
-bool flash_init()
+long *current_flash_ptr;
+
+void flash_write(uint8_t *data, uint16_t len)
 {
-    return true;
+    uint16_t i;
+
+    if (FCTL3 & LOCKA)
+    {
+        FCTL3 = FWKEY | LOCKA;              // Clear Lock bit and LockA
+    }
+    else
+    {
+        FCTL3 = FWKEY;                      // Clear Lock bit
+    }
+
+    FCTL1 = FWKEY | WRT;                    // Set WRT bit for write operation
+    for(i=0; i<len; i++)
+    {
+        *flash_ptr++ = data[i];             // Write value to flash
+        while((FCTL3 & BUSY) == 1);         // Check if Flash being used
+    }
+
+    FCTL1 = FWKEY;                          // Clear WRT bit
+    FCTL3 = FWKEY | LOCK | LOCKA;           // Set LOCK bit
 }
 
-uint8_t flash_read_byte(uint16_t adr)
+void flash_write_single(uint8_t data, uint8_t *addr)
 {
-    return 0xFF;
+    if (FCTL3 & LOCKA)
+    {
+        FCTL3 = FWKEY | LOCKA;              // Clear Lock bit and LockA
+    }
+    else
+    {
+        FCTL3 = FWKEY;                      // Clear Lock bit
+    }
+
+    FCTL1 = FWKEY | WRT;                    // Set WRT bit for write operation
+    *addr = data;                           // Write value to flash
+    while((FCTL3 & BUSY) == 1);             // Check if Flash being used
+    FCTL1 = FWKEY;                          // Clear WRT bit
+    FCTL3 = FWKEY | LOCK | LOCKA;           // Set LOCK bit
 }
 
-void flash_write_byte(uint8_t byte, uint16_t adr)
+void flash_write_long(uint32_t data, uint32_t *addr)
 {
-    FlashCtl_write8(&byte, flash_ptr, 1);
+    if (FCTL3 & LOCKA)
+    {
+        FCTL3 = FWKEY | LOCKA;              // Clear Lock bit and LockA
+    }
+    else
+    {
+        FCTL3 = FWKEY;                      // Clear Lock bit
+    }
+
+    FCTL1 = FWKEY | BLKWRT;                 // Set WRT bit for write operation
+    *addr = data;                           // Write value to flash
+    while((FCTL3 & BUSY) == 1);             // Check if Flash being used
+    FCTL1 = FWKEY;                          // Clear WRT bit
+    FCTL3 = FWKEY | LOCK | LOCKA;           // Set LOCK bit
+
 }
 
-void flash_read_data(uint8_t *data, uint8_t size, uint8_t adr)
+void flash_erase(uint32_t *region)
 {
-    
+    uint32_t *erase_ptr = region;
+
+    if (FCTL3 & LOCKA)
+    {
+        FCTL3 = FWKEY | LOCKA;              // Clear Lock bit and LockA
+    }
+    else
+    {
+        FCTL3 = FWKEY;                      // Clear Lock bit
+    }
+
+    switch((uint32_t)region)
+    {
+        case FLASH_BANK_0_ADR:  FCTL1 = FWKEY | MERAS;          break;
+        case FLASH_BANK_1_ADR:  FCTL1 = FWKEY | MERAS;          break;
+        case FLASH_BANK_2_ADR:  FCTL1 = FWKEY | MERAS;          break;
+        case FLASH_BANK_3_ADR:  FCTL1 = FWKEY | MERAS;          break;
+        case FLASH_SEG_A_ADR:   FCTL1 = FWKEY | ERASE;          break;
+        case FLASH_SEG_B_ADR:   FCTL1 = FWKEY | ERASE;          break;
+        case FLASH_SEG_C_ADR:   FCTL1 = FWKEY | ERASE;          break;
+        case FLASH_SEG_D_ADR:   FCTL1 = FWKEY | ERASE;          break;
+        case FLASH_MASS_ERASE:  FCTL1 = FWKEY | MERAS | ERASE;  break;
+    }
+
+    *erase_ptr = 0;
+    while((FCTL3 & BUSY) == 1);
+    FCTL1 = FWKEY;                          // Clear WRT bit
+    FCTL3 = FWKEY | LOCK | LOCKA;           // Set LOCK bit
 }
 
-void flash_write_data(uint8_t *data, uint8_t size, uint8_t adr)
+uint8_t flash_read_single(uint8_t *addr)
 {
-    FlashCtl_write8(data, flash_ptr, size);
+    return *addr;
 }
 
-uint16_t flash_read_word(uint16_t adr)
+uint32_t flash_read_long(uint32_t *addr)
 {
-    return 0xFFFF;
-}
-
-void flash_write_word(uint16_t word, uint16_t adr)
-{
-    FlashCtl_write16(&word, flash_ptr, 1);
-}
-
-uint32_t flash_read_word32(uint16_t adr)
-{
-    return 0xFFFFFFFF;
-}
-
-void flash_write_word32(uint32_t word32, uint16_t adr)
-{
-    FlashCtl_write32(&word32, flash_ptr, 1);
+    return *addr;
 }
 
 //! \} End of flash group
