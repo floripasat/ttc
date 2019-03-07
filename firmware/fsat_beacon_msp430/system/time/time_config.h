@@ -25,7 +25,7 @@
  * 
  * \author Gabriel Mariano Marcelino <gabriel.mm8@gmail.com>
  * 
- * \version 0.1.7
+ * \version 0.2.4
  * 
  * \date 23/02/2019
  * 
@@ -37,7 +37,10 @@
 #ifndef TIME_CONFIG_H_
 #define TIME_CONFIG_H_
 
-#define TIME_MODULE_NAME                "Time Control"
+#define TIME_MODULE_NAME            "Time Control"
+
+#define TIME_CRC8_INITIAL_VALUE     0x00        /**< CRC8-CCITT. */
+#define TIME_CRC8_POLYNOMIAL        0x07        /**< CRC8-CCITT. */
 
 #endif // TIME_CONFIG_H_
 

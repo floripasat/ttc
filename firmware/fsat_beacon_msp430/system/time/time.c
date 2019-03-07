@@ -25,7 +25,7 @@
  * 
  * \author Gabriel Mariano Marcelino <gabriel.mm8@gmail.com>
  * 
- * \version 0.1.8
+ * \version 0.2.4
  * 
  * \date 10/06/2017
  * 
@@ -133,6 +133,11 @@ uint32_t time_get_seconds()
     }
     
     return time.second_counter;
+}
+
+uint32_t time_get_minutes()
+{
+    return TIME_SEC_TO_MIN(time_get_seconds());
 }
 
 /**

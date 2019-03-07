@@ -1,22 +1,22 @@
 /*
  * time.h
  * 
- * Copyright (C) 2017, Universidade Federal de Santa Catarina
+ * Copyright (C) 2017-2019, Universidade Federal de Santa Catarina.
  * 
- * This file is part of FloripaSat-Beacon.
+ * This file is part of FloripaSat-TTC.
  * 
- * FloripaSat-Beacon is free software: you can redistribute it and/or modify
+ * FloripaSat-TTC is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
  * 
- * FloripaSat-Beacon is distributed in the hope that it will be useful,
+ * FloripaSat-TTC is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
  * 
  * You should have received a copy of the GNU General Public License
- * along with FloripaSat-Beacon. If not, see <http://www.gnu.org/licenses/>.
+ * along with FloripaSat-TTC. If not, see <http://www.gnu.org/licenses/>.
  * 
  */
 
@@ -25,7 +25,7 @@
  * 
  * \author Gabriel Mariano Marcelino <gabriel.mm8@gmail.com>
  * 
- * \version 1.0-dev
+ * \version 0.2.4
  * 
  * \date 10/06/2017
  * 
@@ -39,8 +39,8 @@
 
 #include <stdint.h>
 
-#define TIME_CRC8_INITIAL_VALUE     0x00        /**< CRC8-CCITT. */
-#define TIME_CRC8_POLYNOMIAL        0x07        /**< CRC8-CCITT. */
+#define TIME_MIN_TO_SEC(x)      (x*60)      /**< Minutes to seconds conversion. */
+#define TIME_SEC_TO_MIN(x)      (x/60)      /**< Seconds to minutes conversion. */
 
 /**
  * \brief Time struct.
@@ -115,6 +115,13 @@ void time_reset();
  * \return The seconds counter value.
  */
 uint32_t time_get_seconds();
+
+/**
+ * \brief Returns the system time, in minutes.
+ *
+ * \return The seconds counter value in minutes.
+ */
+uint32_t time_get_minutes();
 
 #endif // TIME_H_
 
