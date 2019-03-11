@@ -25,7 +25,7 @@
  * 
  * \author Gabriel Mariano Marcelino <gabriel.mm8@gmail.com>
  * 
- * \version 0.2.1
+ * \version 0.2.5
  * 
  * \date 20/09/2017
  * 
@@ -45,16 +45,6 @@ void isis_antenna_init()
     debug_print_event_from_module(DEBUG_INFO, ISIS_ANTENNA_MODULE_NAME, "Initializing...\n\r");
 
     isis_antenna_i2c_init();
-}
-
-bool isis_antenna_is_released()
-{
-    
-}
-
-bool isis_antenna_release()
-{
-    debug_print_event_from_module(DEBUG_INFO, ISIS_ANTENNA_MODULE_NAME, "Releasing...\n\r");
 }
 
 void isis_antenna_arm()
@@ -77,7 +67,9 @@ void isis_antenna_disarm()
 
 void isis_antenna_start_sequential_deploy(uint8_t sec)
 {
-    debug_print_event_from_module(DEBUG_INFO, ISIS_ANTENNA_MODULE_NAME, "Executing sequential deployment...\n\r");
+    debug_print_event_from_module(DEBUG_INFO, ISIS_ANTENNA_MODULE_NAME, "Executing sequential deployment (");
+    debug_print_dec(sec);
+    debug_print_msg(" sec)...\n\r");
 
     uint8_t cmd[2];
 
@@ -95,9 +87,11 @@ void isis_antenna_start_independent_deploy(uint8_t ant, uint8_t sec, uint8_t ovr
 
     cmd[1] = sec;
 
-    debug_print_event_from_module(DEBUG_INFO, ISIS_ANTENNA_MODULE_NAME, "Executing independent deployment of ");
+    debug_print_event_from_module(DEBUG_INFO, ISIS_ANTENNA_MODULE_NAME, "Executing independent deployment (");
+    debug_print_dec(sec);
+    debug_print_msg(" sec) of ");
 
-    if (ovr == 1)
+    if (ovr == ISIS_ANTENNA_INDEPENDENT_DEPLOY_WITH_OVERRIDE)
     {
         switch(ant)
         {
@@ -151,21 +145,104 @@ void isis_antenna_start_independent_deploy(uint8_t ant, uint8_t sec, uint8_t ovr
     isis_antenna_delay_ms(100);
 }
 
-static uint16_t isis_antenna_read_deployment_status()
+isis_antenna_status_t isis_antenna_read_deployment_status()
 {
-    uint16_t status = ISIS_ANTENNA_STATUS_MASK;     // Initial state (all not deployed and disarmed
-    
+    uint16_t status_code = ISIS_ANTENNA_STATUS_MASK;    // Initial state
+
     isis_antenna_i2c_write_byte(ISIS_ANTENNA_CMD_REPORT_DEPLOY_STATUS);
-    
+
     isis_antenna_delay_ms(1000);
-    
+
     uint8_t status_bytes[2];
-    
+
     isis_antenna_i2c_read_data(status_bytes, 2);
-    
-    status = (uint16_t)(status_bytes[1] << 8) | status_bytes[0];
-    
+
+    status_code = (uint16_t)(status_bytes[1] << 8) | status_bytes[0];
+
+    isis_antenna_status_t status;
+
+    status.antenna_1.status     = (status_code >> 15) & 0x01;
+    status.antenna_1.timeout    = (status_code >> 14) & 0x01;
+    status.antenna_1.burning    = (status_code >> 13) & 0x01;
+    status.antenna_2.status     = (status_code >> 11) & 0x01;
+    status.antenna_2.timeout    = (status_code >> 10) & 0x01;
+    status.antenna_2.burning    = (status_code >> 9) & 0x01;
+    status.ignoring_switches    = (status_code >> 8) & 0x01;
+    status.antenna_3.status     = (status_code >> 7) & 0x01;
+    status.antenna_3.timeout    = (status_code >> 6) & 0x01;
+    status.antenna_3.burning    = (status_code >> 5) & 0x01;
+    status.independent_burn     = (status_code >> 4) & 0x01;
+    status.antenna_4.status     = (status_code >> 3) & 0x01;
+    status.antenna_4.timeout    = (status_code >> 2) & 0x01;
+    status.antenna_4.burning    = (status_code >> 1) & 0x01;
+    status.armed                = (status_code >> 0) & 0x01;
+
     return status;
+}
+
+uint8_t isis_antenna_get_antenna_status(uint8_t ant)
+{
+    isis_antenna_status_t status = isis_antenna_read_deployment_status();
+
+    switch(ant)
+    {
+        case ISIS_ANTENNA_ANT_1:
+            return status.antenna_1.status;
+        case ISIS_ANTENNA_ANT_2:
+            return status.antenna_2.status;
+        case ISIS_ANTENNA_ANT_3:
+            return status.antenna_3.status;
+        case ISIS_ANTENNA_ANT_4:
+            return status.antenna_4.status;
+        default:
+            debug_print_event_from_module(DEBUG_ERROR, ISIS_ANTENNA_MODULE_NAME, "Error reading the status of an antenna! Unknown antenna number!");
+            return ISIS_ANTENNA_STATUS_DEPLOYED;
+    }
+}
+
+uint8_t isis_antenna_get_antenna_timeout(uint8_t ant)
+{
+    isis_antenna_status_t status = isis_antenna_read_deployment_status();
+
+    switch(ant)
+    {
+        case ISIS_ANTENNA_ANT_1:
+            return status.antenna_1.timeout;
+        case ISIS_ANTENNA_ANT_2:
+            return status.antenna_2.timeout;
+        case ISIS_ANTENNA_ANT_3:
+            return status.antenna_3.timeout;
+        case ISIS_ANTENNA_ANT_4:
+            return status.antenna_4.timeout;
+        default:
+            debug_print_event_from_module(DEBUG_ERROR, ISIS_ANTENNA_MODULE_NAME, "Error reading the timeout flag of an antenna! Unknown antenna number!");
+            return ISIS_ANTENNA_OTHER_CAUSE;
+    }
+}
+
+uint8_t isis_antenna_get_burning(uint8_t ant)
+{
+    isis_antenna_status_t status = isis_antenna_read_deployment_status();
+
+    switch(ant)
+    {
+        case ISIS_ANTENNA_ANT_1:
+            return status.antenna_1.burning;
+        case ISIS_ANTENNA_ANT_2:
+            return status.antenna_2.burning;
+        case ISIS_ANTENNA_ANT_3:
+            return status.antenna_3.burning;
+        case ISIS_ANTENNA_ANT_4:
+            return status.antenna_4.burning;
+        default:
+            debug_print_event_from_module(DEBUG_ERROR, ISIS_ANTENNA_MODULE_NAME, "Error reading the burning flag of an antenna! Unknown antenna number!");
+            return ISIS_ANTENNA_BURN_INACTIVE;
+    }
+}
+
+uint8_t isis_antenna_get_arming_status()
+{
+    return isis_antenna_read_deployment_status().armed;
 }
 
 //! \} End of isis_antenna group

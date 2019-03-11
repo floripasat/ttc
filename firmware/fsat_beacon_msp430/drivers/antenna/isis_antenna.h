@@ -25,7 +25,7 @@
  * 
  * \author Gabriel Mariano Marcelino <gabriel.mm8@gmail.com>
  * 
- * \version 0.2.1
+ * \version 0.2.5
  * 
  * \date 08/07/2017
  * 
@@ -38,96 +38,106 @@
 #define ISIS_ANTENNA_H_
 
 #include <stdint.h>
-#include <stdbool.h>
+
+// Status mask
+#define ISIS_ANTENNA_STATUS_MASK    0x8888                  /**< Status mask (all antenna not deployed and disarmed). */
 
 /**
- * \brief ISIS antenna status.
+ * \brief Antennas number.
+ */
+typedef enum
+{
+    ISIS_ANTENNA_ANT_1 = 1,                                 /**< Antenna number 1. */
+    ISIS_ANTENNA_ANT_2,                                     /**< Antenna number 2. */
+    ISIS_ANTENNA_ANT_3,                                     /**< Antenna number 3. */
+    ISIS_ANTENNA_ANT_4                                      /**< Antenna number 4. */
+} isis_antenna_ant_e;
+
+/**
+ * \brief ISIS antenna independent deployment override options.
+ */
+typedef enum
+{
+    ISIS_ANTENNA_INDEPENDENT_DEPLOY_WITHOUT_OVERRIDE = 0,   /**< Independent deployment without override. */
+    ISIS_ANTENNA_INDEPENDENT_DEPLOY_WITH_OVERRIDE           /**< Independent deployment with override. */
+} isis_antenna_override_e;
+
+/**
+ * \brief Deployment status.
+ */
+typedef enum
+{
+    ISIS_ANTENNA_STATUS_DEPLOYED = 0,                       /**< The antenna is deployed. */
+    ISIS_ANTENNA_STATUS_NOT_DEPLOYED                        /**< The antenna is not deployed. */
+} isis_antenna_deployment_status_e;
+
+/**
+ * \brief Deployment stop causes.
+ */
+typedef enum
+{
+    ISIS_ANTENNA_OTHER_CAUSE = 0,                           /**< Deployment stopped by timeout. */
+    ISIS_ANTENNA_TIMEOUT_CAUSE                              /**< Deployment stopped by other cause. */
+} isis_antenna_stop_cause_e;
+
+/**
+ * \brief Burn system status.
+ */
+typedef enum
+{
+    ISIS_ANTENNA_BURN_INACTIVE = 0,                         /**< Burn system inactive. */
+    ISIS_ANTENNA_BURN_ACTIVE                                /**< Burn system active. */
+} isis_antenna_burn_system_status_e;
+
+/**
+ * \brief Data of a single antenna.
  */
 typedef struct
 {
-    uint8_t antenna_1_status  : 1;      /**< . */
-    uint8_t antenna_1_timeout : 1;      /**< . */
-    uint8_t antenna_1_burning : 1;      /**< . */
-    uint8_t antenna_2_status  : 1;      /**< . */
-    uint8_t antenna_2_timeout : 1;      /**< . */
-    uint8_t antenna_2_burning : 1;      /**< . */
-    uint8_t ignoring_switches : 1;      /**< . */
-    uint8_t antenna_3_status  : 1;      /**< . */
-    uint8_t antenna_3_timeout : 1;      /**< . */
-    uint8_t antenna_3_burning : 1;      /**< . */
-    uint8_t independent_burn  : 1;      /**< . */
-    uint8_t antenna_4_status  : 1;      /**< . */
-    uint8_t antenna_4_timeout : 1;      /**< . */
-    uint8_t antenna_4_burning : 1;      /**< . */
-    uint8_t armed             : 1;      /**< . */
-} ISIS_Antenna_Status;
-
-#define ISIS_ANTENNA_STATUS_MASK            0x8888  /**< . */
-
-// Antenna status
-#define ISIS_ANTENNA_STATUS_NOT_DEPLOYED    1       /**< Value if antennas are not deployed yet */
-#define ISIS_ANTENNA_STATUS_DEPLOYED        0       /**< Value if antennas are deployed         */
-
-// Antenna stop cause
-#define ISIS_ANTENNA_TIMEOUT_CAUSE          1       /**< Value if deployment system stops because timeout                   */
-#define ISIS_ANTENNA_OTHER_CAUSE            0       /**< Value if deployment system stops because other reason than timeout */
-
-// Antenna burn system
-#define ISIS_ANTENNA_BURN_ACTIVE            1       /**< Value if the referring antenna burn system is active */
-#define ISIS_ANTENNA_BURN_INACTIVE          0       /**< Value if the referring antenna burn system is off    */
-
-#define ISIS_ANTENNA_ANT_1                  1       /**< . */
-#define ISIS_ANTENNA_ANT_2                  2       /**< . */
-#define ISIS_ANTENNA_ANT_3                  3       /**< . */
-#define ISIS_ANTENNA_ANT_4                  4       /**< . */
-
-#define VERIFY_STATUS(status, bit)          ( (status & bit) > 0 )
+    uint8_t status  : 1;                                    /**< Antenna status. */
+    uint8_t timeout : 1;                                    /**< Antenna timeout flag. */
+    uint8_t burning : 1;                                    /**< Antenna burning flag. */
+} isis_antenna_single_antenna_data_t;
 
 /**
- * \brief .
+ * \brief ISIS antenna status bits.
+ */
+typedef struct
+{
+    isis_antenna_single_antenna_data_t antenna_1;           /**< Antenna 1 status. */
+    isis_antenna_single_antenna_data_t antenna_2;           /**< Antenna 2 status. */
+    isis_antenna_single_antenna_data_t antenna_3;           /**< Antenna 3 status. */
+    isis_antenna_single_antenna_data_t antenna_4;           /**< Antenna 4 status. */
+    uint8_t ignoring_switches : 1;                          /**< Ignoring switches. */
+    uint8_t independent_burn  : 1;                          /**< Independent burn. */
+    uint8_t armed             : 1;                          /**< Armed. */
+} isis_antenna_status_t;
+
+/**
+ * \brief Driver initialization.
  *
  * \return None.
  */
 void isis_antenna_init();
 
 /**
- * \brief Verifies if the antenna is released or not.
- *
- * \return Deployment status. It can return:
- *              - true if the antenna is released.
- *              - false if the antenna is not released.
- *              .
- */
-bool isis_antenna_is_released();
-
-/**
- * \brief Enables the antenna deployment.
- *
- * \return It can be:
- *              - true
- *              - false
- *              .
- */
-bool isis_antenna_release();
-
-/**
- * \brief 
+ * \brief Arm the antenna module.
  *
  * \return None.
  */
 void isis_antenna_arm();
 
 /**
- * \brief 
+ * \brief Disarm the antenna module.
  *
  * \return None.
  */
 void isis_antenna_disarm();
 
 /**
- * \brief 
+ * \brief Executes a sequential deployment.
  *
- * \param sec
+ * \param[in] sec
  *
  * \return None.
  */
@@ -136,44 +146,130 @@ void isis_antenna_start_sequential_deploy(uint8_t sec);
 /**
  * \brief 
  *
- * \param ant
- * \param sec
- * \param ovr
+ * \param[in] ant is the antenna number:
+ * \parblock
+ *      - ISIS_ANTENNA_ANT_1
+ *      - ISIS_ANTENNA_ANT_2
+ *      - ISIS_ANTENNA_ANT_3
+ *      - ISIS_ANTENNA_ANT_4
+ *      .
+ * \endparblock
+ *
+ * \param[in] sec
+ *
+ * \param[in] ovr is the override option:
+ * \parblock
+ *      - ISIS_ANTENNA_INDEPENDENT_DEPLOYMENT_WITHOUT_OVERRIDE
+ *      - ISIS_ANTENNA_INDEPENDENT_DEPLOYMENT_WITH_OVERRIDE
+ *      .
+ * \endparblock
  *
  * \return None.
  */
 void isis_antenna_start_independent_deploy(uint8_t ant, uint8_t sec, uint8_t ovr);
 
 /**
- * \brief 
+ * \brief Reads the deployment status.
  *
- * \return The deployment status code.
+ * Send a command through I2C to read the deploy switches to know if the antennas were deployed.
+ *
+ * \return The deployment status bits.
  */
-static uint16_t isis_antenna_read_deployment_status();
+isis_antenna_status_t isis_antenna_read_deployment_status();
+
+/**
+ * \brief Gets the status of antenna.
+ *
+ * \param[in] ant is the antenna to get the status. It can be:
+ * \parblock
+ *      - ISIS_ANTENNA_ANT_1
+ *      - ISIS_ANTENNA_ANT_2
+ *      - ISIS_ANTENNA_ANT_3
+ *      - ISIS_ANTENNA_ANT_4
+ *      .
+ * \endparblock
+ *
+ * \return The given antenna status:
+ * \parblock
+ *      - ISIS_ANTENNA_STATUS_NOT_DEPLOYED
+ *      - ISIS_ANTENNA_STATUS_DEPLOYED
+ *      .
+ * \endparblock
+ */
+uint8_t isis_antenna_get_antenna_status(uint8_t ant);
+
+/**
+ * \brief Gets the timeout status of an antenna.
+ *
+ * \param[in] ant is the antenna to get the timeout flag. It can be:
+ * \parblock
+ *      - ISIS_ANTENNA_ANT_1
+ *      - ISIS_ANTENNA_ANT_2
+ *      - ISIS_ANTENNA_ANT_3
+ *      - ISIS_ANTENNA_ANT_4
+ *      .
+ * \endparblock
+ *
+ * \return The timeout flag:
+ * \parblock
+ *      - ISIS_ANTENNA_TIMEOUT_CAUSE
+ *      - ISIS_ANTENNA_OTHER_CAUSE
+ *      .
+ * \endparblock
+ */
+uint8_t isis_antenna_get_antenna_timeout(uint8_t ant);
+
+/**
+ * \brief Gets the burn system status.
+ *
+ * \param[in] ant is the antenna to get the burn system status. It can be:
+ * \parblock
+ *      - ISIS_ANTENNA_ANT_1
+ *      - ISIS_ANTENNA_ANT_2
+ *      - ISIS_ANTENNA_ANT_3
+ *      - ISIS_ANTENNA_ANT_4
+ *      .
+ * \endparblock
+ *
+ * \return .
+ * \parblock
+ *      - ISIS_ANTENNA_BURN_ACTIVE
+ *      - ISIS_ANTENNA_BURN_INACTIVE
+ *      .
+ * \endparblock
+ */
+uint8_t isis_antenna_get_burning(uint8_t ant);
+
+/**
+ * \brief Gets the arming status of the antennas.
+ *
+ * \return 1 if armed, 0 it not armed.
+ */
+uint8_t isis_antenna_get_arming_status();
 
 /**
  * \brief I2C interface initialization.
  *
- * \return None
+ * \return None.
  */
 void isis_antenna_i2c_init();
 
 /**
  * \brief Writes a byte in the I2C bus.
  *
- * \param byte is the byte to write in the I2C bus.
+ * \param[in] byte is the byte to write in the I2C bus.
  *
- * \return None
+ * \return None.
  */
 void isis_antenna_i2c_write_byte(uint8_t byte);
 
 /**
  * \brief Writes data in the I2C bus.
  *
- * \param data is an array of data to write in the I2C bus.
- * \param len is the length of the data.
+ * \param[in] data is an array of data to write in the I2C bus.
+ * \param[in] len is the length of the data.
  *
- * \return None
+ * \return None.
  */
 void isis_antenna_i2c_write_data(uint8_t *data, uint8_t len);
 
@@ -187,8 +283,8 @@ uint8_t isis_antenna_i2c_read_byte();
 /**
  * \brief Read n bytes from the I2C bus.
  *
- * \param data is a pointe to write the data from the I2C bus.
- * \param len is the length of the data.
+ * \param[in] data is a pointe to write the data from the I2C bus.
+ * \param[in] len is the length of the data.
  *
  * \return None.
  */
@@ -197,30 +293,30 @@ void isis_antenna_i2c_read_data(uint8_t *data, uint8_t len);
 /**
  * \brief Seconds delay.
  *
- * \param s is the delay in seconds.
+ * \param[in] s is the delay in seconds.
  *
- * \return None
+ * \return None.
  */
 void isis_antenna_delay_s(uint8_t s);
 
 /**
  * \brief Milliseconds delay.
  *
- * \param ms is the delay in milliseconds.
+ * \param[in] ms is the delay in milliseconds.
  *
- * \return None
+ * \return None.
  */
 void isis_antenna_delay_ms(uint16_t ms);
 
 /**
- * \brief Microseconds delay
+ * \brief Microseconds delay.
  *
- * \param us is the delay in microseconds.
+ * \param[in] us is the delay in microseconds.
  *
- * \return None
+ * \return None.
  */
 void isis_antenna_delay_us(uint32_t us);
 
 #endif // ANTENNA_H_
 
-//! \} End of antenna group
+//! \} End of isis_antenna group
