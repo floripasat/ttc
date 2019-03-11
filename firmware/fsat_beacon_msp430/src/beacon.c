@@ -25,7 +25,7 @@
  * 
  * \author Gabriel Mariano Marcelino <gabriel.mm8@gmail.com>
  * 
- * \version 0.2.2
+ * \version 0.2.6
  * 
  * \date 08/06/2017
  * 
@@ -40,6 +40,7 @@
 #include <system/system.h>
 
 #include "beacon.h"
+#include "beacon_config.h"
 #include "fsp/fsp.h"
 #include "ngham/ngham.h"
 #include "ax25/ax25.h"
@@ -112,15 +113,12 @@ void beacon_run()
 {
     debug_print_event_from_module(DEBUG_INFO, BEACON_MODULE_NAME, "Running main loop...\n\r");
 
-//    if (!antenna_is_released())
-//    {
-//        task_antenna_deployment();
-//    }
-
     __enable_interrupt();
 
     while(1)
     {
+        task_aperiodic(&beacon_antenna_deployment, beacon.deployment_executed? false : true);
+
         task_periodic(&beacon_check_devices_status, 1, &beacon.last_devices_verification, time_get_seconds());
 
     #if BEACON_PACKET_PROTOCOL & PACKET_NGHAM
@@ -645,16 +643,40 @@ void beacon_process_radio_pkt()
 
 void beacon_antenna_deployment()
 {
-    uint8_t time_marker = time_get_seconds();
-    
-    while((time_get_seconds() - time_marker) <= BEACON_ANTENNA_DEPLOY_SLEEP_SEC)
-    {
-        watchdog_reset_timer();
+    debug_print_event_from_module(DEBUG_INFO, BEACON_MODULE_NAME, "Executing the deployment routines...\n\r");
 
-        system_enter_low_power_mode();
+    // If it is the first deployment attempt, wait 45 minutes before trying to deploy
+    if (antenna_get_deployment_status() != ANTENNA_STATUS_DEPLOYED)
+    {
+        beacon.hibernation = true;
+
+        debug_print_event_from_module(DEBUG_WARNING, BEACON_MODULE_NAME, "Deployment never executed! First deployment attempt in ");
+        debug_print_dec(BEACON_ANTENNA_DEPLOY_SLEEP_MIN);
+        debug_print_msg(" minute(s)...\n\r");
+
+        uint32_t time_marker = time_get_seconds();
+
+        while((time_get_seconds() - time_marker) <= BEACON_ANTENNA_DEPLOY_SLEEP_SEC)
+        {
+            watchdog_reset_timer();
+
+            system_enter_low_power_mode();
+
+            if (((time_get_seconds() - time_marker) % 60) == 0)
+            {
+                debug_print_event_from_module(DEBUG_INFO, BEACON_MODULE_NAME, "First deployment attempt in ");
+                debug_print_dec(BEACON_ANTENNA_DEPLOY_SLEEP_MIN - time_get_minutes());
+                debug_print_msg(" minute(s)...\n\r");
+            }
+        }
     }
-    
+
     antenna_deploy();
+
+    antenna_set_deployment_status(ANTENNA_STATUS_DEPLOYED);
+
+    beacon.hibernation = false;
+    beacon.deployment_executed = true;
 }
 
 void beacon_delay_sec(uint8_t delay_sec)

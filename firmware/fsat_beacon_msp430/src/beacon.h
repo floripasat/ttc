@@ -25,7 +25,7 @@
  * 
  * \author Gabriel Mariano Marcelino <gabriel.mm8@gmail.com>
  * 
- * \version 0.1.11
+ * \version 0.2.6
  * 
  * \date 08/06/2017
  * 
@@ -44,8 +44,6 @@
 
 #include "fsat_module.h"
 
-#define BEACON_MODULE_NAME      "Beacon"
-
 /**
  * \brief Beacon variables struct.
  */
@@ -54,6 +52,7 @@ typedef struct
     bool        hibernation;                    /**< If true, the beacon is in hibernation mode, otherwise, not. */
     bool        can_transmit;                   /**< If true, the beacon can transmit packets, otherwise, not. */
     bool        transmitting;                   /**< If true, the beacon is transmitting packets, otherwise, not. */
+    bool        deployment_executed;            /**< If true, the antenna deployment was executed since the last beacon reset. */
     uint8_t     energy_level;                   /**< Energy level of the satellite. */
     uint32_t    last_radio_reset_time;          /**< Time stamp of the last radio reset. */
     uint32_t    last_system_reset_time;         /**< Time stamp of the last system reset. */
