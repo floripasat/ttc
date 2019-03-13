@@ -1,48 +1,52 @@
 /*
- * version.h
+ * antenna_delay.c
  * 
  * Copyright (C) 2019, Universidade Federal de Santa Catarina.
  * 
  * This file is part of FloripaSat-TTC.
  * 
  * FloripaSat-TTC is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
+ * it under the terms of the GNU Lesser General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
  * 
  * FloripaSat-TTC is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * GNU Lesser General Public License for more details.
  * 
- * You should have received a copy of the GNU General Public License
+ * You should have received a copy of the GNU Lesser General Public License
  * along with FloripaSat-TTC. If not, see <http://www.gnu.org/licenses/>.
  * 
  */
 
 /**
- * \brief Version control.
+ * \brief Antenna delay implementation.
  * 
  * \author Gabriel Mariano Marcelino <gabriel.mm8@gmail.com>
  * 
  * \version 0.2.7
  * 
- * \date 08/02/2019
+ * \date 13/03/2019
  * 
- * \defgroup version_control Version Control
+ * \defgroup antenna_delay Delay
+ * \ingroup antenna
  * \{
  */
 
-#ifndef VERSION_H_
-#define VERSION_H_
+#include <system/system.h>
 
-#define FIRMWARE_VERSION        "0.2.7"
+#include "antenna.h"
 
-#define FIRMWARE_STATUS         "Development"
+void antenna_delay_s(uint32_t s)
+{
+    uint8_t i = 0;
+    for(i=0; i<s; i++)
+    {
+        system_enter_low_power_mode();
 
-#define FIRMWARE_AUTHOR_NAME    "Gabriel Mariano Marcelino"
-#define FIRMWARE_AUTHOR_EMAIL   "gabriel.mm8@gmail.com"
+        watchdog_reset_timer();
+    }
+}
 
-#endif // VERSION_H_
-
-//! \} End of version_control group
+//! \} End of antenna_delay group

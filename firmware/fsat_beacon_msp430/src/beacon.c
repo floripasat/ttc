@@ -25,7 +25,7 @@
  * 
  * \author Gabriel Mariano Marcelino <gabriel.mm8@gmail.com>
  * 
- * \version 0.2.6
+ * \version 0.2.7
  * 
  * \date 08/06/2017
  * 
@@ -672,8 +672,6 @@ void beacon_antenna_deployment()
     }
 
     antenna_deploy();
-
-    antenna_set_deployment_status(ANTENNA_STATUS_DEPLOYED);
 
     beacon.hibernation = false;
     beacon.deployment_executed = true;

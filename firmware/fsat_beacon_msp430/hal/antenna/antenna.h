@@ -89,6 +89,15 @@ uint8_t antenna_get_deployment_status();
  */
 void antenna_set_deployment_status(uint8_t status);
 
+/**
+ * \brief Delay period in seconds.
+ *
+ * \param[in] s is the delay period in seconds.
+ *
+ * \return None.
+ */
+void antenna_delay_s(uint32_t s);
+
 #endif // ANTENNA_H_
 
 //! \} End of antenna group

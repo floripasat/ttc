@@ -25,7 +25,7 @@
  * 
  * \author Gabriel Mariano Marcelino <gabriel.mm8@gmail.com>
  * 
- * \version 0.2.3
+ * \version 0.2.7
  * 
  * \date 23/02/2019
  * 
@@ -37,11 +37,19 @@
 #ifndef ANTENNA_CONFIG_H_
 #define ANTENNA_CONFIG_H_
 
-#define ANTENNA_MODULE_NAME                 "Antenna"
+#define ANTENNA_MODULE_NAME                         "Antenna"
 
-#define ANTENNA_MEM_ADR_DEPLOY_STATUS_0     0x10
-#define ANTENNA_MEM_ADR_DEPLOY_STATUS_1     0x20
-#define ANTENNA_MEM_ADR_DEPLOY_STATUS_2     0x40
+#define ANTENNA_MEM_ADR_DEPLOY_STATUS_0             0x10
+#define ANTENNA_MEM_ADR_DEPLOY_STATUS_1             0x20
+#define ANTENNA_MEM_ADR_DEPLOY_STATUS_2             0x40
+
+#define ANTENNA_ARMING_TIMEOUT_S                    5
+#define ANTENNA_ARMING_TIMEOUT_MS                   (ANTENNA_ARMING_TIMEOUT_S*1000)
+
+#define ANTENNA_SEQUENTIAL_DEPLOYMENT_BURN_TIME_S   20
+#define ANTENNA_SEQUENTIAL_DEPLOYMENT_BURN_TIME_MS  (ANTENNA_SEQUENTIAL_DEPLOYMENT_BURN_TIME_S*1000)
+#define ANTENNA_OVERRIDE_DEPLOYMENT_BURN_TIME_S     5
+#define ANTENNA_OVERRIDE_DEPLOYMENT_BURN_TIME_MS    (ANTENNA_OVERRIDE_DEPLOYMENT_BURN_TIME_S*1000)
 
 #endif // ANTENNA_CONFIG_H_
 
