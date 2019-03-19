@@ -25,7 +25,7 @@
  * 
  * \author Gabriel Mariano Marcelino <gabriel.mm8@gmail.com>
  * 
- * \version 0.1.8
+ * \version 0.2.10
  * 
  * \date 23/09/2016
  * 
@@ -42,7 +42,7 @@ Queue eps_queue;
 
 bool eps_init()
 {
-    debug_print_event_from_module(DEBUG_INFO, EPS_HAL_MODULE_NAME, "Initialization communication...\n\r");
+    debug_print_event_from_module(DEBUG_INFO, EPS_HAL_MODULE_NAME, "Initializing communication bus...\n\r");
 
     // UART initialization
     if (eps_hal_uart_init())
