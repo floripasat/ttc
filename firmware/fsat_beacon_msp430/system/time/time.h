@@ -25,7 +25,7 @@
  * 
  * \author Gabriel Mariano Marcelino <gabriel.mm8@gmail.com>
  * 
- * \version 0.2.4
+ * \version 0.2.9
  * 
  * \date 10/06/2017
  * 
@@ -94,6 +94,20 @@ static void time_timer_init();
  * \return The crc8 value of the time counter variable.
  */
 static uint8_t time_crc8(uint32_t time_counter);
+
+/**
+ * \brief Saves the current system time to the non-volation memory.
+ *
+ * \return None.
+ */
+static void time_save();
+
+/**
+ * \brief Loads the system time from the non-volatile memory.
+ *
+ * \return None.
+ */
+static void time_load();
 
 /**
  * \brief Starts the time control timer operation (timer continuous mode).

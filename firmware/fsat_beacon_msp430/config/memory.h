@@ -25,7 +25,7 @@
  * 
  * \author Gabriel Mariano Marcelino <gabriel.mm8@gmail.com>
  * 
- * \version 0.2.8
+ * \version 0.2.9
  * 
  * \date 18/03/2019
  * 
@@ -37,7 +37,14 @@
 #ifndef MEMORY_H_
 #define MEMORY_H_
 
-#define MEMORY_ADDRESS_         0x00
+#include <hal/mcu/flash.h>
+
+// System time
+#define MEMORY_REGION_SYSTEM_TIME               FLASH_SEG_A_ADR
+#define MEMORY_ADR_TIME_COUNT                   (uint32_t *)(FLASH_SEG_A_ADR)
+#define MEMORY_ADR_TIME_COUNT_CHECKSUM          (uint8_t *)(FLASH_SEG_A_ADR + 8)
+#define MEMORY_ADR_TIME_COUNT_BKP               (uint32_t *)(FLASH_SEG_A_ADR + 16)
+#define MEMORY_ADR_TIME_COUNT_BKP_CHECKSUM      (uint8_t *)(FLASH_SEG_A_ADR + 24)
 
 #endif // MEMORY_H_
 

@@ -25,7 +25,7 @@
  * 
  * \author Gabriel Mariano Marcelino <gabriel.mm8@gmail.com>
  * 
- * \version 0.2.4
+ * \version 0.2.9
  * 
  * \date 10/06/2017
  * 
@@ -36,6 +36,7 @@
 #include <config/config.h>
 #include <drivers/driverlib/driverlib.h>
 #include <system/debug/debug.h>
+#include <hal/mcu/flash.h>
 
 #include "time.h"
 #include "time_config.h"
@@ -48,8 +49,8 @@ void time_init()
 {
     debug_print_event_from_module(DEBUG_INFO, TIME_MODULE_NAME, "Time control initialization...\n\r");
 
-    time_reset();
-    
+    time_load();
+
     time_timer_init();
 }
 
@@ -101,6 +102,57 @@ static uint8_t time_crc8(uint32_t time_counter)
     return crc;
 }
 
+static void time_save()
+{
+    flash_erase(TIME_MEMORY_REGION);
+
+    flash_write_long(time.second_counter, TIME_VALUE_ADDRESS);
+    flash_write_single(time.crc8, TIME_CHECKSUM_ADDRESS);
+
+    flash_write_long(time_backup.second_counter, TIME_VALUE_BKP_ADDRESS);
+    flash_write_single(time_backup.crc8, TIME_CHECKSUM_BKP_ADDRESS);
+}
+
+static void time_load()
+{
+    debug_print_event_from_module(DEBUG_INFO, TIME_MODULE_NAME, "Loading the last system time  value from the flash memory...\n\r");
+
+    uint32_t time_count = flash_read_long(TIME_VALUE_ADDRESS);
+    uint8_t checksum = flash_read_single(TIME_CHECKSUM_ADDRESS);
+
+    if (time_crc8(time_count) == checksum)
+    {
+        time.second_counter = time_count;
+        time.crc8 = checksum;
+
+        time_backup.second_counter = time_count;
+        time_backup.crc8 = checksum;
+    }
+    else
+    {
+        debug_print_event_from_module(DEBUG_ERROR, TIME_MODULE_NAME, "The last stored system time value is corrupted!\n\r");
+        debug_print_event_from_module(DEBUG_WARNING, TIME_MODULE_NAME, "Loading the last system time value from the flash memory (backup address)...\n\r");
+
+        time_count = flash_read_long(TIME_VALUE_BKP_ADDRESS);
+        checksum = flash_read_single(TIME_CHECKSUM_BKP_ADDRESS);
+
+        if (time_crc8(time_count) == checksum)
+        {
+            time.second_counter = time_count;
+            time.crc8 = checksum;
+
+            time_backup.second_counter = time_count;
+            time_backup.crc8 = checksum;
+        }
+        else
+        {
+            debug_print_event_from_module(DEBUG_ERROR, TIME_MODULE_NAME, "The last stored system time backup is also corrupted!\n\r");
+
+            time_reset();
+        }
+    }
+}
+
 void time_timer_start()
 {
     debug_print_event_from_module(DEBUG_INFO, TIME_MODULE_NAME, "Initializing timer...\n\r");
@@ -110,6 +162,8 @@ void time_timer_start()
 
 void time_reset()
 {
+    debug_print_event_from_module(DEBUG_WARNING, TIME_MODULE_NAME, "Reseting the the system time counter...\n\r");
+
     time.second_counter = 0;
     time.crc8 = 0;
     
@@ -119,19 +173,6 @@ void time_reset()
 
 uint32_t time_get_seconds()
 {
-    if (time_crc8(time.second_counter) != time.crc8)
-    {
-        if (time_crc8(time_backup.second_counter) == time_backup.crc8)
-        {
-            time.second_counter = time_backup.second_counter;
-            time.crc8 = time_backup.crc8;
-        }
-        else
-        {
-            time_reset();
-        }
-    }
-    
     return time.second_counter;
 }
 
@@ -177,9 +218,15 @@ void time_timer_isr()
     }
     else
     {
-        time_reset();
+        time_load();
     }
-    
+
+    // Save the time count value periodically
+    if (time.second_counter % TIME_SAVE_PERIOD_S == 0)
+    {
+        time_save();
+    }
+
     // Add Offset to CCR0
     Timer_A_setCompareValue(TIME_TIMER_BASE_ADDRESS, TIME_TIMER_COMPARE_REGISTER, comp_val);
     

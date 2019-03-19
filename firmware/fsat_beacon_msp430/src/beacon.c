@@ -25,7 +25,7 @@
  * 
  * \author Gabriel Mariano Marcelino <gabriel.mm8@gmail.com>
  * 
- * \version 0.2.7
+ * \version 0.2.9
  * 
  * \date 08/06/2017
  * 
@@ -53,6 +53,8 @@ void beacon_init()
     
     cpu_init();
 
+    debug_init();
+
     status_led_init();
     
     time_init();
@@ -62,8 +64,6 @@ void beacon_init()
     __enable_interrupt();
     beacon_delay_sec(BEACON_BOOT_DELAY_SEC);
     __disable_interrupt();
-
-    task_init_with_timeout(&debug_init, DEBUG_INIT_TIMEOUT_MS);
 
     task_init_with_timeout(&antenna_init, BEACON_ANTENNA_INIT_TIMEOUT_MS);
     

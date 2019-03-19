@@ -26,7 +26,7 @@
  * \author Matheus dos Santos Frata
  * \author Gabriel Mariano Marcelino <gabriel.mm8@gmail.com>
  * 
- * \version 0.2.2
+ * \version 0.2.9
  * 
  * \date 10/06/2017
  * 
@@ -79,16 +79,6 @@
 
 // Last adress that can write a data(beyond this will enter the overflow)
 #define FLASH_LAST_WRITE_ADDR       0x00087FFF
-
-/**
- * \brief Initialize flash pointer.
- */
-extern char *flash_ptr;
-
-/**
- * \brief Place holder to save flash pointer to boot.
- */
-extern long *current_flash_ptr;
 
 /**
  * \brief Writes data into the flash memory.
