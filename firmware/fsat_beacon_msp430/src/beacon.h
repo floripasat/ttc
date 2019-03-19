@@ -25,7 +25,7 @@
  * 
  * \author Gabriel Mariano Marcelino <gabriel.mm8@gmail.com>
  * 
- * \version 0.2.6
+ * \version 0.2.11
  * 
  * \date 08/06/2017
  * 
@@ -49,16 +49,19 @@
  */
 typedef struct
 {
+    bool        params_saved;                   /**< If true, the beacon parameters were saved at least once. */
     bool        hibernation;                    /**< If true, the beacon is in hibernation mode, otherwise, not. */
     bool        can_transmit;                   /**< If true, the beacon can transmit packets, otherwise, not. */
     bool        transmitting;                   /**< If true, the beacon is transmitting packets, otherwise, not. */
     bool        deployment_executed;            /**< If true, the antenna deployment was executed since the last beacon reset. */
+    bool        deploy_hibernation_executed;    /**< If true, the mandatory deployment hibernation was executed. */
     uint8_t     energy_level;                   /**< Energy level of the satellite. */
     uint32_t    last_radio_reset_time;          /**< Time stamp of the last radio reset. */
     uint32_t    last_system_reset_time;         /**< Time stamp of the last system reset. */
     uint32_t    last_ngham_pkt_transmission;    /**< Time stamp of the last NGHam packet transmission. */
     uint32_t    last_devices_verification;      /**< Time stamp of the last devices verification. */
     uint32_t    last_energy_level_set;          /**< Time stamp of the last energy level verification. */
+    uint32_t    last_params_saving;             /**< Time stamp of the last parameters saving. */
     uint32_t    hibernation_mode_initial_time;  /**< Seconds since boot before the hibernations. */
     uint32_t    time_obdh_started_tx;           /**< Time stamp of the allowed window to OBDH transmit data via radio. */
     Buffer      radio_rx;                       /**< Radio RX data buffer. */
@@ -217,6 +220,20 @@ void beacon_antenna_deployment();
  * \return None.
  */
 static void beacon_delay_sec(uint8_t delay_sec);
+
+/**
+ * \brief Loads the beacon parameters from the flash memory.
+ *
+ * \return None.
+ */
+static void beacon_load_params();
+
+/**
+ * \brief Saves the beacon parameters to the flash memory.
+ *
+ * \return None.
+ */
+static void beacon_save_params();
 
 #endif // BEACON_H_
 

@@ -25,7 +25,7 @@
  * 
  * \author Gabriel Mariano Marcelino <gabriel.mm8@gmail.com>
  * 
- * \version 0.2.9
+ * \version 0.2.11
  * 
  * \date 18/03/2019
  * 
@@ -40,11 +40,26 @@
 #include <hal/mcu/flash.h>
 
 // System time
-#define MEMORY_REGION_SYSTEM_TIME               FLASH_SEG_A_ADR
-#define MEMORY_ADR_TIME_COUNT                   (uint32_t *)(FLASH_SEG_A_ADR)
-#define MEMORY_ADR_TIME_COUNT_CHECKSUM          (uint8_t *)(FLASH_SEG_A_ADR + 8)
-#define MEMORY_ADR_TIME_COUNT_BKP               (uint32_t *)(FLASH_SEG_A_ADR + 16)
-#define MEMORY_ADR_TIME_COUNT_BKP_CHECKSUM      (uint8_t *)(FLASH_SEG_A_ADR + 24)
+#define MEMORY_REGION_SYSTEM_TIME                   FLASH_SEG_A_ADR
+#define MEMORY_ADR_TIME_COUNT                       (uint32_t *)(FLASH_SEG_A_ADR)
+#define MEMORY_ADR_TIME_COUNT_CHECKSUM              (uint8_t *)(FLASH_SEG_A_ADR + 8)
+#define MEMORY_ADR_TIME_COUNT_BKP                   (uint32_t *)(FLASH_SEG_A_ADR + 16)
+#define MEMORY_ADR_TIME_COUNT_BKP_CHECKSUM          (uint8_t *)(FLASH_SEG_A_ADR + 24)
+
+// System parameters
+#define MEMORY_REGION_SYSTEM_PARAMS                 FLASH_SEG_D_ADR
+#define MEMORY_ADR_PARAM_HIBERNATION                (uint8_t *)(FLASH_SEG_D_ADR)
+#define MEMORY_ADR_PARAM_ENERGY_LEVEL               (uint8_t *)(FLASH_SEG_D_ADR + 4)
+#define MEMORY_ADR_PARAM_LAST_ENERGY_LEVEL_SET      (uint8_t *)(FLASH_SEG_D_ADR + 8)
+#define MEMORY_ADR_PARAM_LAST_TIME_VALID_PKT        (uint8_t *)(FLASH_SEG_D_ADR + 12)
+#define MEMORY_ADR_PARAM_EPS_LAST_TIME_VALID_PKT    (uint8_t *)(FLASH_SEG_D_ADR + 16)
+#define MEMORY_ADR_PARAM_EPS_ERRORS                 (uint8_t *)(FLASH_SEG_D_ADR + 20)
+#define MEMORY_ADR_PARAM_EPS_IS_DEAD_PKT            (uint8_t *)(FLASH_SEG_D_ADR + 24)
+#define MEMORY_ADR_PARAM_OBDH_LAST_TIME_VALID_PKT   (uint8_t *)(FLASH_SEG_D_ADR + 28)
+#define MEMORY_ADR_PARAM_OBDH_ERRORS                (uint8_t *)(FLASH_SEG_D_ADR + 32)
+#define MEMORY_ADR_PARAM_OBDH_IS_DEAD_PKT           (uint8_t *)(FLASH_SEG_D_ADR + 36)
+#define MEMORY_ADR_PARAM_PARAMS_SAVED               (uint8_t *)(FLASH_SEG_D_ADR + 40)
+#define MEMORY_ADR_PARAM_PARAMS_DEPLOU_HIB_EXECUTED (uint8_t *)(FLASH_SEG_D_ADR + 44)
 
 #endif // MEMORY_H_
 

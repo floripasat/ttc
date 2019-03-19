@@ -25,7 +25,7 @@
  * 
  * \author Gabriel Mariano Marcelino <gabriel.mm8@gmail.com>
  * 
- * \version 0.2.9
+ * \version 0.2.11
  * 
  * \date 08/06/2017
  * 
@@ -84,24 +84,15 @@ void beacon_init()
     fsp_init(FSP_ADR_TTC);
     
     ngham_init();
-    
-    beacon.hibernation                  = false;
+
+    beacon_load_params();
+
     beacon.can_transmit                 = true;
     beacon.transmitting                 = false;
-    beacon.energy_level                 = SATELLITE_ENERGY_LEVEL_5;
     beacon.last_radio_reset_time        = time_get_seconds();
     beacon.last_system_reset_time       = time_get_seconds();
     beacon.last_ngham_pkt_transmission  = time_get_seconds();
     beacon.last_devices_verification    = time_get_seconds();
-    beacon.last_energy_level_set        = time_get_seconds();
-    
-    beacon.eps.time_last_valid_pkt      = time_get_seconds();
-    beacon.eps.errors                   = 0;
-    beacon.eps.is_dead                  = false;
-
-    beacon.obdh.time_last_valid_pkt     = time_get_seconds();
-    beacon.obdh.errors                  = 0;
-    beacon.obdh.is_dead                 = false;
 }
 
 void beacon_deinit()
@@ -144,6 +135,8 @@ void beacon_run()
         task_periodic(&radio_init, BEACON_RADIO_RESET_PERIOD_SEC, &beacon.last_radio_reset_time, time_get_seconds());
 
         task_periodic(&system_reset, BEACON_SYSTEM_RESET_PERIOD_SEC, &beacon.last_system_reset_time, time_get_seconds());
+
+        task_periodic(&beacon_save_params, BEACON_SAVE_PARAMS_PERIOD_S, &beacon.last_params_saving, time_get_seconds());
 
         status_led_toggle();                // Heartbeat
 
@@ -646,7 +639,7 @@ void beacon_antenna_deployment()
     debug_print_event_from_module(DEBUG_INFO, BEACON_MODULE_NAME, "Executing the deployment routines...\n\r");
 
     // If it is the first deployment attempt, wait 45 minutes before trying to deploy
-    if (antenna_get_deployment_status() != ANTENNA_STATUS_DEPLOYED)
+    if (!beacon.deploy_hibernation_executed)
     {
         beacon.hibernation = true;
 
@@ -655,6 +648,7 @@ void beacon_antenna_deployment()
         debug_print_msg(" minute(s)...\n\r");
 
         uint32_t time_marker = time_get_seconds();
+        uint32_t time_marker_minutes = time_get_minutes();
 
         while((time_get_seconds() - time_marker) <= BEACON_ANTENNA_DEPLOY_SLEEP_SEC)
         {
@@ -665,10 +659,14 @@ void beacon_antenna_deployment()
             if (((time_get_seconds() - time_marker) % 60) == 0)
             {
                 debug_print_event_from_module(DEBUG_INFO, BEACON_MODULE_NAME, "First deployment attempt in ");
-                debug_print_dec(BEACON_ANTENNA_DEPLOY_SLEEP_MIN - time_get_minutes());
+                debug_print_dec((BEACON_ANTENNA_DEPLOY_SLEEP_MIN + time_marker_minutes) - time_get_minutes());
                 debug_print_msg(" minute(s)...\n\r");
             }
         }
+
+        beacon.deploy_hibernation_executed = true;
+
+        beacon_save_params();
     }
 
     antenna_deploy();
@@ -686,6 +684,70 @@ void beacon_delay_sec(uint8_t delay_sec)
 
         watchdog_reset_timer();
     }
+}
+
+void beacon_load_params()
+{
+    debug_print_event_from_module(DEBUG_INFO, BEACON_MODULE_NAME, "Loading the system parameters from the flash memory...\n\r");
+
+    beacon.params_saved = flash_read_single(BEACON_PARAM_PARAMS_SAVED_MEM_ADR) == 1 ? true : false;
+
+    if (!beacon.params_saved)
+    {
+        debug_print_event_from_module(DEBUG_WARNING, BEACON_MODULE_NAME, "No saved system parameters found! Loading default values...\n\r");
+
+        beacon.hibernation                  = false;
+        beacon.energy_level                 = SATELLITE_ENERGY_LEVEL_5;
+        beacon.deploy_hibernation_executed  = false;
+        beacon.last_energy_level_set        = time_get_seconds();
+
+        beacon.eps.time_last_valid_pkt      = time_get_seconds();
+        beacon.eps.errors                   = 0;
+        beacon.eps.is_dead                  = false;
+
+        beacon.obdh.time_last_valid_pkt     = time_get_seconds();
+        beacon.obdh.errors                  = 0;
+        beacon.obdh.is_dead                 = false;
+    }
+    else
+    {
+        beacon.hibernation                  = (bool)flash_read_single(BEACON_PARAM_HIBERNATION_MEM_ADR);
+        beacon.energy_level                 = flash_read_single(BEACON_PARAM_ENERGY_LEVEL_MEM_ADR);
+        beacon.last_energy_level_set        = flash_read_long(BEACON_PARAM_LAST_ENERGY_LEVEL_SET_MEM_ADR);
+        beacon.deploy_hibernation_executed  = flash_read_single(BEACON_PARAM_PARAMS_DEPLOU_HIB_EXECUTED_MEM_ADR);
+
+        beacon.eps.time_last_valid_pkt      = flash_read_long(BEACON_PARAM_EPS_LAST_TIME_VALID_PKT_MEM_ADR);
+        beacon.eps.errors                   = flash_read_single(BEACON_PARAM_EPS_ERRORS_MEM_ADR);
+        beacon.eps.is_dead                  = (bool)flash_read_single(BEACON_PARAM_EPS_IS_DEAD_PKT_MEM_ADR);
+
+        beacon.obdh.time_last_valid_pkt     = flash_read_long(BEACON_PARAM_OBDH_LAST_TIME_VALID_PKT_MEM_ADR);
+        beacon.obdh.errors                  = flash_read_single(BEACON_PARAM_EPS_ERRORS_MEM_ADR);
+        beacon.obdh.is_dead                 = (bool)flash_read_single(BEACON_PARAM_OBDH_IS_DEAD_PKT_MEM_ADR);
+    }
+}
+
+void beacon_save_params()
+{
+    debug_print_event_from_module(DEBUG_INFO, BEACON_MODULE_NAME, "Saving the system parameters to the flash memory...\n\r");
+
+    flash_erase(BEACON_PARAMS_MEMORY_REGION);
+
+    flash_write_single(beacon.hibernation ? 1 : 0, BEACON_PARAM_HIBERNATION_MEM_ADR);
+    flash_write_single(beacon.energy_level, BEACON_PARAM_ENERGY_LEVEL_MEM_ADR);
+    flash_write_long(beacon.last_energy_level_set, BEACON_PARAM_LAST_ENERGY_LEVEL_SET_MEM_ADR);
+    flash_write_single(beacon.deploy_hibernation_executed ? 1 : 0, BEACON_PARAM_PARAMS_DEPLOU_HIB_EXECUTED_MEM_ADR);
+
+    flash_write_long(beacon.eps.time_last_valid_pkt, BEACON_PARAM_EPS_LAST_TIME_VALID_PKT_MEM_ADR);
+    flash_write_single(beacon.eps.errors, BEACON_PARAM_EPS_ERRORS_MEM_ADR);
+    flash_write_single(beacon.eps.is_dead ? 1 : 0, BEACON_PARAM_EPS_IS_DEAD_PKT_MEM_ADR);
+
+    flash_write_long(beacon.obdh.time_last_valid_pkt, BEACON_PARAM_OBDH_LAST_TIME_VALID_PKT_MEM_ADR);
+    flash_write_single(beacon.obdh.errors, BEACON_PARAM_EPS_ERRORS_MEM_ADR);
+    flash_write_single(beacon.obdh.is_dead ? 1 : 0, BEACON_PARAM_OBDH_IS_DEAD_PKT_MEM_ADR);
+
+    flash_write_single(1, BEACON_PARAM_PARAMS_SAVED_MEM_ADR);
+
+    beacon.last_params_saving = time_get_seconds();
 }
 
 //! \} End of beacon group
