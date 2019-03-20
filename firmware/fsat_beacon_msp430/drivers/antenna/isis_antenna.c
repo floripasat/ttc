@@ -25,7 +25,7 @@
  * 
  * \author Gabriel Mariano Marcelino <gabriel.mm8@gmail.com>
  * 
- * \version 0.2.5
+ * \version 0.2.12
  * 
  * \date 20/09/2017
  * 
@@ -51,7 +51,10 @@ void isis_antenna_arm()
 {
     debug_print_event_from_module(DEBUG_INFO, ISIS_ANTENNA_MODULE_NAME, "Arming...\n\r");
 
-    isis_antenna_i2c_write_byte(ISIS_ANTENNA_CMD_ARM);
+    uint8_t data = ISIS_ANTENNA_CMD_ARM;
+    isis_antenna_i2c_write_data(&data, 1);
+
+    debug_print_event_from_module(DEBUG_INFO, ISIS_ANTENNA_MODULE_NAME, "Arming command transmitted!\n\r");
 
     isis_antenna_delay_ms(100);
 }
@@ -60,7 +63,8 @@ void isis_antenna_disarm()
 {
     debug_print_event_from_module(DEBUG_INFO, ISIS_ANTENNA_MODULE_NAME, "Disarming...\n\r");
 
-    isis_antenna_i2c_write_byte(ISIS_ANTENNA_CMD_DISARM);
+    uint8_t data = ISIS_ANTENNA_CMD_DISARM;
+    isis_antenna_i2c_write_data(&data, 1);
 
     isis_antenna_delay_ms(100);
 }
@@ -96,19 +100,19 @@ void isis_antenna_start_independent_deploy(uint8_t ant, uint8_t sec, uint8_t ovr
         switch(ant)
         {
             case ISIS_ANTENNA_ANT_1:
-                debug_print_msg(" ANTENNA 1 with OVERRIDE...\n\r");
+                debug_print_msg("ANTENNA 1 with OVERRIDE...\n\r");
                 cmd[0] = ISIS_ANTENNA_CMD_DEPLOY_ANT_1_WITH_OVERRIDE;
                 break;
             case ISIS_ANTENNA_ANT_2:
-                debug_print_msg(" ANTENNA 2 with OVERRIDE...\n\r");
+                debug_print_msg("ANTENNA 2 with OVERRIDE...\n\r");
                 cmd[0] = ISIS_ANTENNA_CMD_DEPLOY_ANT_2_WITH_OVERRIDE;
                 break;
             case ISIS_ANTENNA_ANT_3:
-                debug_print_msg(" ANTENNA 3 with OVERRIDE...\n\r");
+                debug_print_msg("ANTENNA 3 with OVERRIDE...\n\r");
                 cmd[0] = ISIS_ANTENNA_CMD_DEPLOY_ANT_3_WITH_OVERRIDE;
                 break;
             case ISIS_ANTENNA_ANT_4:
-                debug_print_msg(" ANTENNA 4 with OVERRIDE...\n\r");
+                debug_print_msg("ANTENNA 4 with OVERRIDE...\n\r");
                 cmd[0] = ISIS_ANTENNA_CMD_DEPLOY_ANT_4_WITH_OVERRIDE;
                 break;
             default:
@@ -120,19 +124,19 @@ void isis_antenna_start_independent_deploy(uint8_t ant, uint8_t sec, uint8_t ovr
         switch(ant)
         {
             case ISIS_ANTENNA_ANT_1:
-                debug_print_msg(" ANTENNA 1...\n\r");
+                debug_print_msg("ANTENNA 1...\n\r");
                 cmd[0] = ISIS_ANTENNA_CMD_DEPLOY_ANT_1;
                 break;
             case ISIS_ANTENNA_ANT_2:
-                debug_print_msg(" ANTENNA 2...\n\r");
+                debug_print_msg("ANTENNA 2...\n\r");
                 cmd[0] = ISIS_ANTENNA_CMD_DEPLOY_ANT_2;
                 break;
             case ISIS_ANTENNA_ANT_3:
-                debug_print_msg(" ANTENNA 3...\n\r");
+                debug_print_msg("ANTENNA 3...\n\r");
                 cmd[0] = ISIS_ANTENNA_CMD_DEPLOY_ANT_3;
                 break;
             case ISIS_ANTENNA_ANT_4:
-                debug_print_msg(" ANTENNA 4...\n\r");
+                debug_print_msg("ANTENNA 4...\n\r");
                 cmd[0] = ISIS_ANTENNA_CMD_DEPLOY_ANT_4;
                 break;
             default:
@@ -149,7 +153,8 @@ isis_antenna_status_t isis_antenna_read_deployment_status()
 {
     uint16_t status_code = ISIS_ANTENNA_STATUS_MASK;    // Initial state
 
-    isis_antenna_i2c_write_byte(ISIS_ANTENNA_CMD_REPORT_DEPLOY_STATUS);
+    uint8_t data = ISIS_ANTENNA_CMD_REPORT_DEPLOY_STATUS;
+    isis_antenna_i2c_write_data(&data, 1);
 
     isis_antenna_delay_ms(1000);
 
