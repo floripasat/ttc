@@ -25,7 +25,7 @@
  * 
  * \author Gabriel Mariano Marcelino <gabriel.mm8@gmail.com>
  * 
- * \version 0.2.12
+ * \version 0.2.13
  * 
  * \date 21/09/2017
  * 
@@ -210,14 +210,14 @@ void isis_antenna_i2c_read_data(uint8_t *data, uint8_t len)
 }
 
 #if defined(__TI_COMPILER_VERSION__) || defined(__IAR_SYSTEMS_ICC__)
-#pragma vector=USCI_B0_VECTOR
+#pragma vector=USCI_B2_VECTOR
 __interrupt
 #elif defined(__GNUC__)
-__attribute__((interrupt(USCI_B0_VECTOR)))
+__attribute__((interrupt(USCI_B2_VECTOR)))
 #endif
-void USCI_B0_ISR(void)
+void USCI_B2_ISR(void)
 {
-    switch(__even_in_range(UCB0IV, 12))
+    switch(__even_in_range(UCB2IV, 12))
     {
         //Vector 12: Transmit buffer empty - TXIF
         case USCI_I2C_UCTXIFG:
