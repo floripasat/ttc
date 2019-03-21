@@ -25,7 +25,7 @@
  * 
  * \author Gabriel Mariano Marcelino <gabriel.mm8@gmail.com>
  * 
- * \version 0.1.6
+ * \version 0.2.15
  * 
  * \date 08/06/2017
  * 
@@ -70,8 +70,8 @@
 #define BEACON_HIBERNATION_PERIOD_MINUTES   (24*60)
 #define BEACON_HIBERNATION_PERIOD_HOURS     24
 
-#define BEACON_ANTENNA_DEPLOY_SLEEP_SEC     (45*60)
 #define BEACON_ANTENNA_DEPLOY_SLEEP_MIN     45
+#define BEACON_ANTENNA_DEPLOY_SLEEP_SEC     (BEACON_ANTENNA_DEPLOY_SLEEP_MIN*60)
 #define BEACON_ANTENNA_DEPLOY_SLEEP_HOUR    0
 
 #define BEACON_RADIO_RESET_PERIOD_MIN       10
@@ -140,7 +140,7 @@
 //-- ANTENNA ---------------------------------------------
 //########################################################
 
-#define BEACON_ANTENNA                      PASSIVE_ANTENNA
+#define BEACON_ANTENNA                      ISIS_ANTENNA
 #define BEACON_ANTENNA_I2C_CLK              100000
 
 #define BEACON_ANTENNA_INIT_TIMEOUT_MS      100
