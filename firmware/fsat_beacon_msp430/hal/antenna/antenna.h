@@ -1,7 +1,7 @@
 /*
  * antenna.h
  * 
- * Copyright (C) 2017-2018, Universidade Federal de Santa Catarina.
+ * Copyright (C) 2017-2019, Universidade Federal de Santa Catarina.
  * 
  * This file is part of FloripaSat-TTC.
  * 
@@ -25,7 +25,7 @@
  * 
  * \author Gabriel Mariano Marcelino <gabriel.mm8@gmail.com>
  * 
- * \version 0.2.3
+ * \version 0.2.14
  * 
  * \date 15/06/2017
  * 
@@ -52,16 +52,27 @@ typedef enum
 /**
  * \brief Antenna module initialization.
  * 
- * \return TRUE/FALSE if successful or not.
+ * \return None.
  */
-bool antenna_init();
+void antenna_init();
 
 /**
  * \brief Antenna deployment routine.
- * 
- * \return TRUE/FALSE if the deployment was successful or not.
+ *
+ * Deployment sequence:
+ *      - Arm antenna system
+ *      - Either
+ *          - Send deployment commands for each antenna
+ *          - Send command to start automated sequential antenna deployment
+ *          .
+ *      - Poll antenna system’s deployment status to see when deployment is complete
+ *      - Get deployment activation times from antenna system
+ *      - Disarm antenna system
+ *      .
+ *
+ * \return None.
  */
-bool antenna_deploy();
+void antenna_deploy();
 
 /**
  * \brief Checks if the antenna is released or not.
@@ -74,20 +85,6 @@ bool antenna_deploy();
  * \endparblock
  */
 uint8_t antenna_get_deployment_status();
-
-/**
- * \brief Saves the deployment status in non-volatile memory.
- *
- * \param[in] status is the deployment status:
- * \parblock
- *      - ANTENNA_STATUS_NOT_DEPLOYED.
- *      - ANTENNA_STATUS_DEPLOYED.
- *      .
- * \endparblock
- *
- * \return None.
- */
-void antenna_set_deployment_status(uint8_t status);
 
 /**
  * \brief Delay period in seconds.
