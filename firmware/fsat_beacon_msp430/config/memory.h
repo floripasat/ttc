@@ -25,7 +25,7 @@
  * 
  * \author Gabriel Mariano Marcelino <gabriel.mm8@gmail.com>
  * 
- * \version 0.2.11
+ * \version 0.2.16
  * 
  * \date 18/03/2019
  * 
@@ -60,6 +60,7 @@
 #define MEMORY_ADR_PARAM_OBDH_IS_DEAD_PKT           (uint8_t *)(FLASH_SEG_D_ADR + 36)
 #define MEMORY_ADR_PARAM_PARAMS_SAVED               (uint8_t *)(FLASH_SEG_D_ADR + 40)
 #define MEMORY_ADR_PARAM_PARAMS_DEPLOU_HIB_EXECUTED (uint8_t *)(FLASH_SEG_D_ADR + 44)
+#define MEMORY_ADR_PARAM_DEPLOYMENT_ATTEMPTS        (uint8_t *)(FLASH_SEG_D_ADR + 48)
 
 #endif // MEMORY_H_
 

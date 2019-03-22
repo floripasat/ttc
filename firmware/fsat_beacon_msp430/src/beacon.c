@@ -25,7 +25,7 @@
  * 
  * \author Gabriel Mariano Marcelino <gabriel.mm8@gmail.com>
  * 
- * \version 0.2.11
+ * \version 0.2.16
  * 
  * \date 08/06/2017
  * 
@@ -638,6 +638,18 @@ void beacon_antenna_deployment()
 {
     debug_print_event_from_module(DEBUG_INFO, BEACON_MODULE_NAME, "Executing the deployment routines...\n\r");
 
+    if (beacon.deployment_attempts >= BEACON_ANTENNA_MAX_DEPLOYMENTS)
+    {
+        debug_print_event_from_module(DEBUG_WARNING, BEACON_MODULE_NAME, "Enough deployment attempts executed (");
+        debug_print_dec(beacon.deployment_attempts);
+        debug_print_msg(")! Skipping the deployment routine...\n\r");
+
+        beacon.hibernation = false;
+        beacon.deployment_executed = true;
+
+        return;
+    }
+
     // If it is the first deployment attempt, wait 45 minutes before trying to deploy
     if (!beacon.deploy_hibernation_executed)
     {
@@ -671,6 +683,8 @@ void beacon_antenna_deployment()
 
     antenna_deploy();
 
+    beacon.deployment_attempts++;
+
     beacon.hibernation = false;
     beacon.deployment_executed = true;
 }
@@ -700,6 +714,7 @@ void beacon_load_params()
         beacon.energy_level                 = SATELLITE_ENERGY_LEVEL_5;
         beacon.deploy_hibernation_executed  = false;
         beacon.last_energy_level_set        = time_get_seconds();
+        beacon.deployment_attempts          = 0;
 
         beacon.eps.time_last_valid_pkt      = time_get_seconds();
         beacon.eps.errors                   = 0;
@@ -715,6 +730,7 @@ void beacon_load_params()
         beacon.energy_level                 = flash_read_single(BEACON_PARAM_ENERGY_LEVEL_MEM_ADR);
         beacon.last_energy_level_set        = flash_read_long(BEACON_PARAM_LAST_ENERGY_LEVEL_SET_MEM_ADR);
         beacon.deploy_hibernation_executed  = flash_read_single(BEACON_PARAM_PARAMS_DEPLOU_HIB_EXECUTED_MEM_ADR);
+        beacon.deployment_attempts          = flash_read_single(BEACON_PARAM_DEPLOYMENT_ATTEMPTS_MEM_ADR);
 
         beacon.eps.time_last_valid_pkt      = flash_read_long(BEACON_PARAM_EPS_LAST_TIME_VALID_PKT_MEM_ADR);
         beacon.eps.errors                   = flash_read_single(BEACON_PARAM_EPS_ERRORS_MEM_ADR);
@@ -736,6 +752,7 @@ void beacon_save_params()
     flash_write_single(beacon.energy_level, BEACON_PARAM_ENERGY_LEVEL_MEM_ADR);
     flash_write_long(beacon.last_energy_level_set, BEACON_PARAM_LAST_ENERGY_LEVEL_SET_MEM_ADR);
     flash_write_single(beacon.deploy_hibernation_executed ? 1 : 0, BEACON_PARAM_PARAMS_DEPLOU_HIB_EXECUTED_MEM_ADR);
+    flash_write_single(beacon.deployment_attempts, BEACON_PARAM_DEPLOYMENT_ATTEMPTS_MEM_ADR);
 
     flash_write_long(beacon.eps.time_last_valid_pkt, BEACON_PARAM_EPS_LAST_TIME_VALID_PKT_MEM_ADR);
     flash_write_single(beacon.eps.errors, BEACON_PARAM_EPS_ERRORS_MEM_ADR);

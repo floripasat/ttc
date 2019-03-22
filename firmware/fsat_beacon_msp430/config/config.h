@@ -25,7 +25,7 @@
  * 
  * \author Gabriel Mariano Marcelino <gabriel.mm8@gmail.com>
  * 
- * \version 0.2.15
+ * \version 0.2.16
  * 
  * \date 08/06/2017
  * 
@@ -144,6 +144,8 @@
 #define BEACON_ANTENNA_I2C_CLK              100000
 
 #define BEACON_ANTENNA_INIT_TIMEOUT_MS      100
+
+#define BEACON_ANTENNA_MAX_DEPLOYMENTS      10
 
 //########################################################
 //-- CPU -------------------------------------------------

@@ -25,7 +25,7 @@
  * 
  * \author Gabriel Mariano Marcelino <gabriel.mm8@gmail.com>
  * 
- * \version 0.2.11
+ * \version 0.2.16
  * 
  * \date 08/06/2017
  * 
@@ -55,6 +55,7 @@ typedef struct
     bool        transmitting;                   /**< If true, the beacon is transmitting packets, otherwise, not. */
     bool        deployment_executed;            /**< If true, the antenna deployment was executed since the last beacon reset. */
     bool        deploy_hibernation_executed;    /**< If true, the mandatory deployment hibernation was executed. */
+    uint8_t     deployment_attempts;            /**< Number of executed deployment attempts. */
     uint8_t     energy_level;                   /**< Energy level of the satellite. */
     uint32_t    last_radio_reset_time;          /**< Time stamp of the last radio reset. */
     uint32_t    last_system_reset_time;         /**< Time stamp of the last system reset. */

@@ -25,7 +25,7 @@
  * 
  * \author Gabriel Mariano Marcelino <gabriel.mm8@gmail.com>
  * 
- * \version 0.2.11
+ * \version 0.2.16
  * 
  * \date 07/03/2019
  * 
@@ -58,6 +58,7 @@
 #define BEACON_PARAM_OBDH_IS_DEAD_PKT_MEM_ADR               MEMORY_ADR_PARAM_OBDH_IS_DEAD_PKT
 #define BEACON_PARAM_PARAMS_SAVED_MEM_ADR                   MEMORY_ADR_PARAM_PARAMS_SAVED
 #define BEACON_PARAM_PARAMS_DEPLOU_HIB_EXECUTED_MEM_ADR     MEMORY_ADR_PARAM_PARAMS_DEPLOU_HIB_EXECUTED
+#define BEACON_PARAM_DEPLOYMENT_ATTEMPTS_MEM_ADR            MEMORY_ADR_PARAM_DEPLOYMENT_ATTEMPTS
 
 #endif // BEACON_CONFIG_H_
 
