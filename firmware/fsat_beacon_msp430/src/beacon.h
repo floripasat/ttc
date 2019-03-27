@@ -25,7 +25,7 @@
  * 
  * \author Gabriel Mariano Marcelino <gabriel.mm8@gmail.com>
  * 
- * \version 0.2.16
+ * \version 0.3.1
  * 
  * \date 08/06/2017
  * 
@@ -230,11 +230,25 @@ static void beacon_delay_sec(uint8_t delay_sec);
 static void beacon_load_params();
 
 /**
+ * \brief Loads the default values to the beacon parameters.
+ *
+ * \return None.
+ */
+static void beacon_load_default_params();
+
+/**
  * \brief Saves the beacon parameters to the flash memory.
  *
  * \return None.
  */
 static void beacon_save_params();
+
+/**
+ * \brief Resets the beacons parameters to the default values.
+ *
+ * \return None.
+ */
+static void beacon_reset_params();
 
 #endif // BEACON_H_
 

@@ -25,7 +25,7 @@
  * 
  * \author Gabriel Mariano Marcelino <gabriel.mm8@gmail.com>
  * 
- * \version 0.2.16
+ * \version 0.3.1
  * 
  * \date 08/06/2017
  * 
@@ -85,7 +85,11 @@ void beacon_init()
     
     ngham_init();
 
+#if BEACON_RESET_PARAMS_ON_BOOT == 1
+    beacon_reset_params();
+#else
     beacon_load_params();
+#endif // BEACON_RESET_PARAMS
 
     beacon.can_transmit                 = true;
     beacon.transmitting                 = false;
@@ -710,19 +714,7 @@ void beacon_load_params()
     {
         debug_print_event_from_module(DEBUG_WARNING, BEACON_MODULE_NAME, "No saved system parameters found! Loading default values...\n\r");
 
-        beacon.hibernation                  = false;
-        beacon.energy_level                 = SATELLITE_ENERGY_LEVEL_5;
-        beacon.deploy_hibernation_executed  = false;
-        beacon.last_energy_level_set        = time_get_seconds();
-        beacon.deployment_attempts          = 0;
-
-        beacon.eps.time_last_valid_pkt      = time_get_seconds();
-        beacon.eps.errors                   = 0;
-        beacon.eps.is_dead                  = false;
-
-        beacon.obdh.time_last_valid_pkt     = time_get_seconds();
-        beacon.obdh.errors                  = 0;
-        beacon.obdh.is_dead                 = false;
+        beacon_load_default_params();
     }
     else
     {
@@ -740,6 +732,23 @@ void beacon_load_params()
         beacon.obdh.errors                  = flash_read_single(BEACON_PARAM_EPS_ERRORS_MEM_ADR);
         beacon.obdh.is_dead                 = (bool)flash_read_single(BEACON_PARAM_OBDH_IS_DEAD_PKT_MEM_ADR);
     }
+}
+
+void beacon_load_default_params()
+{
+    beacon.hibernation                  = false;
+    beacon.energy_level                 = SATELLITE_ENERGY_LEVEL_5;
+    beacon.deploy_hibernation_executed  = false;
+    beacon.last_energy_level_set        = time_get_seconds();
+    beacon.deployment_attempts          = 0;
+
+    beacon.eps.time_last_valid_pkt      = time_get_seconds();
+    beacon.eps.errors                   = 0;
+    beacon.eps.is_dead                  = false;
+
+    beacon.obdh.time_last_valid_pkt     = time_get_seconds();
+    beacon.obdh.errors                  = 0;
+    beacon.obdh.is_dead                 = false;
 }
 
 void beacon_save_params()
@@ -765,6 +774,15 @@ void beacon_save_params()
     flash_write_single(1, BEACON_PARAM_PARAMS_SAVED_MEM_ADR);
 
     beacon.last_params_saving = time_get_seconds();
+}
+
+void beacon_reset_params()
+{
+    debug_print_event_from_module(DEBUG_WARNING, BEACON_MODULE_NAME, "Reseting the system parameters...\n\r");
+
+    beacon_load_default_params();
+
+    beacon_save_params();
 }
 
 //! \} End of beacon group
