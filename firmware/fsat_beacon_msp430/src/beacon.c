@@ -25,7 +25,7 @@
  * 
  * \author Gabriel Mariano Marcelino <gabriel.mm8@gmail.com>
  * 
- * \version 0.3.1
+ * \version 0.3.2
  * 
  * \date 08/06/2017
  * 
@@ -640,6 +640,7 @@ void beacon_process_radio_pkt()
 
 void beacon_antenna_deployment()
 {
+#if BEACON_EXECUTE_DEPLOYMENT_ROUTINE == 1
     debug_print_event_from_module(DEBUG_INFO, BEACON_MODULE_NAME, "Executing the deployment routines...\n\r");
 
     if (beacon.deployment_attempts >= BEACON_ANTENNA_MAX_DEPLOYMENTS)
@@ -688,6 +689,7 @@ void beacon_antenna_deployment()
     antenna_deploy();
 
     beacon.deployment_attempts++;
+#endif // BEACON_EXECUTE_DEPLOYMENT_ROUTINE
 
     beacon.hibernation = false;
     beacon.deployment_executed = true;

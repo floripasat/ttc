@@ -25,7 +25,7 @@
  * 
  * \author Gabriel Mariano Marcelino <gabriel.mm8@gmail.com>
  * 
- * \version 0.3.1
+ * \version 0.3.2
  * 
  * \date 08/06/2017
  * 
@@ -61,6 +61,7 @@
 #define BEACON_DEBUG_MESSAGES               1
 
 #define BEACON_RESET_PARAMS_ON_BOOT         0
+#define BEACON_EXECUTE_DEPLOYMENT_ROUTINE   1
 
 #define BEACON_TX_PERIOD_SEC_L1             10
 #define BEACON_TX_PERIOD_SEC_L2             10
