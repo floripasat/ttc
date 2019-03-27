@@ -25,7 +25,7 @@
  * 
  * \author Gabriel Mariano Marcelino <gabriel.mm8@gmail.com>
  * 
- * \version 0.1.10
+ * \version 0.3.0
  * 
  * \date 23/09/2016
  * 
@@ -52,7 +52,7 @@ bool debug_init()
 
         debug_print_splash_screen();
 
-        debug_print_msg("=========================================================\n\r");
+        debug_print_msg("=================================================================\n\r");
         debug_print_msg("Version:\t");
         debug_print_firmware_version();
         debug_print_msg("\n\r");
@@ -66,7 +66,7 @@ bool debug_init()
         debug_print_msg(" <");
         debug_print_msg(FIRMWARE_AUTHOR_EMAIL);
         debug_print_msg(">\n\r");
-        debug_print_msg("=========================================================\n\r");
+        debug_print_msg("=================================================================\n\r");
         debug_print_msg("\n\n\r");
 
         return true;
@@ -280,21 +280,21 @@ void debug_print_license_msg()
 
 void debug_print_splash_screen()
 {
-    debug_print_msg("                                                         \n\r");
-    debug_print_msg("                                                         \n\r");
-    debug_print_msg(".........................................................\n\r");
-    debug_print_msg(".........................................................\n\r");
-    debug_print_msg("......                                             ......\n\r");
-    debug_print_msg("......  _____ ____        _      _____ _____ ____  ......\n\r");
-    debug_print_msg("...... |  ___/ ___|  __ _| |_   |_   _|_   _/ ___| ......\n\r");
-    debug_print_msg("...... | |_  \\___ \\ / _` | __|____| |   | || |     ......\n\r");
-    debug_print_msg("...... |  _|  ___) | (_| | ||_____| |   | || |___  ......\n\r");
-    debug_print_msg("...... |_|   |____/ \\__,_|\\__|    |_|   |_| \\____| ......\n\r");
-    debug_print_msg("......                                             ......\n\r");
-    debug_print_msg(".........................................................\n\r");
-    debug_print_msg(".........................................................\n\r");
-    debug_print_msg("                                                         \n\r");
-    debug_print_msg("                                                         \n\r");
+    debug_print_msg("                                                                 \n\r");
+    debug_print_msg("                                                                 \n\r");
+    debug_print_msg(".................................................................\n\r");
+    debug_print_msg(".................................................................\n\r");
+    debug_print_msg("..........                                             ..........\n\r");
+    debug_print_msg("..........  _____ ____        _      _____ _____ ____  ..........\n\r");
+    debug_print_msg(".......... |  ___/ ___|  __ _| |_   |_   _|_   _/ ___| ..........\n\r");
+    debug_print_msg(".......... | |_  \\___ \\ / _` | __|____| |   | || |     ..........\n\r");
+    debug_print_msg(".......... |  _|  ___) | (_| | ||_____| |   | || |___  ..........\n\r");
+    debug_print_msg(".......... |_|   |____/ \\__,_|\\__|    |_|   |_| \\____| ..........\n\r");
+    debug_print_msg("..........                                             ..........\n\r");
+    debug_print_msg(".................................................................\n\r");
+    debug_print_msg(".................................................................\n\r");
+    debug_print_msg("                                                                 \n\r");
+    debug_print_msg("                                                                 \n\r");
 }
 
 void debug_print_firmware_version()
