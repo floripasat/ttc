@@ -25,7 +25,7 @@
  * 
  * \author Gabriel Mariano Marcelino <gabriel.mm8@gmail.com>
  * 
- * \version 0.1.8
+ * \version 0.3.3
  * 
  * \date 23/03/2017
  * 
@@ -61,7 +61,7 @@ bool obdh_init()
 
 static bool obdh_hal_spi_init()
 {
-    debug_print_event_from_module(DEBUG_INFO, OBDH_COM_MODULE_NAME, "Initializing SPI bus...");
+    debug_print_event_from_module(DEBUG_INFO, OBDH_COM_MODULE_NAME, "Initializing SPI bus...\n\r");
 
     // SPI pins init.
     GPIO_setAsPeripheralModuleFunctionInputPin(OBDH_SPI_PORT, OBDH_SPI_MOSI_PIN + OBDH_SPI_MISO_PIN + OBDH_SPI_SCLK_PIN + OBDH_SPI_NSEL_PIN);
@@ -76,20 +76,32 @@ static bool obdh_hal_spi_init()
         // Enable SPI Module
         USCI_A_SPI_enable(OBDH_SPI_BASE_ADDRESS);
 
-        // Enable Receive interrupt
-        USCI_A_SPI_clearInterrupt(OBDH_SPI_BASE_ADDRESS, USCI_A_SPI_RECEIVE_INTERRUPT);
-        USCI_A_SPI_enableInterrupt(OBDH_SPI_BASE_ADDRESS, USCI_A_SPI_RECEIVE_INTERRUPT);
-
-        debug_print_msg("SUCCESS!\n\r");
+        // Enable reception
+        obdh_enable();
 
         return true;
     }
     else
     {
-        debug_print_msg("FAILURE!\n\r");
+        debug_print_event_from_module(DEBUG_ERROR, OBDH_COM_MODULE_NAME, "Error initializing the SPI bus!\n\r");
 
         return false;
     }
+}
+
+void obdh_enable()
+{
+    debug_print_event_from_module(DEBUG_INFO, OBDH_COM_MODULE_NAME, "Enabling reception...\n\r");
+
+    USCI_A_SPI_clearInterrupt(OBDH_SPI_BASE_ADDRESS, USCI_A_SPI_RECEIVE_INTERRUPT);
+    USCI_A_SPI_enableInterrupt(OBDH_SPI_BASE_ADDRESS, USCI_A_SPI_RECEIVE_INTERRUPT);
+}
+
+void obdh_disable()
+{
+    debug_print_event_from_module(DEBUG_WARNING, OBDH_COM_MODULE_NAME, "Disabling reception...\n\r");
+
+    USCI_A_UART_disableInterrupt(OBDH_SPI_BASE_ADDRESS, USCI_A_SPI_RECEIVE_INTERRUPT);
 }
 
 uint8_t obdh_available()
