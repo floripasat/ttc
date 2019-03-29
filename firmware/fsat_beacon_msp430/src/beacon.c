@@ -25,7 +25,7 @@
  * 
  * \author Gabriel Mariano Marcelino <gabriel.mm8@gmail.com>
  * 
- * \version 0.3.2
+ * \version 0.3.5
  * 
  * \date 08/06/2017
  * 
@@ -227,10 +227,14 @@ void beacon_check_devices_status()
     if ((time_get_seconds() - beacon.obdh.time_last_valid_pkt) <= OBDH_TIMEOUT_SEC)
     {
         beacon.obdh.is_dead = false;
+
+        eps_disable();
     }
     else
     {
         beacon.obdh.is_dead = true;
+
+        eps_enable();
     }
     
     if ((time_get_seconds() - beacon.eps.time_last_valid_pkt) <= EPS_TIMEOUT_SEC)
