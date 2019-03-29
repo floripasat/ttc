@@ -25,7 +25,7 @@
  * 
  * \author Gabriel Mariano Marcelino <gabriel.mm8@gmail.com>
  * 
- * \version 0.2.10
+ * \version 0.3.4
  * 
  * \date 23/09/2016
  * 
@@ -57,6 +57,21 @@ bool eps_init()
     }
 }
 
+void eps_enable()
+{
+    debug_print_event_from_module(DEBUG_INFO, EPS_HAL_MODULE_NAME, "Enabling reception...\n\r");
+
+    USCI_A_UART_clearInterrupt(EPS_UART_BASE_ADDRESS, USCI_A_UART_RECEIVE_INTERRUPT);
+    USCI_A_UART_enableInterrupt(EPS_UART_BASE_ADDRESS, USCI_A_UART_RECEIVE_INTERRUPT);
+}
+
+void eps_disable()
+{
+    debug_print_event_from_module(DEBUG_WARNING, EPS_HAL_MODULE_NAME, "Disabling reception...\n\r");
+
+    USCI_A_UART_disableInterrupt(EPS_UART_BASE_ADDRESS, USCI_A_UART_RECEIVE_INTERRUPT);
+}
+
 uint8_t eps_available()
 {
     return queue_size(&eps_queue);
@@ -86,7 +101,7 @@ void eps_clear()
 
 static bool eps_hal_uart_init()
 {
-    debug_print_event_from_module(DEBUG_INFO, EPS_HAL_MODULE_NAME, "Initializing UART bus...");
+    debug_print_event_from_module(DEBUG_INFO, EPS_HAL_MODULE_NAME, "Initializing UART bus...\n\r");
 
     // UART pins init.
     GPIO_setAsPeripheralModuleFunctionInputPin(EPS_UART_RX_PORT, EPS_UART_RX_PIN);
@@ -108,17 +123,14 @@ static bool eps_hal_uart_init()
         // Enable UART module
         USCI_A_UART_enable(EPS_UART_BASE_ADDRESS);
 
-        // Enable Receive Interrupt
-        USCI_A_UART_clearInterrupt(EPS_UART_BASE_ADDRESS, USCI_A_UART_RECEIVE_INTERRUPT);
-        USCI_A_UART_enableInterrupt(EPS_UART_BASE_ADDRESS, USCI_A_UART_RECEIVE_INTERRUPT);
-
-        debug_print_msg("SUCCESS!\n\r");
+        // Enable reception
+        eps_enable();
 
         return true;
     }
     else
     {
-        debug_print_msg("FAILURE!\n\r");
+        debug_print_event_from_module(DEBUG_ERROR, EPS_HAL_MODULE_NAME, "Error initializing the UART bus!");
 
         return false;
     }
