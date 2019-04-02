@@ -25,7 +25,7 @@
  * 
  * \author Gabriel Mariano Marcelino <gabriel.mm8@gmail.com>
  * 
- * \version 0.2.12
+ * \version 0.4.0
  * 
  * \date 21/09/2017
  * 
@@ -56,6 +56,7 @@
 
 #define ISIS_ANTENNA_I2C_CLOCK                  UCS_getSMCLK()
 
+#define ISIS_ANTENNA_I2C_TIMEOUT                10000
 #define ISIS_ANTENNA_I2C_TIMEOUT_MS             100
 
 #endif // ISIS_ANTENNA_CONFIG_H_

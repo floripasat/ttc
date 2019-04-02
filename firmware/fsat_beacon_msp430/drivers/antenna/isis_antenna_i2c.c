@@ -25,7 +25,7 @@
  * 
  * \author Gabriel Mariano Marcelino <gabriel.mm8@gmail.com>
  * 
- * \version 0.2.13
+ * \version 0.4.0
  * 
  * \date 21/09/2017
  * 
@@ -98,7 +98,7 @@ void isis_antenna_i2c_write_byte(uint8_t byte)
     USCI_A_I2C_setMode(ISIS_ANTENNA_I2C_BASE_ADDRESS, USCI_A_I2C_TRANSMIT_MODE);
 
     // Send single byte data
-    USCI_A_I2C_masterSendSingleByte(ISIS_ANTENNA_I2C_BASE_ADDRESS, byte);
+    USCI_A_I2C_masterSendSingleByteWithTimeout(ISIS_ANTENNA_I2C_BASE_ADDRESS, byte, ISIS_ANTENNA_I2C_TIMEOUT);
 
     // Wait until transmission completes
     uint16_t timeout_ms = ISIS_ANTENNA_I2C_TIMEOUT_MS;
@@ -118,7 +118,7 @@ void isis_antenna_i2c_write_byte(uint8_t byte)
     USCI_B_I2C_setMode(ISIS_ANTENNA_I2C_BASE_ADDRESS, USCI_B_I2C_TRANSMIT_MODE);
 
     // Send single byte data
-    USCI_B_I2C_masterSendSingleByte(ISIS_ANTENNA_I2C_BASE_ADDRESS, byte);
+    USCI_B_I2C_masterSendSingleByteWithTimeout(ISIS_ANTENNA_I2C_BASE_ADDRESS, byte, ISIS_ANTENNA_I2C_TIMEOUT);
 
     // Wait until transmission completes
     uint16_t timeout_ms = ISIS_ANTENNA_I2C_TIMEOUT_MS;
@@ -141,29 +141,29 @@ void isis_antenna_i2c_write_data(uint8_t *data, uint8_t len)
 #if ISIS_ANTENNA_I2C_USCI == USCI_A
     // Set in transmit mode
     USCI_A_I2C_setMode(ISIS_ANTENNA_I2C_BASE_ADDRESS, USCI_A_I2C_TRANSMIT_MODE);
-    
-    USCI_A_I2C_masterSendMultiByteStart(ISIS_ANTENNA_I2C_BASE_ADDRESS, data[0]);
-    
+
+    USCI_A_I2C_masterSendMultiByteStartWithTimeout(ISIS_ANTENNA_I2C_BASE_ADDRESS, data[0], ISIS_ANTENNA_I2C_TIMEOUT);
+
     uint8_t i = 1;
     for(i=1; i<len; i++)
     {
-        USCI_A_I2C_masterSendMultiByteNext(ISIS_ANTENNA_I2C_BASE_ADDRESS, data[i]);
+        USCI_A_I2C_masterSendMultiByteNextWithTimeout(ISIS_ANTENNA_I2C_BASE_ADDRESS, data[i], ISIS_ANTENNA_I2C_TIMEOUT);
     }
-    
+
     USCI_A_I2C_masterSendMultiByteStop(ISIS_ANTENNA_I2C_BASE_ADDRESS);
 #elif ISIS_ANTENNA_I2C_USCI == USCI_B
     // Set in transmit mode
     USCI_B_I2C_setMode(ISIS_ANTENNA_I2C_BASE_ADDRESS, USCI_B_I2C_TRANSMIT_MODE);
-    
-    USCI_B_I2C_masterSendMultiByteStart(ISIS_ANTENNA_I2C_BASE_ADDRESS, data[0]);
-    
+
+    USCI_B_I2C_masterSendMultiByteStartWithTimeout(ISIS_ANTENNA_I2C_BASE_ADDRESS, data[0], ISIS_ANTENNA_I2C_TIMEOUT);
+
     uint8_t i = 1;
     for(i=1; i<len; i++)
     {
-        USCI_B_I2C_masterSendMultiByteNext(ISIS_ANTENNA_I2C_BASE_ADDRESS, data[i]);
+        USCI_B_I2C_masterSendMultiByteNextWithTimeout(ISIS_ANTENNA_I2C_BASE_ADDRESS, data[i], ISIS_ANTENNA_I2C_TIMEOUT);
     }
-    
-    USCI_B_I2C_masterSendMultiByteStop(ISIS_ANTENNA_I2C_BASE_ADDRESS);
+
+    USCI_B_I2C_masterSendMultiByteStopWithTimeout(ISIS_ANTENNA_I2C_BASE_ADDRESS, ISIS_ANTENNA_I2C_TIMEOUT);
 #endif // ISIS_ANTENNA_I2C_USCI
 }
 
