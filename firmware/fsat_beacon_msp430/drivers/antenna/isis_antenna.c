@@ -25,7 +25,7 @@
  * 
  * \author Gabriel Mariano Marcelino <gabriel.mm8@gmail.com>
  * 
- * \version 0.2.12
+ * \version 0.4.0
  * 
  * \date 20/09/2017
  * 
@@ -51,8 +51,7 @@ void isis_antenna_arm()
 {
     debug_print_event_from_module(DEBUG_INFO, ISIS_ANTENNA_MODULE_NAME, "Arming...\n\r");
 
-    uint8_t data = ISIS_ANTENNA_CMD_ARM;
-    isis_antenna_i2c_write_data(&data, 1);
+    isis_antenna_i2c_write_byte(ISIS_ANTENNA_CMD_ARM);
 
     debug_print_event_from_module(DEBUG_INFO, ISIS_ANTENNA_MODULE_NAME, "Arming command transmitted!\n\r");
 
@@ -63,8 +62,7 @@ void isis_antenna_disarm()
 {
     debug_print_event_from_module(DEBUG_INFO, ISIS_ANTENNA_MODULE_NAME, "Disarming...\n\r");
 
-    uint8_t data = ISIS_ANTENNA_CMD_DISARM;
-    isis_antenna_i2c_write_data(&data, 1);
+    isis_antenna_i2c_write_byte(ISIS_ANTENNA_CMD_DISARM);
 
     isis_antenna_delay_ms(100);
 }
@@ -153,8 +151,7 @@ isis_antenna_status_t isis_antenna_read_deployment_status()
 {
     uint16_t status_code = ISIS_ANTENNA_STATUS_MASK;    // Initial state
 
-    uint8_t data = ISIS_ANTENNA_CMD_REPORT_DEPLOY_STATUS;
-    isis_antenna_i2c_write_data(&data, 1);
+    isis_antenna_i2c_write_byte(ISIS_ANTENNA_CMD_REPORT_DEPLOY_STATUS);
 
     isis_antenna_delay_ms(1000);
 
