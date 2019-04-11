@@ -25,7 +25,7 @@
  * 
  * \author Gabriel Mariano Marcelino <gabriel.mm8@gmail.com>
  * 
- * \version 0.3.2
+ * \version 0.4.1
  * 
  * \date 08/06/2017
  * 
@@ -47,6 +47,7 @@
 //########################################################
 
 #define SATELLITE_ID                        "FLORIPASAT"
+#define SATELLITE_CALLSIGN                  "PY0EFS"
 
 #define SATELLITE_ENERGY_LEVEL_1            0x01
 #define SATELLITE_ENERGY_LEVEL_2            0x02
