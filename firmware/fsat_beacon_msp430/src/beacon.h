@@ -25,7 +25,7 @@
  * 
  * \author Gabriel Mariano Marcelino <gabriel.mm8@gmail.com>
  * 
- * \version 0.3.1
+ * \version 0.4.3
  * 
  * \date 08/06/2017
  * 
@@ -125,9 +125,16 @@ uint8_t beacon_get_tx_period();
  * 
  * If the last OBDH data is not valid, the last valid EPS data is used to generate the packet payload.
  * 
+ * \param[in] protocol is the packet protocol to generate the payload:
+ * \parblock
+ *      - PACKET_NGHAM
+ *      - PACKET_AX25
+ *      .
+ * \endparblock
+ *
  * \return None.
  */
-void beacon_gen_pkt_payload();
+void beacon_gen_pkt_payload(uint8_t protocol);
 
 /**
  * \brief Generates a payload and a NGHam packets to transmit.
