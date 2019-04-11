@@ -25,7 +25,7 @@
  * 
  * \author Gabriel Mariano Marcelino <gabriel.mm8@gmail.com>
  * 
- * \version 0.4.1
+ * \version 0.4.2
  * 
  * \date 08/06/2017
  * 
@@ -97,6 +97,8 @@
 #define BEACON_PACKET_PAYLOAD_CONTENT       (PAYLOAD_SAT_ID | PAYLOAD_OBDH_DATA | PAYLOAD_EPS_DATA)
 
 #define BEACON_PACKET_PROTOCOL              (PACKET_NGHAM | PACKET_AX25)
+
+#define BEACON_PACKET_DST_CALLSIGN          "PP5UF"
 
 //########################################################
 //-- RADIO -----------------------------------------------

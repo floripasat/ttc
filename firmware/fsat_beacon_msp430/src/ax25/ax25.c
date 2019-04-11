@@ -27,7 +27,7 @@
  * 
  * \author Gabriel Mariano Marcelino <gabriel.mm8@gmail.com>
  * 
- * \version 0.1.7
+ * \version 0.4.2
  * 
  * \date 16/12/2016
  *
@@ -48,7 +48,7 @@ void ax25_beacon_pkt_gen(AX25_Packet *ax25_packet, uint8_t *data, uint16_t data_
     AX25_Transfer_Frame_Header destination;
     AX25_Transfer_Frame_Header source;
     
-    uint8_t dst_callsign[] = AX25_FLORIPASAT_CALLSIGN;
+    uint8_t dst_callsign[] = AX25_DESTINATION_CALLSIGN;
     uint8_t src_callsign[] = AX25_FLORIPASAT_CALLSIGN;
     
     uint8_t i = 0;

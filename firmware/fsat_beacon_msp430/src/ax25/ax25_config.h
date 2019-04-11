@@ -25,7 +25,7 @@
  * 
  * \author Gabriel Mariano Marcelino <gabriel.mm8@gmail.com>
  * 
- * \version 0.4.1
+ * \version 0.4.2
  * 
  * \date 08/09/2017
  * 
@@ -39,12 +39,14 @@
 
 #include <config/config.h>
 
-#define AX25_MODULE_NAME                            "AX.25"             /**< Module name in debug messages. */
+#define AX25_MODULE_NAME                "AX.25"                         /**< Module name in debug messages. */
 
-#define AX25_FLORIPASAT_CALLSIGN                    SATELLITE_CALLSIGN  /**< The FloripaSat project callsign. */
-#define AX25_FLORIPASAT_GRS_SSID                    0x00                /**< The SSID of the groundstation. User defined field. */
-#define AX25_FLORIPASAT_SAT_SSID                    0x01                /**< The SSID of the satellite. User defined field. */
-#define AX25_FLORIPASAT_HEADER_SIZE                 20                  /**< The size of the header. */
+#define AX25_FLORIPASAT_CALLSIGN        SATELLITE_CALLSIGN              /**< The FloripaSat project callsign. */
+#define AX25_FLORIPASAT_GRS_SSID        0x00                            /**< The SSID of the groundstation. User defined field. */
+#define AX25_FLORIPASAT_SAT_SSID        0x01                            /**< The SSID of the satellite. User defined field. */
+#define AX25_FLORIPASAT_HEADER_SIZE     20                              /**< The size of the header. */
+
+#define AX25_DESTINATION_CALLSIGN       BEACON_PACKET_DST_CALLSIGN      /**< Destination callsign. */
 
 #endif // AX25_CONFIG_H_
 
