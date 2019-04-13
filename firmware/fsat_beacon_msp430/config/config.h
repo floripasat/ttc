@@ -25,7 +25,7 @@
  * 
  * \author Gabriel Mariano Marcelino <gabriel.mm8@gmail.com>
  * 
- * \version 0.3.2
+ * \version 0.4.3
  * 
  * \date 08/06/2017
  * 
@@ -47,6 +47,7 @@
 //########################################################
 
 #define SATELLITE_ID                        "FLORIPASAT"
+#define SATELLITE_CALLSIGN                  "PY0EFS"
 
 #define SATELLITE_ENERGY_LEVEL_1            0x01
 #define SATELLITE_ENERGY_LEVEL_2            0x02
@@ -96,6 +97,15 @@
 #define BEACON_PACKET_PAYLOAD_CONTENT       (PAYLOAD_SAT_ID | PAYLOAD_OBDH_DATA | PAYLOAD_EPS_DATA)
 
 #define BEACON_PACKET_PROTOCOL              (PACKET_NGHAM | PACKET_AX25)
+
+#define BEACON_PACKET_DST_CALLSIGN          "PP5UF"
+
+#define BEACON_PACKET_ID_NGHAM_OBDH_DATA    0x00
+#define BEACON_PACKET_ID_NGHAM_EPS_DATA     0x01
+#define BEACON_PACKET_ID_NGHAM_TTC_DATA     0x02
+#define BEACON_PACKET_ID_AX25_OBDH_DATA     0x03
+#define BEACON_PACKET_ID_AX25_EPS_DATA      0x04
+#define BEACON_PACKET_ID_AX25_TTC_DATA      0x05
 
 //########################################################
 //-- RADIO -----------------------------------------------

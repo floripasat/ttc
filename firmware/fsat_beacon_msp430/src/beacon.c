@@ -25,7 +25,7 @@
  * 
  * \author Gabriel Mariano Marcelino <gabriel.mm8@gmail.com>
  * 
- * \version 0.3.5
+ * \version 0.4.3
  * 
  * \date 08/06/2017
  * 
@@ -268,7 +268,7 @@ void beacon_check_devices_status()
     }
 }
 
-void beacon_gen_pkt_payload()
+void beacon_gen_pkt_payload(uint8_t protocol)
 {
     debug_print_event_from_module(DEBUG_INFO, BEACON_MODULE_NAME, "Generating packet payload from ");
 
@@ -277,17 +277,35 @@ void beacon_gen_pkt_payload()
         buffer_clear(&beacon.pkt_payload);
     }
 
-#if BEACON_PACKET_PAYLOAD_CONTENT & PAYLOAD_SAT_ID
-    buffer_fill(&beacon.pkt_payload, SATELLITE_ID, sizeof(SATELLITE_ID)-1);
-#endif // PAYLOAD_SAT_ID
-    
+    // Packet ID
+    uint8_t dummy[2] = {0};
+    buffer_fill(&beacon.pkt_payload, &dummy, 1);
+
+    // Packet source callsign
+    uint16_t i;
+    for(i=0; i<(7-(sizeof(SATELLITE_CALLSIGN)-1)); i++)
+    {
+        buffer_append(&beacon.pkt_payload, "0", 1); // Fill with 0s when the callsign length is less than 7 characters
+    }
+
+    buffer_append(&beacon.pkt_payload, SATELLITE_CALLSIGN, sizeof(SATELLITE_CALLSIGN)-1);
+
+    // Packet data
     if ((beacon.obdh.errors == 0) && (!beacon.obdh.is_dead))
     {
 #if BEACON_PACKET_PAYLOAD_CONTENT & PAYLOAD_OBDH_DATA
         debug_print_msg("OBDH data...\n\r");
 
         buffer_append(&beacon.pkt_payload, beacon.obdh.buffer.data, beacon.obdh.buffer.size);
-        
+
+        if (protocol == PACKET_NGHAM)
+        {
+            beacon.pkt_payload.data[0] = BEACON_PACKET_ID_NGHAM_OBDH_DATA;
+        }
+        else
+        {
+            beacon.pkt_payload.data[0] = BEACON_PACKET_ID_AX25_OBDH_DATA;
+        }
 #endif // PAYLOAD_OBDH_DATA
     }
     else if ((beacon.eps.errors == 0) && (!beacon.eps.is_dead))
@@ -296,12 +314,31 @@ void beacon_gen_pkt_payload()
         debug_print_msg("EPS data...\n\r");
 
         buffer_append(&beacon.pkt_payload, beacon.eps.buffer.data, beacon.eps.buffer.size);
-        
+
+        if (protocol == PACKET_NGHAM)
+        {
+            beacon.pkt_payload.data[0] = BEACON_PACKET_ID_NGHAM_EPS_DATA;
+        }
+        else
+        {
+            beacon.pkt_payload.data[0] = BEACON_PACKET_ID_AX25_EPS_DATA;
+        }
 #endif // PAYLOAD_EPS_DATA
     }
     else
     {
         debug_print_msg("the satellite ID...\n\r");
+
+        buffer_append(&beacon.pkt_payload, SATELLITE_ID, sizeof(SATELLITE_ID)-1);
+
+        if (protocol == PACKET_NGHAM)
+        {
+            beacon.pkt_payload.data[0] = BEACON_PACKET_ID_NGHAM_TTC_DATA;
+        }
+        else
+        {
+            beacon.pkt_payload.data[0] = BEACON_PACKET_ID_AX25_TTC_DATA;
+        }
     }
 }
 
@@ -309,7 +346,7 @@ void beacon_gen_ngham_pkt(uint8_t *ngham_pkt_str, uint16_t *ngham_pkt_str_len)
 {
     debug_print_event_from_module(DEBUG_INFO, BEACON_MODULE_NAME, "Generating a NGHam packet...\n\r");
 
-    beacon_gen_pkt_payload();
+    beacon_gen_pkt_payload(PACKET_NGHAM);
 
     NGHam_TX_Packet ngham_packet;
 
@@ -321,7 +358,7 @@ void beacon_gen_ax25_pkt(uint8_t *ax25_pkt_str, uint16_t *ax25_pkt_str_len)
 {
     debug_print_event_from_module(DEBUG_INFO, BEACON_MODULE_NAME, "Generating a AX.25 packet...\n\r");
 
-    beacon_gen_pkt_payload();
+    beacon_gen_pkt_payload(PACKET_AX25);
 
     AX25_Packet ax25_packet;
 
