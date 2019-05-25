@@ -1,7 +1,7 @@
 /*
  * fsp.h
  * 
- * Copyright (C) 2017, Federal University of Santa Catarina.
+ * Copyright (C) 2017-2019, Universidade Federal de Santa Catarina.
  * 
  * This file is part of FloripaSat-FSP.
  * 
@@ -21,11 +21,11 @@
  */
 
 /**
- * \brief FloripaSat Protocol library.
+ * \brief FloripaSat Protocol library implementation.
  * 
  * \author Gabriel Mariano Marcelino <gabriel.mm8@gmail.com>
  * 
- * \version 1.0-dev
+ * \version 0.4.4
  * 
  * \date 06/11/2017
  * 
@@ -66,7 +66,7 @@
 #define FSP_CMD_NOP                     1       /**< No-operation command. */
 #define FSP_CMD_SEND_DATA               2       /**< Send data command. */
 #define FSP_CMD_REQUEST_RF_MUTEX        3       /**< Request RF mutex command. */
-#define FSP_CMD_SHUTDOWN                4       /**< Shutdown command. */
+#define FSP_CMD_HIBERNATION             4       /**< Hibernation command. */
 
 // Ack answers
 #define FSP_ACK_RF_MUTEX_FREE           1       /**< RF mutex free acknowledge answer. */

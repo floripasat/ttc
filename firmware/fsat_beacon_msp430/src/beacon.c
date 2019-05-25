@@ -25,7 +25,7 @@
  * 
  * \author Gabriel Mariano Marcelino <gabriel.mm8@gmail.com>
  * 
- * \version 0.4.3
+ * \version 0.4.4
  * 
  * \date 08/06/2017
  * 
@@ -487,7 +487,7 @@ void beacon_process_obdh_pkt()
                     break;
                 case FSP_CMD_REQUEST_RF_MUTEX:      // This command demands an cmd. with ack.
                     break;
-                case FSP_CMD_SHUTDOWN:
+                case FSP_CMD_HIBERNATION:
                     beacon_enter_hibernation();
                     break;
             }
@@ -515,7 +515,7 @@ void beacon_process_obdh_pkt()
                         fsp_gen_pkt((uint8_t*)FSP_ACK_RF_MUTEX_FREE, 1, FSP_ADR_OBDH, FSP_PKT_TYPE_ACK, &obdh_ack_pkt);
                     }
                     break;
-                case FSP_CMD_SHUTDOWN:
+                case FSP_CMD_HIBERNATION:
                     beacon_enter_hibernation();
                     fsp_gen_ack_pkt(FSP_ADR_OBDH, &obdh_ack_pkt);
                     break;
@@ -635,11 +635,11 @@ void beacon_process_radio_pkt()
                 uint8_t pkt_payload_len = 0;
                 uint8_t pkt_payload[60];
 
-                uint8_t shutdown_ack_start[] = "Shutdown received from ";
+                uint8_t hibernation_ack_start[] = "Shutdown received from ";
 
-                for(i=0; i<sizeof(shutdown_ack_start); i++)
+                for(i=0; i<sizeof(hibernation_ack_start); i++)
                 {
-                    pkt_payload[pkt_payload_len++] = shutdown_ack_start[i];
+                    pkt_payload[pkt_payload_len++] = hibernation_ack_start[i];
                 }
 
                 for(i=0; i<6; i++)
@@ -647,19 +647,19 @@ void beacon_process_radio_pkt()
                     pkt_payload[pkt_payload_len++] = data[i];
                 }
 
-                uint8_t shutdown_ack_end[] = ". Wake up time in 24 hours.";
-                for(i=0; i<sizeof(shutdown_ack_end); i++)
+                uint8_t hibernation_ack_end[] = ". Wake up time in 24 hours.";
+                for(i=0; i<sizeof(hibernation_ack_end); i++)
                 {
-                    pkt_payload[pkt_payload_len++] = shutdown_ack_end[i];
+                    pkt_payload[pkt_payload_len++] = hibernation_ack_end[i];
                 }
 
                 NGHam_TX_Packet ngham_packet;
                 ngham_tx_pkt_gen(&ngham_packet, pkt_payload, pkt_payload_len);
                 ngham_encode(&ngham_packet, ngham_pkt_str, &ngham_pkt_str_len);
 
-                uint32_t timeout_radio_shutdown_ack = BEACON_TIMEOUT_RADIO_SHUTDOWN;
+                uint32_t timeout_radio_hibernation_ack = BEACON_TIMEOUT_RADIO_HIBERNATION;
 
-                while(timeout_radio_shutdown_ack--)
+                while(timeout_radio_hibernation_ack--)
                 {
                     if (beacon.can_transmit)
                     {

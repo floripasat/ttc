@@ -25,7 +25,7 @@
  * 
  * \author Gabriel Mariano Marcelino <gabriel.mm8@gmail.com>
  * 
- * \version 0.4.3
+ * \version 0.4.4
  * 
  * \date 08/06/2017
  * 
@@ -85,7 +85,7 @@
 #define BEACON_SYSTEM_RESET_PERIOD_MIN      (BEACON_SYSTEM_RESET_PERIOD_HOURS*60)
 #define BEACON_SYSTEM_RESET_PERIOD_SEC      (BEACON_SYSTEM_RESET_PERIOD_MIN*60*1UL)
 
-#define BEACON_TIMEOUT_RADIO_SHUTDOWN       1000000UL
+#define BEACON_TIMEOUT_RADIO_HIBERNATION    1000000UL
 
 #define BEACON_BOOT_DELAY_SEC               2
 #define BEACON_BOOT_DELAY_MS                (BEACON_BOOT_DELAY_SEC*1000)

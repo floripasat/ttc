@@ -25,7 +25,7 @@
  * 
  * \author Gabriel Mariano Marcelino <gabriel.mm8@gmail.com>
  * 
- * \version 0.1.7
+ * \version 0.4.4
  * 
  * \date 08/07/2017
  * 
@@ -48,11 +48,11 @@
 // OBDH->Beacon Commands
 #define OBDH_COM_CMD_POSITION               0
 #define OBDH_COM_CMD_START_OF_DATA_TRANSFER 0x80
-#define OBDH_COM_CMD_SHUTDOWN_REQUEST       0x40
+#define OBDH_COM_CMD_HIBERNATION_REQUEST    0x40
 #define OBDH_COM_CMD_RF_MUTEX               0x20
 
 // Beacon->OBDH Commands
-#define OBDH_COM_SHUTDOWN_ACK               0x01
+#define OBDH_COM_HIBERNATION_ACK            0x01
 #define OBDH_COM_BEACON_FREE                0x10
 #define OBDH_COM_BEACON_BUSY                0x11
 
