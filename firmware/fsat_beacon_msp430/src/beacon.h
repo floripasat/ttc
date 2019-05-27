@@ -25,7 +25,7 @@
  * 
  * \author Gabriel Mariano Marcelino <gabriel.mm8@gmail.com>
  * 
- * \version 0.4.3
+ * \version 0.4.5
  * 
  * \date 08/06/2017
  * 
@@ -64,6 +64,7 @@ typedef struct
     uint32_t    last_energy_level_set;          /**< Time stamp of the last energy level verification. */
     uint32_t    last_params_saving;             /**< Time stamp of the last parameters saving. */
     uint32_t    hibernation_mode_initial_time;  /**< Seconds since boot before the hibernations. */
+    uint32_t    hibernation_mode_duration;      /**< Hibernation mode duration in seconds. */
     uint32_t    time_obdh_started_tx;           /**< Time stamp of the allowed window to OBDH transmit data via radio. */
     Buffer      radio_rx;                       /**< Radio RX data buffer. */
     Buffer      pkt_payload;                    /**< The current payload to transmit in a packet (With the OBDH or EPS data, or only with the satellite ID). */
@@ -102,9 +103,11 @@ void beacon_run();
 /**
  * \brief Makes the beacon enter in hibernation.
  * 
+ * \param[in] hib_min is the hibernation duration in minutes.
+ *
  * \return None.
  */
-void beacon_enter_hibernation();
+void beacon_enter_hibernation(uint32_t hib_min);
 
 /**
  * \brief Makes the beacon leave the hibernation.

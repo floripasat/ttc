@@ -25,7 +25,7 @@
  * 
  * \author Gabriel Mariano Marcelino <gabriel.mm8@gmail.com>
  * 
- * \version 0.2.16
+ * \version 0.4.5
  * 
  * \date 18/03/2019
  * 
@@ -45,6 +45,8 @@
 #define MEMORY_ADR_TIME_COUNT_CHECKSUM              (uint8_t *)(FLASH_SEG_A_ADR + 8)
 #define MEMORY_ADR_TIME_COUNT_BKP                   (uint32_t *)(FLASH_SEG_A_ADR + 16)
 #define MEMORY_ADR_TIME_COUNT_BKP_CHECKSUM          (uint8_t *)(FLASH_SEG_A_ADR + 24)
+#define MEMORY_ADR_HIBERNATION_MODE_INITIAL_TIME    (uint32_t *)(FLASH_SEG_A_ADR + 32)
+#define MEMORY_ADR_HIBERNATION_MODE_DURATION        (uint32_t *)(FLASH_SEG_A_ADR + 40)
 
 // System parameters
 #define MEMORY_REGION_SYSTEM_PARAMS                 FLASH_SEG_D_ADR

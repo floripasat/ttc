@@ -25,7 +25,7 @@
  * 
  * \author Gabriel Mariano Marcelino <gabriel.mm8@gmail.com>
  * 
- * \version 0.4.4
+ * \version 0.4.5
  * 
  * \date 08/06/2017
  * 
@@ -132,7 +132,7 @@ void beacon_run()
 
         task_aperiodic(&radio_enable_rx, beacon.obdh.is_dead? true : false);
 
-        task_scheduled(&beacon_leave_hibernation, beacon.hibernation_mode_initial_time + BEACON_HIBERNATION_PERIOD_SECONDS, time_get_seconds(), 5, beacon.hibernation? true : false);
+        task_scheduled(&beacon_leave_hibernation, beacon.hibernation_mode_initial_time + beacon.hibernation_mode_duration, time_get_seconds(), 5, beacon.hibernation? true : false);
 
         task_periodic(&beacon_set_energy_level, BEACON_TX_PERIOD_SEC_L1, &beacon.last_energy_level_set, time_get_seconds());
 
@@ -150,7 +150,7 @@ void beacon_run()
     }
 }
 
-void beacon_enter_hibernation()
+void beacon_enter_hibernation(uint32_t hib_min)
 {
     if (!beacon.hibernation)
     {
@@ -161,6 +161,7 @@ void beacon_enter_hibernation()
         beacon.hibernation = true;
 
         beacon.hibernation_mode_initial_time = time_get_seconds();
+        beacon.hibernation_mode_duration = hib_min*60;
     }
 }
 
@@ -488,7 +489,7 @@ void beacon_process_obdh_pkt()
                 case FSP_CMD_REQUEST_RF_MUTEX:      // This command demands an cmd. with ack.
                     break;
                 case FSP_CMD_HIBERNATION:
-                    beacon_enter_hibernation();
+                    beacon_enter_hibernation(BEACON_HIBERNATION_PERIOD_MINUTES);
                     break;
             }
         }
@@ -516,7 +517,7 @@ void beacon_process_obdh_pkt()
                     }
                     break;
                 case FSP_CMD_HIBERNATION:
-                    beacon_enter_hibernation();
+                    beacon_enter_hibernation(BEACON_HIBERNATION_PERIOD_MINUTES);
                     fsp_gen_ack_pkt(FSP_ADR_OBDH, &obdh_ack_pkt);
                     break;
             }
@@ -617,7 +618,7 @@ void beacon_process_radio_pkt()
         }
 
         if (ngham_state == PKT_CONDITION_OK)
-        {        
+        {
             if ((data[6] == 's') && (data[7] == 'd'))
             {
                 uint8_t i = 0;
@@ -673,7 +674,7 @@ void beacon_process_radio_pkt()
                     }
                 }
 
-                beacon_enter_hibernation();
+                beacon_enter_hibernation(BEACON_HIBERNATION_PERIOD_MINUTES);
             }
         }
     }
@@ -761,37 +762,41 @@ void beacon_load_params()
     }
     else
     {
-        beacon.hibernation                  = (bool)flash_read_single(BEACON_PARAM_HIBERNATION_MEM_ADR);
-        beacon.energy_level                 = flash_read_single(BEACON_PARAM_ENERGY_LEVEL_MEM_ADR);
-        beacon.last_energy_level_set        = flash_read_long(BEACON_PARAM_LAST_ENERGY_LEVEL_SET_MEM_ADR);
-        beacon.deploy_hibernation_executed  = flash_read_single(BEACON_PARAM_PARAMS_DEPLOU_HIB_EXECUTED_MEM_ADR);
-        beacon.deployment_attempts          = flash_read_single(BEACON_PARAM_DEPLOYMENT_ATTEMPTS_MEM_ADR);
+        beacon.hibernation                      = (bool)flash_read_single(BEACON_PARAM_HIBERNATION_MEM_ADR);
+        beacon.hibernation_mode_initial_time    = flash_read_long(BEACON_PARAM_HIBERNATION_MODE_INITIAL_TIME_MEM_ADR);
+        beacon.hibernation_mode_duration        = flash_read_long(BEACON_PARAM_HIBERNATION_DURATION_MEM_ADR);
+        beacon.energy_level                     = flash_read_single(BEACON_PARAM_ENERGY_LEVEL_MEM_ADR);
+        beacon.last_energy_level_set            = flash_read_long(BEACON_PARAM_LAST_ENERGY_LEVEL_SET_MEM_ADR);
+        beacon.deploy_hibernation_executed      = flash_read_single(BEACON_PARAM_PARAMS_DEPLOU_HIB_EXECUTED_MEM_ADR);
+        beacon.deployment_attempts              = flash_read_single(BEACON_PARAM_DEPLOYMENT_ATTEMPTS_MEM_ADR);
 
-        beacon.eps.time_last_valid_pkt      = flash_read_long(BEACON_PARAM_EPS_LAST_TIME_VALID_PKT_MEM_ADR);
-        beacon.eps.errors                   = flash_read_single(BEACON_PARAM_EPS_ERRORS_MEM_ADR);
-        beacon.eps.is_dead                  = (bool)flash_read_single(BEACON_PARAM_EPS_IS_DEAD_PKT_MEM_ADR);
+        beacon.eps.time_last_valid_pkt          = flash_read_long(BEACON_PARAM_EPS_LAST_TIME_VALID_PKT_MEM_ADR);
+        beacon.eps.errors                       = flash_read_single(BEACON_PARAM_EPS_ERRORS_MEM_ADR);
+        beacon.eps.is_dead                      = (bool)flash_read_single(BEACON_PARAM_EPS_IS_DEAD_PKT_MEM_ADR);
 
-        beacon.obdh.time_last_valid_pkt     = flash_read_long(BEACON_PARAM_OBDH_LAST_TIME_VALID_PKT_MEM_ADR);
-        beacon.obdh.errors                  = flash_read_single(BEACON_PARAM_EPS_ERRORS_MEM_ADR);
-        beacon.obdh.is_dead                 = (bool)flash_read_single(BEACON_PARAM_OBDH_IS_DEAD_PKT_MEM_ADR);
+        beacon.obdh.time_last_valid_pkt         = flash_read_long(BEACON_PARAM_OBDH_LAST_TIME_VALID_PKT_MEM_ADR);
+        beacon.obdh.errors                      = flash_read_single(BEACON_PARAM_EPS_ERRORS_MEM_ADR);
+        beacon.obdh.is_dead                     = (bool)flash_read_single(BEACON_PARAM_OBDH_IS_DEAD_PKT_MEM_ADR);
     }
 }
 
 void beacon_load_default_params()
 {
-    beacon.hibernation                  = false;
-    beacon.energy_level                 = SATELLITE_ENERGY_LEVEL_5;
-    beacon.deploy_hibernation_executed  = false;
-    beacon.last_energy_level_set        = time_get_seconds();
-    beacon.deployment_attempts          = 0;
+    beacon.hibernation                      = false;
+    beacon.hibernation_mode_initial_time    = 0;
+    beacon.hibernation_mode_duration        = 0;
+    beacon.energy_level                     = SATELLITE_ENERGY_LEVEL_5;
+    beacon.deploy_hibernation_executed      = false;
+    beacon.last_energy_level_set            = time_get_seconds();
+    beacon.deployment_attempts              = 0;
 
-    beacon.eps.time_last_valid_pkt      = time_get_seconds();
-    beacon.eps.errors                   = 0;
-    beacon.eps.is_dead                  = false;
+    beacon.eps.time_last_valid_pkt          = time_get_seconds();
+    beacon.eps.errors                       = 0;
+    beacon.eps.is_dead                      = false;
 
-    beacon.obdh.time_last_valid_pkt     = time_get_seconds();
-    beacon.obdh.errors                  = 0;
-    beacon.obdh.is_dead                 = false;
+    beacon.obdh.time_last_valid_pkt         = time_get_seconds();
+    beacon.obdh.errors                      = 0;
+    beacon.obdh.is_dead                     = false;
 }
 
 void beacon_save_params()
@@ -801,6 +806,8 @@ void beacon_save_params()
     flash_erase(BEACON_PARAMS_MEMORY_REGION);
 
     flash_write_single(beacon.hibernation ? 1 : 0, BEACON_PARAM_HIBERNATION_MEM_ADR);
+    flash_write_long(beacon.hibernation_mode_initial_time, BEACON_PARAM_HIBERNATION_MODE_INITIAL_TIME_MEM_ADR);
+    flash_write_long(beacon.hibernation_mode_duration, BEACON_PARAM_HIBERNATION_DURATION_MEM_ADR);
     flash_write_single(beacon.energy_level, BEACON_PARAM_ENERGY_LEVEL_MEM_ADR);
     flash_write_long(beacon.last_energy_level_set, BEACON_PARAM_LAST_ENERGY_LEVEL_SET_MEM_ADR);
     flash_write_single(beacon.deploy_hibernation_executed ? 1 : 0, BEACON_PARAM_PARAMS_DEPLOU_HIB_EXECUTED_MEM_ADR);
