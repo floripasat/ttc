@@ -25,7 +25,7 @@
  * 
  * \author Gabriel Mariano Marcelino <gabriel.mm8@gmail.com>
  * 
- * \version 0.4.4
+ * \version 0.4.7
  * 
  * \date 08/06/2017
  * 
@@ -74,7 +74,7 @@
 #define BEACON_HIBERNATION_PERIOD_MINUTES   (24*60)
 #define BEACON_HIBERNATION_PERIOD_HOURS     24
 
-#define BEACON_ANTENNA_DEPLOY_SLEEP_MIN     45
+#define BEACON_ANTENNA_DEPLOY_SLEEP_MIN     55
 #define BEACON_ANTENNA_DEPLOY_SLEEP_SEC     (BEACON_ANTENNA_DEPLOY_SLEEP_MIN*60)
 #define BEACON_ANTENNA_DEPLOY_SLEEP_HOUR    0
 
