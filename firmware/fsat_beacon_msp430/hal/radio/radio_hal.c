@@ -25,7 +25,7 @@
  * 
  * \author Gabriel Mariano Marcelino <gabriel.mm8@gmail.com>
  * 
- * \version 0.1.12
+ * \version 0.4.6
  * 
  * \date 09/06/2017
  * 
@@ -56,8 +56,6 @@
 
 #include "radio_hal.h"
 #include "radio_hal_config.h"
-
-Queue radio_rx_queue;
 
 bool radio_init()
 {
@@ -143,26 +141,27 @@ void radio_write(uint8_t *data, uint16_t len)
 #endif // BEACON_RADIO
 }
 
-void radio_read(uint8_t len)
+void radio_read(uint8_t *data, uint8_t len)
 {
+    if (len > 128)
+    {
+        len = 128;
+    }
+
     debug_print_event_from_module(DEBUG_INFO, RADIO_HAL_MODULE_NAME, "Reading ");
     debug_print_dec(len);
     debug_print_msg(" bytes from buffer...\n\r");
 
 #if BEACON_RADIO == CC1175 || BEACON_RADIO == CC1125
-
+    return;
 #elif BEACON_RADIO == SI4063
-
+    return;
 #elif BEACON_RADIO == RF4463F30
-    uint8_t data[128];
     rf4463_rx_packet(data, len);
 
-    uint8_t i = 0;
-    for(i=0; i<len; i++)
-    {
-        radio_push(data[i]);
-    }
+    rf4463_clear_interrupts();
 
+    radio_enable_rx();  // Returning to RX mode
 #elif BEACON_RADIO == UART_SIM
     return;
 #endif // BEACON_RADIO
@@ -206,7 +205,6 @@ void radio_enable_rx()
 #elif BEACON_RADIO == SI4063
     return;
 #elif BEACON_RADIO == RF4463F30
-    radio_init_rx_isr();
     rf4463_enter_rx_mode();
 #elif BEACON_RADIO == UART_SIM
     return;
@@ -218,60 +216,17 @@ void radio_disable_rx()
     radio_sleep();
 }
 
-uint8_t radio_available()
-{
-    return queue_size(&radio_rx_queue);
-}
-
-uint8_t radio_pop()
-{
-    return queue_pop_front(&radio_rx_queue);
-}
-
-static void radio_init_rx_isr()
+bool radio_available()
 {
 #if BEACON_RADIO == CC1175 || BEACON_RADIO == CC1125
-    return;
+    return false;
 #elif BEACON_RADIO == SI4063
-    return;
+    return false;
 #elif BEACON_RADIO == RF4463F30
-    // Enables interrupt
-    GPIO_enableInterrupt(RADIO_GPIO_nIRQ_PORT, RADIO_GPIO_nIRQ_PIN);
-
-    // Sets Hi/Lo edge
-    GPIO_selectInterruptEdge(RADIO_GPIO_nIRQ_PORT, RADIO_GPIO_nIRQ_PIN, GPIO_HIGH_TO_LOW_TRANSITION);
-
-    // Clears IFG
-    GPIO_clearInterrupt(RADIO_GPIO_nIRQ_PORT, RADIO_GPIO_nIRQ_PIN);
+    return rf4463_wait_nIRQ();
 #elif BEACON_RADIO == UART_SIM
-    return;
+    return false;
 #endif // BEACON_RADIO
 }
-
-static void radio_push(uint8_t byte)
-{
-    queue_push_back(&radio_rx_queue, byte);
-}
-
-#if BEACON_RADIO == RF4463F30
-/**
- * \brief Radio RX interrupt vector service routine.
- * 
- * \return None
- */
-#if defined(__TI_COMPILER_VERSION__) || defined(__IAR_SYSTEMS_ICC__)
-#pragma vector=RADIO_HAL_RX_ISR_PORT_VECTOR
-__interrupt
-#elif defined(__GNUC__)
-__attribute__((interrupt(RADIO_HAL_RX_ISR_PORT_VECTOR)))
-#endif
-void radio_rx_isr()
-{
-    radio_read(50);
-
-    // P3.1 IFG cleared
-    GPIO_clearInterrupt(RADIO_GPIO_nIRQ_PORT, RADIO_GPIO_nIRQ_PIN);
-}
-#endif // BEACON_RADIO
 
 //! \} End of radio_hal group

@@ -25,7 +25,7 @@
  * 
  * \author Gabriel Mariano Marcelino <gabriel.mm8@gmail.com>
  * 
- * \version 0.4.5
+ * \version 0.4.6
  * 
  * \date 08/06/2017
  * 
@@ -128,9 +128,9 @@ void beacon_run()
 
         task_aperiodic(&beacon_process_eps_pkt, eps_available()? true : false);
 
-        task_aperiodic(&beacon_process_radio_pkt, ((radio_available() > 0)? true : false) && (beacon.obdh.is_dead? true : false));
+        task_aperiodic(&beacon_process_radio_pkt, radio_available() && beacon.obdh.is_dead);
 
-        task_aperiodic(&radio_enable_rx, beacon.obdh.is_dead? true : false);
+        task_aperiodic(&radio_enable_rx, beacon.obdh.is_dead);
 
         task_scheduled(&beacon_leave_hibernation, beacon.hibernation_mode_initial_time + beacon.hibernation_mode_duration, time_get_seconds(), 5, beacon.hibernation? true : false);
 
@@ -592,92 +592,115 @@ void beacon_process_eps_pkt()
 
 void beacon_process_radio_pkt()
 {
-    if (!beacon.hibernation)
+    uint8_t pkt[58];
+    uint8_t pkt_len = 58;
+    uint8_t pkt_pl[58];
+    uint8_t pkt_pl_len = 0;
+/*
+    if (radio_available())
     {
-        uint8_t data[100];
-        uint8_t data_len;
+        radio_read(pkt, pkt_len);
 
-        uint8_t ngham_state;
-
-        while(radio_available() > 0)
+        uint8_t i = 0;
+        for(i=0; i<pkt_len; i++)
         {
-            ngham_state = ngham_decode(radio_pop(), data, &data_len);
+            uint8_t state = ngham_decode(pkt[i], pkt_pl, &pkt_pl_len);
 
-            if (ngham_state == PKT_CONDITION_OK)
+            if (state == PKT_CONDITION_OK)
             {
+                debug_print_event_from_module(DEBUG_INFO, BEACON_MODULE_NAME, "Incoming packet successfully decoded!!\n\r");
+
                 break;
             }
-            else if (ngham_state == PKT_CONDITION_FAIL)
+            else if (state == PKT_CONDITION_PREFAIL)
             {
+                continue;
+            }
+            else if (state == PKT_CONDITION_FAIL)
+            {
+                debug_print_event_from_module(DEBUG_ERROR, BEACON_MODULE_NAME, "Error decoding an incoming packet!\n\r");
+
                 return;
             }
             else
             {
-                continue;
-            }
-        }
-
-        if (ngham_state == PKT_CONDITION_OK)
-        {
-            if ((data[6] == 's') && (data[7] == 'd'))
-            {
-                uint8_t i = 0;
-
-                debug_print_event_from_module(DEBUG_INFO, BEACON_MODULE_NAME, "Shutdown command received from ");
-                for(i=0; i<6; i++)
-                {
-                    debug_print_byte(data[i]);
-                }
-                debug_print_msg("!\n\r");
-
-                uint8_t ngham_pkt_str[100];
-                uint16_t ngham_pkt_str_len;
-
-                uint8_t pkt_payload_len = 0;
-                uint8_t pkt_payload[60];
-
-                uint8_t hibernation_ack_start[] = "Shutdown received from ";
-
-                for(i=0; i<sizeof(hibernation_ack_start); i++)
-                {
-                    pkt_payload[pkt_payload_len++] = hibernation_ack_start[i];
-                }
-
-                for(i=0; i<6; i++)
-                {
-                    pkt_payload[pkt_payload_len++] = data[i];
-                }
-
-                uint8_t hibernation_ack_end[] = ". Wake up time in 24 hours.";
-                for(i=0; i<sizeof(hibernation_ack_end); i++)
-                {
-                    pkt_payload[pkt_payload_len++] = hibernation_ack_end[i];
-                }
-
-                NGHam_TX_Packet ngham_packet;
-                ngham_tx_pkt_gen(&ngham_packet, pkt_payload, pkt_payload_len);
-                ngham_encode(&ngham_packet, ngham_pkt_str, &ngham_pkt_str_len);
-
-                uint32_t timeout_radio_hibernation_ack = BEACON_TIMEOUT_RADIO_HIBERNATION;
-
-                while(timeout_radio_hibernation_ack--)
-                {
-                    if (beacon.can_transmit)
-                    {
-                        beacon.transmitting = true;
-
-                        radio_write(ngham_pkt_str, ngham_pkt_str_len);
-
-                        beacon.transmitting = false;
-
-                        break;
-                    }
-                }
-
-                beacon_enter_hibernation(BEACON_HIBERNATION_PERIOD_MINUTES);
+                return;
             }
         }
     }
+
+    switch(pkt_pl[0])
+    {
+        case :
+            debug_print_event_from_module(DEBUG_INFO, BEACON_MODULE_NAME, "Hibernation command received from ");
+
+            uint8_t i = 0;
+            for(i=0; i<7; i++)
+            {
+                debug_print_byte(pkt_pl[i+1]);
+            }
+
+            debug_print_msg("! Returning transmission in ");
+            debug_print_dec(pkt_pl[]);
+            debug_print_msg(" minutes!\n\r");
+
+            break;
+        default:
+            debug_print_event_from_module(DEBUG_ERROR, BEACON_MODULE_NAME, "Invalid telecommand received!\n\r");
+    }
+
+    if (ngham_state == PKT_CONDITION_OK)
+    {
+        if ((data[6] == 's') && (data[7] == 'd'))
+        {
+            uint8_t ngham_pkt_str[100];
+            uint16_t ngham_pkt_str_len;
+
+            uint8_t pkt_payload_len = 0;
+            uint8_t pkt_payload[60];
+
+            uint8_t hibernation_ack_start[] = "Shutdown received from ";
+
+            for(i=0; i<sizeof(hibernation_ack_start); i++)
+            {
+                pkt_payload[pkt_payload_len++] = hibernation_ack_start[i];
+            }
+
+            for(i=0; i<6; i++)
+            {
+                pkt_payload[pkt_payload_len++] = data[i];
+            }
+
+            uint8_t hibernation_ack_end[] = ". Wake up time in 24 hours.";
+            for(i=0; i<sizeof(hibernation_ack_end); i++)
+            {
+                pkt_payload[pkt_payload_len++] = hibernation_ack_end[i];
+            }
+
+            NGHam_TX_Packet ngham_packet;
+            ngham_tx_pkt_gen(&ngham_packet, pkt_payload, pkt_payload_len);
+            ngham_encode(&ngham_packet, ngham_pkt_str, &ngham_pkt_str_len);
+
+            uint32_t timeout_radio_hibernation_ack = BEACON_TIMEOUT_RADIO_HIBERNATION;
+
+            while(timeout_radio_hibernation_ack--)
+            {
+                if (beacon.can_transmit)
+                {
+                    beacon.transmitting = true;
+
+                    radio_write(ngham_pkt_str, ngham_pkt_str_len);
+
+                    beacon.transmitting = false;
+
+                    break;
+                }
+            }
+
+            beacon_enter_hibernation(BEACON_HIBERNATION_PERIOD_MINUTES);
+        }
+    }
+*/
 }
 
 void beacon_antenna_deployment()
