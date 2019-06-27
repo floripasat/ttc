@@ -25,7 +25,7 @@
  * 
  * \author Gabriel Mariano Marcelino <gabriel.mm8@gmail.com>
  * 
- * \version 0.4.6
+ * \version 0.4.9
  * 
  * \date 08/06/2017
  * 
@@ -592,16 +592,16 @@ void beacon_process_eps_pkt()
 
 void beacon_process_radio_pkt()
 {
-    uint8_t pkt[58];
-    uint8_t pkt_len = 58;
-    uint8_t pkt_pl[58];
+    uint8_t pkt[90];
+    uint8_t pkt_len = 90;
+    uint8_t pkt_pl[60];
     uint8_t pkt_pl_len = 0;
-/*
+    uint8_t i = 0;
+
     if (radio_available())
     {
         radio_read(pkt, pkt_len);
 
-        uint8_t i = 0;
         for(i=0; i<pkt_len; i++)
         {
             uint8_t state = ngham_decode(pkt[i], pkt_pl, &pkt_pl_len);
@@ -629,78 +629,79 @@ void beacon_process_radio_pkt()
         }
     }
 
+    // Process telecommand
     switch(pkt_pl[0])
     {
-        case :
-            debug_print_event_from_module(DEBUG_INFO, BEACON_MODULE_NAME, "Hibernation command received from ");
+        case TELECOMMAND_ID_PING_REQUEST:
+            debug_print_event_from_module(DEBUG_INFO, BEACON_MODULE_NAME, "Ping request telecommand received from ");
 
-            uint8_t i = 0;
             for(i=0; i<7; i++)
             {
                 debug_print_byte(pkt_pl[i+1]);
             }
 
-            debug_print_msg("! Returning transmission in ");
-            debug_print_dec(pkt_pl[]);
+            debug_print_msg("!\n\r");
+
+            break;
+        case TELECOMMAND_ID_ENTER_HIBERNATION:
+            debug_print_event_from_module(DEBUG_INFO, BEACON_MODULE_NAME, "Hibernation telecommand received from ");
+
+            for(i=0; i<7; i++)
+            {
+                debug_print_byte(pkt_pl[i+1]);
+            }
+
+            debug_print_msg("!\n\r");
+
+            debug_print_event_from_module(DEBUG_INFO, BEACON_MODULE_NAME, "Returning transmissions in ");
+            debug_print_dec(((uint16_t)pkt_pl[0+1+7] << 8) | pkt_pl[0+1+7+1]);
             debug_print_msg(" minutes!\n\r");
+
+            beacon_enter_hibernation(((uint16_t)pkt_pl[0+1+7] << 8) | pkt_pl[0+1+7+1]);
+
+            break;
+        case TELECOMMAND_ID_LEAVE_HIBERNATION:
+            debug_print_event_from_module(DEBUG_INFO, BEACON_MODULE_NAME, "Leave hibernation telecommand received from ");
+
+            for(i=0; i<7; i++)
+            {
+                debug_print_byte(pkt_pl[i+1]);
+            }
+
+            debug_print_msg("!\n\r");
+
+            break;
+        case TELECOMMAND_ID_BROADCAST_MESSAGE:
+            debug_print_event_from_module(DEBUG_INFO, BEACON_MODULE_NAME, "Broadcast message telecommand received from ");
+
+            // Source callsign
+            for(i=0; i<7; i++)
+            {
+                debug_print_byte(pkt_pl[i+1]);
+            }
+
+            debug_print_msg(". Message to ");
+
+            // Destination callsign
+            for(i=0; i<7; i++)
+            {
+                debug_print_byte(pkt_pl[i+1+7]);
+            }
+
+            debug_print_msg(": ");
+
+            // Message
+            for(i=1+7+7; i<pkt_pl_len; i++)
+            {
+                debug_print_byte(pkt_pl[i]);
+            }
+
+            debug_print_msg("!\n\r");
 
             break;
         default:
             debug_print_event_from_module(DEBUG_ERROR, BEACON_MODULE_NAME, "Invalid telecommand received!\n\r");
     }
-
-    if (ngham_state == PKT_CONDITION_OK)
-    {
-        if ((data[6] == 's') && (data[7] == 'd'))
-        {
-            uint8_t ngham_pkt_str[100];
-            uint16_t ngham_pkt_str_len;
-
-            uint8_t pkt_payload_len = 0;
-            uint8_t pkt_payload[60];
-
-            uint8_t hibernation_ack_start[] = "Shutdown received from ";
-
-            for(i=0; i<sizeof(hibernation_ack_start); i++)
-            {
-                pkt_payload[pkt_payload_len++] = hibernation_ack_start[i];
-            }
-
-            for(i=0; i<6; i++)
-            {
-                pkt_payload[pkt_payload_len++] = data[i];
-            }
-
-            uint8_t hibernation_ack_end[] = ". Wake up time in 24 hours.";
-            for(i=0; i<sizeof(hibernation_ack_end); i++)
-            {
-                pkt_payload[pkt_payload_len++] = hibernation_ack_end[i];
-            }
-
-            NGHam_TX_Packet ngham_packet;
-            ngham_tx_pkt_gen(&ngham_packet, pkt_payload, pkt_payload_len);
-            ngham_encode(&ngham_packet, ngham_pkt_str, &ngham_pkt_str_len);
-
-            uint32_t timeout_radio_hibernation_ack = BEACON_TIMEOUT_RADIO_HIBERNATION;
-
-            while(timeout_radio_hibernation_ack--)
-            {
-                if (beacon.can_transmit)
-                {
-                    beacon.transmitting = true;
-
-                    radio_write(ngham_pkt_str, ngham_pkt_str_len);
-
-                    beacon.transmitting = false;
-
-                    break;
-                }
-            }
-
-            beacon_enter_hibernation(BEACON_HIBERNATION_PERIOD_MINUTES);
-        }
-    }
-*/
 }
 
 void beacon_antenna_deployment()
