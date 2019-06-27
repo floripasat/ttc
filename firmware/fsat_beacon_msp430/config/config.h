@@ -25,7 +25,7 @@
  * 
  * \author Gabriel Mariano Marcelino <gabriel.mm8@gmail.com>
  * 
- * \version 0.4.7
+ * \version 0.4.8
  * 
  * \date 08/06/2017
  * 
@@ -41,6 +41,7 @@
 #include "modes.h"
 #include "pinmap.h"
 #include "hardware.h"
+#include "telecommands.h"
 
 //########################################################
 //-- SATELLITE DATA --------------------------------------
