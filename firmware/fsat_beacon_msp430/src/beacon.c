@@ -25,7 +25,7 @@
  * 
  * \author Gabriel Mariano Marcelino <gabriel.mm8@gmail.com>
  * 
- * \version 0.4.11
+ * \version 0.4.12
  * 
  * \date 08/06/2017
  * 
@@ -731,6 +731,50 @@ void beacon_process_radio_pkt()
             }
 
             debug_print_msg("!\n\r");
+
+            uint8_t pkt_broadcast[60];
+
+            // Message broadcast packet ID
+            pkt_broadcast[0] = BEACON_PACKET_ID_MESSAGE_BROADCAST;
+
+            // Message broadcast packet source callsign
+            j = 0;
+            for(i=0; i<(7-(sizeof(SATELLITE_CALLSIGN)-1)); i++)
+            {
+                pkt_broadcast[i+1] = '0';   // Fill with 0s when the callsign length is less than 7 characters
+                j++;
+            }
+
+            for(i=0; i<sizeof(SATELLITE_CALLSIGN)-1; i++)
+            {
+                pkt_broadcast[i+1+j] = SATELLITE_CALLSIGN[i];
+            }
+
+            // Message broadcast packet origin callsign
+            for(i=0; i<7; i++)
+            {
+                pkt_broadcast[i+1+7] = pkt_pl[i+1];
+            }
+
+            // Message broadcast packet destination callsign
+            for(i=0; i<7; i++)
+            {
+                pkt_broadcast[i+1+7+7] = pkt_pl[i+1+7];
+            }
+
+            // Message
+            for(i=0; i<(pkt_pl_len-7-7-1); i++)
+            {
+                pkt_broadcast[i+1+7+7+7] = pkt_pl[i+1+7+7];
+            }
+
+            ngham_tx_pkt_gen(&ngham_packet, pkt_broadcast, 1+7+7+7+(pkt_pl_len-7-7-1));
+
+            ngham_encode(&ngham_packet, pkt, pkt_len);
+
+            beacon.transmitting = true;
+            radio_write(pkt+8, pkt_len-8);  // 8: Removing preamble and sync word from the NGHam packet
+            beacon.transmitting = false;
 
             break;
         default:
