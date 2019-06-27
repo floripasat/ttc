@@ -25,7 +25,7 @@
  * 
  * \author Gabriel Mariano Marcelino <gabriel.mm8@gmail.com>
  * 
- * \version 0.4.10
+ * \version 0.4.11
  * 
  * \date 08/06/2017
  * 
@@ -701,6 +701,8 @@ void beacon_process_radio_pkt()
             }
 
             debug_print_msg("!\n\r");
+
+            beacon_leave_hibernation();
 
             break;
         case TELECOMMAND_ID_BROADCAST_MESSAGE:
