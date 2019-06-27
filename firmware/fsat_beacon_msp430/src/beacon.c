@@ -25,7 +25,7 @@
  * 
  * \author Gabriel Mariano Marcelino <gabriel.mm8@gmail.com>
  * 
- * \version 0.4.9
+ * \version 0.4.10
  * 
  * \date 08/06/2017
  * 
@@ -593,10 +593,10 @@ void beacon_process_eps_pkt()
 void beacon_process_radio_pkt()
 {
     uint8_t pkt[90];
-    uint8_t pkt_len = 90;
+    uint16_t pkt_len = 90;
     uint8_t pkt_pl[60];
-    uint8_t pkt_pl_len = 0;
-    uint8_t i = 0;
+    uint16_t pkt_pl_len = 0;
+    uint16_t i = 0;
 
     if (radio_available())
     {
@@ -641,6 +641,38 @@ void beacon_process_radio_pkt()
             }
 
             debug_print_msg("!\n\r");
+
+            // Ping answer packet ID
+            pkt_pl[0] = BEACON_PACKET_ID_PING_ANSWER;
+
+            // Ping answer packet destination
+            for(i=0; i<7; i++)
+            {
+                pkt_pl[i+1+7] = pkt_pl[i+1];
+            }
+
+            // Ping answer packet source
+            uint8_t j = 0;
+            for(i=0; i<(7-(sizeof(SATELLITE_CALLSIGN)-1)); i++)
+            {
+                pkt_pl[i+1] = '0';  // Fill with 0s when the callsign length is less than 7 characters
+                j++;
+            }
+
+            for(i=0; i<sizeof(SATELLITE_CALLSIGN)-1; i++)
+            {
+                pkt_pl[i+1+j] = SATELLITE_CALLSIGN[i];
+            }
+
+            NGHam_TX_Packet ngham_packet;
+
+            ngham_tx_pkt_gen(&ngham_packet, pkt_pl, 1+7+7);
+
+            ngham_encode(&ngham_packet, pkt, pkt_len);
+
+            beacon.transmitting = true;
+            radio_write(pkt+8, pkt_len-8);  // 8: Removing preamble and sync word from the NGHam packet
+            beacon.transmitting = false;
 
             break;
         case TELECOMMAND_ID_ENTER_HIBERNATION:

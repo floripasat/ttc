@@ -25,7 +25,7 @@
  * 
  * \author Gabriel Mariano Marcelino <gabriel.mm8@gmail.com>
  * 
- * \version 0.4.8
+ * \version 0.4.10
  * 
  * \date 08/06/2017
  * 
@@ -107,6 +107,7 @@
 #define BEACON_PACKET_ID_AX25_OBDH_DATA     0x03
 #define BEACON_PACKET_ID_AX25_EPS_DATA      0x04
 #define BEACON_PACKET_ID_AX25_TTC_DATA      0x05
+#define BEACON_PACKET_ID_PING_ANSWER        0x06
 
 //########################################################
 //-- RADIO -----------------------------------------------
