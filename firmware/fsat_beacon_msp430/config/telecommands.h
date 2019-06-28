@@ -1,5 +1,5 @@
 /*
- * version.h
+ * telecommands.h
  * 
  * Copyright (C) 2019, Universidade Federal de Santa Catarina.
  * 
@@ -21,28 +21,27 @@
  */
 
 /**
- * \brief Version control.
+ * \brief Telecommands definition.
  * 
  * \author Gabriel Mariano Marcelino <gabriel.mm8@gmail.com>
  * 
- * \version 0.4.12
+ * \version 0.4.8
  * 
- * \date 08/02/2019
+ * \date 30/05/2019
  * 
- * \defgroup version_control Version Control
+ * \defgroup telecommands Telecommands
+ * \ingroup config
  * \{
  */
 
-#ifndef VERSION_H_
-#define VERSION_H_
+#ifndef TELECOMMANDS_H_
+#define TELECOMMANDS_H_
 
-#define FIRMWARE_VERSION        "0.4.12"
+#define TELECOMMAND_ID_PING_REQUEST         0x30
+#define TELECOMMAND_ID_ENTER_HIBERNATION    0x31
+#define TELECOMMAND_ID_LEAVE_HIBERNATION    0x32
+#define TELECOMMAND_ID_BROADCAST_MESSAGE    0x33
 
-#define FIRMWARE_STATUS         "Development"
+#endif // TELECOMMANDS_H_
 
-#define FIRMWARE_AUTHOR_NAME    "Gabriel Mariano Marcelino"
-#define FIRMWARE_AUTHOR_EMAIL   "gabriel.mm8@gmail.com"
-
-#endif // VERSION_H_
-
-//! \} End of version_control group
+//! \} End of telecommands group

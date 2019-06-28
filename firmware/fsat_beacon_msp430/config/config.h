@@ -25,7 +25,7 @@
  * 
  * \author Gabriel Mariano Marcelino <gabriel.mm8@gmail.com>
  * 
- * \version 0.4.3
+ * \version 0.4.12
  * 
  * \date 08/06/2017
  * 
@@ -41,6 +41,7 @@
 #include "modes.h"
 #include "pinmap.h"
 #include "hardware.h"
+#include "telecommands.h"
 
 //########################################################
 //-- SATELLITE DATA --------------------------------------
@@ -74,7 +75,7 @@
 #define BEACON_HIBERNATION_PERIOD_MINUTES   (24*60)
 #define BEACON_HIBERNATION_PERIOD_HOURS     24
 
-#define BEACON_ANTENNA_DEPLOY_SLEEP_MIN     45
+#define BEACON_ANTENNA_DEPLOY_SLEEP_MIN     55
 #define BEACON_ANTENNA_DEPLOY_SLEEP_SEC     (BEACON_ANTENNA_DEPLOY_SLEEP_MIN*60)
 #define BEACON_ANTENNA_DEPLOY_SLEEP_HOUR    0
 
@@ -85,7 +86,7 @@
 #define BEACON_SYSTEM_RESET_PERIOD_MIN      (BEACON_SYSTEM_RESET_PERIOD_HOURS*60)
 #define BEACON_SYSTEM_RESET_PERIOD_SEC      (BEACON_SYSTEM_RESET_PERIOD_MIN*60*1UL)
 
-#define BEACON_TIMEOUT_RADIO_SHUTDOWN       1000000UL
+#define BEACON_TIMEOUT_RADIO_HIBERNATION    1000000UL
 
 #define BEACON_BOOT_DELAY_SEC               2
 #define BEACON_BOOT_DELAY_MS                (BEACON_BOOT_DELAY_SEC*1000)
@@ -106,6 +107,8 @@
 #define BEACON_PACKET_ID_AX25_OBDH_DATA     0x03
 #define BEACON_PACKET_ID_AX25_EPS_DATA      0x04
 #define BEACON_PACKET_ID_AX25_TTC_DATA      0x05
+#define BEACON_PACKET_ID_PING_ANSWER        0x06
+#define BEACON_PACKET_ID_MESSAGE_BROADCAST  0x07
 
 //########################################################
 //-- RADIO -----------------------------------------------
