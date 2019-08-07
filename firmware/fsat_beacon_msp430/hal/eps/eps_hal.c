@@ -25,7 +25,7 @@
  * 
  * \author Gabriel Mariano Marcelino <gabriel.mm8@gmail.com>
  * 
- * \version 0.3.4
+ * \version 0.4.13
  * 
  * \date 23/09/2016
  * 
@@ -39,6 +39,8 @@
 #include "eps_hal_config.h"
 
 Queue eps_queue;
+
+bool eps_is_enabled = false;
 
 bool eps_init()
 {
@@ -59,17 +61,27 @@ bool eps_init()
 
 void eps_enable()
 {
-    debug_print_event_from_module(DEBUG_INFO, EPS_HAL_MODULE_NAME, "Enabling reception...\n\r");
+    if (!eps_is_enabled)
+    {
+        debug_print_event_from_module(DEBUG_INFO, EPS_HAL_MODULE_NAME, "Enabling reception...\n\r");
 
-    USCI_A_UART_clearInterrupt(EPS_UART_BASE_ADDRESS, USCI_A_UART_RECEIVE_INTERRUPT);
-    USCI_A_UART_enableInterrupt(EPS_UART_BASE_ADDRESS, USCI_A_UART_RECEIVE_INTERRUPT);
+        USCI_A_UART_clearInterrupt(EPS_UART_BASE_ADDRESS, USCI_A_UART_RECEIVE_INTERRUPT);
+        USCI_A_UART_enableInterrupt(EPS_UART_BASE_ADDRESS, USCI_A_UART_RECEIVE_INTERRUPT);
+
+        eps_is_enabled = true;
+    }
 }
 
 void eps_disable()
 {
-    debug_print_event_from_module(DEBUG_WARNING, EPS_HAL_MODULE_NAME, "Disabling reception...\n\r");
+    if (eps_is_enabled)
+    {
+        debug_print_event_from_module(DEBUG_WARNING, EPS_HAL_MODULE_NAME, "Disabling reception...\n\r");
 
-    USCI_A_UART_disableInterrupt(EPS_UART_BASE_ADDRESS, USCI_A_UART_RECEIVE_INTERRUPT);
+        USCI_A_UART_disableInterrupt(EPS_UART_BASE_ADDRESS, USCI_A_UART_RECEIVE_INTERRUPT);
+
+        eps_is_enabled = false;
+    }
 }
 
 uint8_t eps_available()
@@ -130,7 +142,7 @@ static bool eps_hal_uart_init()
     }
     else
     {
-        debug_print_event_from_module(DEBUG_ERROR, EPS_HAL_MODULE_NAME, "Error initializing the UART bus!");
+        debug_print_event_from_module(DEBUG_ERROR, EPS_HAL_MODULE_NAME, "Error initializing the UART bus!\n\r");
 
         return false;
     }
