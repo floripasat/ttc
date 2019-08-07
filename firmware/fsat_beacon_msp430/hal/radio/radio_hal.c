@@ -25,7 +25,7 @@
  * 
  * \author Gabriel Mariano Marcelino <gabriel.mm8@gmail.com>
  * 
- * \version 0.4.6
+ * \version 0.4.15
  * 
  * \date 09/06/2017
  * 
@@ -57,6 +57,8 @@
 #include "radio_hal.h"
 #include "radio_hal_config.h"
 
+uint8_t radio_mode = RADIO_MODE_STANDBY;
+
 bool radio_init()
 {
     debug_print_event_from_module(DEBUG_INFO, RADIO_HAL_MODULE_NAME, "Initializing device...\n\r");
@@ -80,6 +82,9 @@ bool radio_init()
     if (init_status == STATUS_SUCCESS)
     {
         rf4463_enter_standby_mode();
+
+        radio_mode = RADIO_MODE_STANDBY;
+
         return true;
     }
     else
@@ -136,6 +141,7 @@ void radio_write(uint8_t *data, uint16_t len)
 #elif BEACON_RADIO == RF4463F30
     rf4463_tx_long_packet(data, len);
     rf4463_enter_standby_mode();
+    radio_mode = RADIO_MODE_STANDBY;
 #elif BEACON_RADIO == UART_SIM
     uart_radio_sim_send_data(data, len);
 #endif // BEACON_RADIO
@@ -178,6 +184,7 @@ void radio_sleep()
 #elif BEACON_RADIO == RF4463F30
     GPIO_disableInterrupt(RADIO_GPIO_nIRQ_PORT, RADIO_GPIO_nIRQ_PIN);
     rf4463_enter_standby_mode();
+    radio_mode = RADIO_MODE_STANDBY;
 #elif BEACON_RADIO == UART_SIM
     return;
 #endif // BEACON_RADIO
@@ -198,17 +205,22 @@ void radio_wake_up()
 
 void radio_enable_rx()
 {
-    debug_print_event_from_module(DEBUG_INFO, RADIO_HAL_MODULE_NAME, "Enabling RX...\n\r");
+    if (radio_mode != RADIO_MODE_RX)
+    {
+        debug_print_event_from_module(DEBUG_INFO, RADIO_HAL_MODULE_NAME, "Enabling RX...\n\r");
 
 #if BEACON_RADIO == CC1175 || BEACON_RADIO == CC1125
-    return;
+        return;
 #elif BEACON_RADIO == SI4063
-    return;
+        return;
 #elif BEACON_RADIO == RF4463F30
-    rf4463_enter_rx_mode();
+        rf4463_enter_rx_mode();
 #elif BEACON_RADIO == UART_SIM
-    return;
+        return;
 #endif // BEACON_RADIO
+
+        radio_mode = RADIO_MODE_RX;
+    }
 }
 
 void radio_disable_rx()
