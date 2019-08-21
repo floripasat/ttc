@@ -25,7 +25,7 @@
  * 
  * \author Gabriel Mariano Marcelino <gabriel.mm8@gmail.com>
  * 
- * \version 0.3.3
+ * \version 0.4.14
  * 
  * \date 23/03/2017
  * 
@@ -42,6 +42,8 @@
 #include "obdh_hal_config.h"
 
 Queue obdh_queue;
+
+bool obdh_is_enabled = false;
 
 bool obdh_init()
 {
@@ -91,17 +93,27 @@ static bool obdh_hal_spi_init()
 
 void obdh_enable()
 {
-    debug_print_event_from_module(DEBUG_INFO, OBDH_COM_MODULE_NAME, "Enabling reception...\n\r");
+    if (!obdh_is_enabled)
+    {
+        debug_print_event_from_module(DEBUG_INFO, OBDH_COM_MODULE_NAME, "Enabling reception...\n\r");
 
-    USCI_A_SPI_clearInterrupt(OBDH_SPI_BASE_ADDRESS, USCI_A_SPI_RECEIVE_INTERRUPT);
-    USCI_A_SPI_enableInterrupt(OBDH_SPI_BASE_ADDRESS, USCI_A_SPI_RECEIVE_INTERRUPT);
+        USCI_A_SPI_clearInterrupt(OBDH_SPI_BASE_ADDRESS, USCI_A_SPI_RECEIVE_INTERRUPT);
+        USCI_A_SPI_enableInterrupt(OBDH_SPI_BASE_ADDRESS, USCI_A_SPI_RECEIVE_INTERRUPT);
+
+        obdh_is_enabled = true;
+    }
 }
 
 void obdh_disable()
 {
-    debug_print_event_from_module(DEBUG_WARNING, OBDH_COM_MODULE_NAME, "Disabling reception...\n\r");
+    if (obdh_is_enabled)
+    {
+        debug_print_event_from_module(DEBUG_WARNING, OBDH_COM_MODULE_NAME, "Disabling reception...\n\r");
 
-    USCI_A_UART_disableInterrupt(OBDH_SPI_BASE_ADDRESS, USCI_A_SPI_RECEIVE_INTERRUPT);
+        USCI_A_UART_disableInterrupt(OBDH_SPI_BASE_ADDRESS, USCI_A_SPI_RECEIVE_INTERRUPT);
+
+        obdh_is_enabled = false;
+    }
 }
 
 uint8_t obdh_available()

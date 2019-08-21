@@ -25,7 +25,7 @@
  * 
  * \author Gabriel Mariano Marcelino <gabriel.mm8@gmail.com>
  * 
- * \version 0.4.6
+ * \version 0.4.15
  * 
  * \date 09/06/2017
  * 
@@ -39,6 +39,16 @@
 
 #include <stdint.h>
 #include <stdbool.h>
+
+/**
+ * \brief Radio modes.
+ */
+typedef enum
+{
+    RADIO_MODE_STANDBY = 0,     /**< Standby mode. */
+    RADIO_MODE_TX,              /**< TX mode. */
+    RADIO_MODE_RX               /**< RX mode. */
+} radio_modes_e;
 
 /**
  * \brief Initialization of the radio module.
