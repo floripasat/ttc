@@ -25,7 +25,7 @@
  * 
  * \author Gabriel Mariano Marcelino <gabriel.mm8@gmail.com>
  * 
- * \version 0.5.1
+ * \version 0.5.2
  * 
  * \date 08/06/2017
  * 
@@ -124,7 +124,11 @@ void beacon_run()
         task_scheduled_no_preemption(&beacon_send_ax25_pkt, beacon.last_ngham_pkt_transmission + 1, time_get_seconds(), 0, ((beacon.last_ngham_pkt_transmission + 1) == time_get_seconds())? true : false);
     #endif // PACKET_AX25
 
+    #if BEACON_RX_ALWAYS_ON_MODE == 1
+        radio_enable_rx();
+    #else
         task_aperiodic(&radio_enable_rx, beacon.obdh.is_dead);
+    #endif // BEACON_RX_ALWAYS_ON_MODE
 
         task_aperiodic(&beacon_process_obdh_pkt, obdh_available()? true : false);
 
