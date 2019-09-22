@@ -25,7 +25,7 @@
  * 
  * \author Gabriel Mariano Marcelino <gabriel.mm8@gmail.com>
  * 
- * \version 0.4.15
+ * \version 0.5.1
  * 
  * \date 09/06/2017
  * 
@@ -214,7 +214,9 @@ void radio_enable_rx()
 #elif BEACON_RADIO == SI4063
         return;
 #elif BEACON_RADIO == RF4463F30
+        rf4463_fifo_reset();
         rf4463_enter_rx_mode();
+        rf4463_clear_interrupts();
 #elif BEACON_RADIO == UART_SIM
         return;
 #endif // BEACON_RADIO
