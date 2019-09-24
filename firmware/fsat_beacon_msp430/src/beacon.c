@@ -25,7 +25,7 @@
  * 
  * \author Gabriel Mariano Marcelino <gabriel.mm8@gmail.com>
  * 
- * \version 0.5.2
+ * \version 0.5.4
  * 
  * \date 08/06/2017
  * 
@@ -877,6 +877,12 @@ void beacon_antenna_deployment()
 
         beacon_save_params();
     }
+
+    debug_print_event_from_module(DEBUG_INFO, BEACON_MODULE_NAME, "Executing deployment ");
+    debug_print_dec(beacon.deployment_attempts+1);
+    debug_print_msg(" of ");
+    debug_print_dec(BEACON_ANTENNA_MAX_DEPLOYMENTS);
+    debug_print_msg("...\n\r");
 
     antenna_deploy();
 
