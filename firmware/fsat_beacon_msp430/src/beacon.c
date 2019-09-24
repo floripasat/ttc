@@ -25,7 +25,7 @@
  * 
  * \author Gabriel Mariano Marcelino <gabriel.mm8@gmail.com>
  * 
- * \version 0.5.4
+ * \version 0.5.5
  * 
  * \date 08/06/2017
  * 
@@ -841,7 +841,6 @@ void beacon_antenna_deployment()
         debug_print_dec(beacon.deployment_attempts);
         debug_print_msg(")! Skipping the deployment routine...\n\r");
 
-        beacon.hibernation = false;
         beacon.deployment_executed = true;
 
         return;
@@ -873,6 +872,7 @@ void beacon_antenna_deployment()
             }
         }
 
+        beacon.hibernation = false;
         beacon.deploy_hibernation_executed = true;
 
         beacon_save_params();
@@ -889,7 +889,6 @@ void beacon_antenna_deployment()
     beacon.deployment_attempts++;
 #endif // BEACON_EXECUTE_DEPLOYMENT_ROUTINE
 
-    beacon.hibernation = false;
     beacon.deployment_executed = true;
 }
 
