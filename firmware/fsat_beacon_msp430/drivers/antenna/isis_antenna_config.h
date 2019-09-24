@@ -25,7 +25,7 @@
  * 
  * \author Gabriel Mariano Marcelino <gabriel.mm8@gmail.com>
  * 
- * \version 0.4.0
+ * \version 0.5.6
  * 
  * \date 21/09/2017
  * 
@@ -44,7 +44,7 @@
 #define ISIS_ANTENNA_I2C_SLAVE_ADDRESS_uC_A     0x31
 #define ISIS_ANTENNA_I2C_SLAVE_ADDRESS_uC_B     0x32
 
-#define ISIS_ANTENNA_I2C_SLAVE_ADDRESS          ISIS_ANTENNA_I2C_SLAVE_ADDRESS_uC_A
+#define ISIS_ANTENNA_I2C_SLAVE_ADDRESS          ISIS_ANTENNA_I2C_SLAVE_ADDRESS_uC_B
 
 #if ISIS_ANTENNA_I2C_USCI == USCI_A
     #define ISIS_ANTENNA_I2C_CLOCK_SOURCE       USCI_A_I2C_CLOCKSOURCE_SMCLK
