@@ -25,7 +25,7 @@
  * 
  * \author Gabriel Mariano Marcelino <gabriel.mm8@gmail.com>
  * 
- * \version 0.5.5
+ * \version 0.5.7
  * 
  * \date 08/06/2017
  * 
@@ -849,6 +849,8 @@ void beacon_antenna_deployment()
     // If it is the first deployment attempt, wait 45 minutes before trying to deploy
     if (!beacon.deploy_hibernation_executed)
     {
+        status_led_enable();
+
         beacon.hibernation = true;
 
         debug_print_event_from_module(DEBUG_WARNING, BEACON_MODULE_NAME, "Deployment never executed! First deployment attempt in ");
@@ -876,6 +878,8 @@ void beacon_antenna_deployment()
         beacon.deploy_hibernation_executed = true;
 
         beacon_save_params();
+
+        status_led_disable();
     }
 
     debug_print_event_from_module(DEBUG_INFO, BEACON_MODULE_NAME, "Executing deployment ");
