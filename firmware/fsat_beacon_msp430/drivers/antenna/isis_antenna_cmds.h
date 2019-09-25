@@ -25,7 +25,7 @@
  * 
  * \author Gabriel Mariano Marcelino <gabriel.mm8@gmail.com>
  * 
- * \version 0.2.1
+ * \version 0.5.9
  * 
  * \date 20/09/2017
  * 
@@ -387,6 +387,17 @@
  */
 #define ISIS_ANTENNA_CMD_REPORT_DEPLOY_STATUS           0xC3
 
+/**
+ * \brief Report antenna 1 deployment system activation count.
+ *
+ * Description: Reports the number of times the deployment system for antenna 1
+ * has been activated since the last reset of the microcontroller.
+ *
+ * Parameters: None
+ *
+ * Response: [000 - 000] xxxxxxxx. The number of deployment system activations.
+ * This number has a minimum value of 0 and a maximum value of 255.
+ */
 #define ISIS_ANTENNA_CMD_REPORT_DEPLOY_COUNTER_ANT_1    0xB0
 
 /**

@@ -25,7 +25,7 @@
  * 
  * \author Gabriel Mariano Marcelino <gabriel.mm8@gmail.com>
  * 
- * \version 0.2.5
+ * \version 0.5.9
  * 
  * \date 08/07/2017
  * 
@@ -104,6 +104,7 @@ typedef struct
  */
 typedef struct
 {
+    uint16_t code;                                          /**< Status code. */
     isis_antenna_single_antenna_data_t antenna_1;           /**< Antenna 1 status. */
     isis_antenna_single_antenna_data_t antenna_2;           /**< Antenna 2 status. */
     isis_antenna_single_antenna_data_t antenna_3;           /**< Antenna 3 status. */
@@ -167,6 +168,16 @@ void isis_antenna_start_sequential_deploy(uint8_t sec);
  * \return None.
  */
 void isis_antenna_start_independent_deploy(uint8_t ant, uint8_t sec, uint8_t ovr);
+
+/**
+ * \brief Reads the deployment status code.
+ *
+ * Report the deployment status of the antenna system. This status contains
+ * information for each antenna as well as system level information.
+ *
+ * \return The deployment status code (2 bytes).
+ */
+uint16_t isis_antenna_read_deployment_status_code();
 
 /**
  * \brief Reads the deployment status.
