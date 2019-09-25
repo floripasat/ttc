@@ -25,7 +25,7 @@
  * 
  * \author Gabriel Mariano Marcelino <gabriel.mm8@gmail.com>
  * 
- * \version 0.5.9
+ * \version 0.5.10
  * 
  * \date 20/09/2017
  * 
@@ -207,7 +207,7 @@ uint16_t isis_antenna_read_deployment_status_code()
 
     isis_antenna_i2c_write_byte(ISIS_ANTENNA_CMD_REPORT_DEPLOY_STATUS);
 
-    isis_antenna_delay_ms(1000);
+    isis_antenna_delay_ms(100);
 
     uint8_t status_bytes[2];
 
