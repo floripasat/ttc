@@ -25,7 +25,7 @@
  * 
  * \author Gabriel Mariano Marcelino <gabriel.mm8@gmail.com>
  * 
- * \version 0.2.14
+ * \version 0.5.8
  * 
  * \date 15/06/2017
  * 
@@ -65,26 +65,30 @@ void antenna_deploy()
 
     debug_print_event_from_module(DEBUG_INFO, ANTENNA_MODULE_NAME, "The antenna is armed!\n\r");
 
+#if BEACON_ANTENNA_DEPLOY_MODE == ANTENNA_INDEPENDENT_DEPLOY_MODE
     // Executing independent deployment
     int ant;
     for(ant=ISIS_ANTENNA_ANT_1; ant<=ISIS_ANTENNA_ANT_4; ant++)
     {
         debug_print_event_from_module(DEBUG_INFO, ANTENNA_MODULE_NAME, "Deploying antenna ");
         debug_print_dec(ant);
-        debug_print_msg("...\n\r");
+        debug_print_msg(" independently...\n\r");
 
         isis_antenna_start_independent_deploy(ant, ANTENNA_OVERRIDE_DEPLOYMENT_BURN_TIME_MS, ISIS_ANTENNA_INDEPENDENT_DEPLOY_WITH_OVERRIDE);
         antenna_delay_s(ANTENNA_OVERRIDE_DEPLOYMENT_BURN_TIME_S);
     }
-
+#elif BEACON_ANTENNA_DEPLOY_MODE == ANTENNA_SEQUENTIAL_DEPLOY_MODE
     // Executing sequential deployment
     debug_print_event_from_module(DEBUG_INFO, ANTENNA_MODULE_NAME, "Deploying antennas sequentially...\n\r");
     isis_antenna_start_sequential_deploy(ANTENNA_SEQUENTIAL_DEPLOYMENT_BURN_TIME_MS);
     antenna_delay_s(4*ANTENNA_SEQUENTIAL_DEPLOYMENT_BURN_TIME_S);
+#endif // BEACON_ANTENNA_DEPLOY_MODE
 
     isis_antenna_disarm();
 #elif BEACON_ANTENNA == PASSIVE_ANTENNA
 #endif // BEACON_ANTENNA
+
+    debug_print_event_from_module(DEBUG_INFO, ANTENNA_MODULE_NAME, "Deployment procedure executed!\n\r");
 }
 
 uint8_t antenna_get_deployment_status()
