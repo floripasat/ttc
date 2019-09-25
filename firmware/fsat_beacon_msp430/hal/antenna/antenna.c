@@ -25,7 +25,7 @@
  * 
  * \author Gabriel Mariano Marcelino <gabriel.mm8@gmail.com>
  * 
- * \version 0.5.8
+ * \version 0.5.11
  * 
  * \date 15/06/2017
  * 
@@ -74,15 +74,18 @@ void antenna_deploy()
         debug_print_dec(ant);
         debug_print_msg(" independently...\n\r");
 
-        isis_antenna_start_independent_deploy(ant, ANTENNA_OVERRIDE_DEPLOYMENT_BURN_TIME_MS, ISIS_ANTENNA_INDEPENDENT_DEPLOY_WITH_OVERRIDE);
-        antenna_delay_s(ANTENNA_OVERRIDE_DEPLOYMENT_BURN_TIME_S);
+        isis_antenna_start_independent_deploy(ant, ANTENNA_INDEPENDENT_DEPLOYMENT_BURN_TIME_S, ISIS_ANTENNA_INDEPENDENT_DEPLOY_WITH_OVERRIDE);
+
+        antenna_delay_s(ANTENNA_INDEPENDENT_DEPLOYMENT_BURN_TIME_S+2);
     }
 #elif BEACON_ANTENNA_DEPLOY_MODE == ANTENNA_SEQUENTIAL_DEPLOY_MODE
     // Executing sequential deployment
     debug_print_event_from_module(DEBUG_INFO, ANTENNA_MODULE_NAME, "Deploying antennas sequentially...\n\r");
     isis_antenna_start_sequential_deploy(ANTENNA_SEQUENTIAL_DEPLOYMENT_BURN_TIME_MS);
-    antenna_delay_s(4*ANTENNA_SEQUENTIAL_DEPLOYMENT_BURN_TIME_S);
+    antenna_delay_s(ANTENNA_SEQUENTIAL_DEPLOYMENT_BURN_TIME_S);
 #endif // BEACON_ANTENNA_DEPLOY_MODE
+
+    antenna_delay_s(5);     // Wait before disarming the antenna
 
     isis_antenna_disarm();
 #elif BEACON_ANTENNA == PASSIVE_ANTENNA
