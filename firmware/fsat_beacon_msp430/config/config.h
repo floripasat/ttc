@@ -25,7 +25,7 @@
  * 
  * \author Gabriel Mariano Marcelino <gabriel.mm8@gmail.com>
  * 
- * \version 0.4.12
+ * \version 0.5.8
  * 
  * \date 08/06/2017
  * 
@@ -65,6 +65,8 @@
 #define BEACON_RESET_PARAMS_ON_BOOT         0
 #define BEACON_EXECUTE_DEPLOYMENT_ROUTINE   1
 
+#define BEACON_RX_ALWAYS_ON_MODE            0
+
 #define BEACON_TX_PERIOD_SEC_L1             10
 #define BEACON_TX_PERIOD_SEC_L2             10
 #define BEACON_TX_PERIOD_SEC_L3             20
@@ -78,6 +80,7 @@
 #define BEACON_ANTENNA_DEPLOY_SLEEP_MIN     55
 #define BEACON_ANTENNA_DEPLOY_SLEEP_SEC     (BEACON_ANTENNA_DEPLOY_SLEEP_MIN*60)
 #define BEACON_ANTENNA_DEPLOY_SLEEP_HOUR    0
+#define BEACON_ANTENNA_DEPLOY_MODE          ANTENNA_SEQUENTIAL_DEPLOY_MODE
 
 #define BEACON_RADIO_RESET_PERIOD_MIN       10
 #define BEACON_RADIO_RESET_PERIOD_SEC       (BEACON_RADIO_RESET_PERIOD_MIN*60*1UL)

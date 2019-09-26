@@ -25,7 +25,7 @@
  * 
  * \author Gabriel Mariano Marcelino <gabriel.mm8@gmail.com>
  * 
- * \version 0.4.0
+ * \version 0.5.10
  * 
  * \date 20/09/2017
  * 
@@ -45,6 +45,60 @@ void isis_antenna_init()
     debug_print_event_from_module(DEBUG_INFO, ISIS_ANTENNA_MODULE_NAME, "Initializing...\n\r");
 
     isis_antenna_i2c_init();
+
+    isis_antenna_status_t status = isis_antenna_read_deployment_status();
+
+    debug_print_event_from_module(DEBUG_INFO, ISIS_ANTENNA_MODULE_NAME, "Deployment status (code=");
+    debug_print_hex(status.code);
+    debug_print_msg("):\n\r");
+
+    // Antenna 1
+    debug_print_event_from_module(DEBUG_INFO, ISIS_ANTENNA_MODULE_NAME, "\t- Antenna 1: ");
+
+    if (status.antenna_1.status)
+    {
+        debug_print_msg("DEPLOYED\n\r");
+    }
+    else
+    {
+        debug_print_msg("NOT DEPLOYED\n\r");
+    }
+
+    // Antenna 2
+    debug_print_event_from_module(DEBUG_INFO, ISIS_ANTENNA_MODULE_NAME, "\t- Antenna 2: ");
+
+    if (status.antenna_2.status)
+    {
+        debug_print_msg("DEPLOYED\n\r");
+    }
+    else
+    {
+        debug_print_msg("NOT DEPLOYED\n\r");
+    }
+
+    // Antenna 3
+    debug_print_event_from_module(DEBUG_INFO, ISIS_ANTENNA_MODULE_NAME, "\t- Antenna 3: ");
+
+    if (status.antenna_3.status)
+    {
+        debug_print_msg("DEPLOYED\n\r");
+    }
+    else
+    {
+        debug_print_msg("NOT DEPLOYED\n\r");
+    }
+
+    // Antenna 4
+    debug_print_event_from_module(DEBUG_INFO, ISIS_ANTENNA_MODULE_NAME, "\t- Antenna 4: ");
+
+    if (status.antenna_4.status)
+    {
+        debug_print_msg("DEPLOYED\n\r");
+    }
+    else
+    {
+        debug_print_msg("NOT DEPLOYED\n\r");
+    }
 }
 
 void isis_antenna_arm()
@@ -147,13 +201,13 @@ void isis_antenna_start_independent_deploy(uint8_t ant, uint8_t sec, uint8_t ovr
     isis_antenna_delay_ms(100);
 }
 
-isis_antenna_status_t isis_antenna_read_deployment_status()
+uint16_t isis_antenna_read_deployment_status_code()
 {
     uint16_t status_code = ISIS_ANTENNA_STATUS_MASK;    // Initial state
 
     isis_antenna_i2c_write_byte(ISIS_ANTENNA_CMD_REPORT_DEPLOY_STATUS);
 
-    isis_antenna_delay_ms(1000);
+    isis_antenna_delay_ms(100);
 
     uint8_t status_bytes[2];
 
@@ -161,8 +215,16 @@ isis_antenna_status_t isis_antenna_read_deployment_status()
 
     status_code = (uint16_t)(status_bytes[1] << 8) | status_bytes[0];
 
+    return status_code;
+}
+
+isis_antenna_status_t isis_antenna_read_deployment_status()
+{
+    uint16_t status_code = isis_antenna_read_deployment_status_code();
+
     isis_antenna_status_t status;
 
+    status.code                 = status_code;
     status.antenna_1.status     = (status_code >> 15) & 0x01;
     status.antenna_1.timeout    = (status_code >> 14) & 0x01;
     status.antenna_1.burning    = (status_code >> 13) & 0x01;

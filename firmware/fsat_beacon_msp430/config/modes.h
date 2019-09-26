@@ -25,7 +25,7 @@
  * 
  * \author Gabriel Mariano Marcelino <gabriel.mm8@gmail.com>
  * 
- * \version 0.1.6
+ * \version 0.5.8
  * 
  * \date 08/06/2017
  * 
@@ -37,13 +37,16 @@
 #ifndef MODES_H_
 #define MODES_H_
 
-#define PAYLOAD_SAT_ID              1
-#define PAYLOAD_OBDH_DATA           2
-#define PAYLOAD_EPS_DATA            4
+#define PAYLOAD_SAT_ID                      1
+#define PAYLOAD_OBDH_DATA                   2
+#define PAYLOAD_EPS_DATA                    4
 
-#define PACKET_NGHAM                1
-#define PACKET_AX25                 2
-#define PACKET_RAW                  4
+#define PACKET_NGHAM                        1
+#define PACKET_AX25                         2
+#define PACKET_RAW                          4
+
+#define ANTENNA_INDEPENDENT_DEPLOY_MODE     1
+#define ANTENNA_SEQUENTIAL_DEPLOY_MODE      2
 
 #endif // MODES_H_
 

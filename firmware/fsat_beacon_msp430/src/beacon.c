@@ -25,7 +25,7 @@
  * 
  * \author Gabriel Mariano Marcelino <gabriel.mm8@gmail.com>
  * 
- * \version 0.4.12
+ * \version 0.5.7
  * 
  * \date 08/06/2017
  * 
@@ -124,13 +124,17 @@ void beacon_run()
         task_scheduled_no_preemption(&beacon_send_ax25_pkt, beacon.last_ngham_pkt_transmission + 1, time_get_seconds(), 0, ((beacon.last_ngham_pkt_transmission + 1) == time_get_seconds())? true : false);
     #endif // PACKET_AX25
 
+    #if BEACON_RX_ALWAYS_ON_MODE == 1
+        radio_enable_rx();
+    #else
+        task_aperiodic(&radio_enable_rx, beacon.obdh.is_dead);
+    #endif // BEACON_RX_ALWAYS_ON_MODE
+
         task_aperiodic(&beacon_process_obdh_pkt, obdh_available()? true : false);
 
         task_aperiodic(&beacon_process_eps_pkt, eps_available()? true : false);
 
         task_aperiodic(&beacon_process_radio_pkt, radio_available() && beacon.obdh.is_dead);
-
-        task_aperiodic(&radio_enable_rx, beacon.obdh.is_dead);
 
         task_scheduled(&beacon_leave_hibernation, beacon.hibernation_mode_initial_time + beacon.hibernation_mode_duration, time_get_seconds(), 5, beacon.hibernation? true : false);
 
@@ -628,6 +632,10 @@ void beacon_process_radio_pkt()
             }
         }
     }
+    else
+    {
+        return;
+    }
 
     // Process telecommand
     switch(pkt_pl[0])
@@ -778,7 +786,47 @@ void beacon_process_radio_pkt()
 
             break;
         default:
-            debug_print_event_from_module(DEBUG_ERROR, BEACON_MODULE_NAME, "Invalid telecommand received!\n\r");
+            debug_print_event_from_module(DEBUG_ERROR, BEACON_MODULE_NAME, "Invalid telecommand received! (ID=");
+            debug_print_hex(pkt_pl[0]);
+            debug_print_msg(")\n\r");
+
+            // RR packet ID
+            pkt_pl[0] = 0x0F;
+
+            // RR packet destination
+            for(i=0; i<7; i++)
+            {
+                pkt_pl[i+1+7] = pkt_pl[i+1];
+            }
+
+            // RR packet source
+            j = 0;
+            for(i=0; i<(7-(sizeof(SATELLITE_CALLSIGN)-1)); i++)
+            {
+                pkt_pl[i+1] = '0';  // Fill with 0s when the callsign length is less than 7 characters
+                j++;
+            }
+
+            for(i=0; i<sizeof(SATELLITE_CALLSIGN)-1; i++)
+            {
+                pkt_pl[i+1+j] = SATELLITE_CALLSIGN[i];
+            }
+
+            // RR link
+            uint8_t rr_link[] = "https://youtu.be/dQw4w9WgXcQ";
+
+            for(i=0; i<sizeof(rr_link)-1; i++)
+            {
+                pkt_pl[i+1+7+7] = rr_link[i];
+            }
+
+            ngham_tx_pkt_gen(&ngham_packet, pkt_pl, 1+7+7+sizeof(rr_link)-1);
+
+            ngham_encode(&ngham_packet, pkt, pkt_len);
+
+            beacon.transmitting = true;
+            radio_write(pkt+8, pkt_len-8);  // 8: Removing preamble and sync word from the NGHam packet
+            beacon.transmitting = false;
     }
 }
 
@@ -793,7 +841,6 @@ void beacon_antenna_deployment()
         debug_print_dec(beacon.deployment_attempts);
         debug_print_msg(")! Skipping the deployment routine...\n\r");
 
-        beacon.hibernation = false;
         beacon.deployment_executed = true;
 
         return;
@@ -802,6 +849,8 @@ void beacon_antenna_deployment()
     // If it is the first deployment attempt, wait 45 minutes before trying to deploy
     if (!beacon.deploy_hibernation_executed)
     {
+        status_led_enable();
+
         beacon.hibernation = true;
 
         debug_print_event_from_module(DEBUG_WARNING, BEACON_MODULE_NAME, "Deployment never executed! First deployment attempt in ");
@@ -825,17 +874,25 @@ void beacon_antenna_deployment()
             }
         }
 
+        beacon.hibernation = false;
         beacon.deploy_hibernation_executed = true;
 
         beacon_save_params();
+
+        status_led_disable();
     }
+
+    debug_print_event_from_module(DEBUG_INFO, BEACON_MODULE_NAME, "Executing deployment ");
+    debug_print_dec(beacon.deployment_attempts+1);
+    debug_print_msg(" of ");
+    debug_print_dec(BEACON_ANTENNA_MAX_DEPLOYMENTS);
+    debug_print_msg("...\n\r");
 
     antenna_deploy();
 
     beacon.deployment_attempts++;
 #endif // BEACON_EXECUTE_DEPLOYMENT_ROUTINE
 
-    beacon.hibernation = false;
     beacon.deployment_executed = true;
 }
 

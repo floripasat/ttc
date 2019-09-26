@@ -198,14 +198,18 @@ void isis_antenna_i2c_read_data(uint8_t *data, uint8_t len)
     USCI_B_I2C_setMode(ISIS_ANTENNA_I2C_BASE_ADDRESS, USCI_B_I2C_RECEIVE_MODE);
     
     USCI_B_I2C_masterReceiveMultiByteStart(ISIS_ANTENNA_I2C_BASE_ADDRESS);
-    
+
+    uint8_t buffer;
+
     uint8_t i = 0;
     for(i=0; i<len-1; i++)
     {
         data[i] = USCI_B_I2C_masterReceiveMultiByteNext(ISIS_ANTENNA_I2C_BASE_ADDRESS);
     }
-    
-    data[len-1] = USCI_B_I2C_masterReceiveMultiByteFinish(ISIS_ANTENNA_I2C_BASE_ADDRESS);
+
+    USCI_B_I2C_masterReceiveMultiByteFinishWithTimeout(ISIS_ANTENNA_I2C_BASE_ADDRESS, &buffer, ISIS_ANTENNA_I2C_TIMEOUT);
+
+    data[len-1] = buffer;
 #endif // ISIS_ANTENNA_I2C_USCI
 }
 
