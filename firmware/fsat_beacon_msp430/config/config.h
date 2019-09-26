@@ -25,7 +25,7 @@
  * 
  * \author Gabriel Mariano Marcelino <gabriel.mm8@gmail.com>
  * 
- * \version 0.5.8
+ * \version 0.5.12
  * 
  * \date 08/06/2017
  * 
@@ -65,6 +65,7 @@
 #define BEACON_RESET_PARAMS_ON_BOOT         0
 #define BEACON_EXECUTE_DEPLOYMENT_ROUTINE   1
 
+#define BEACON_TX_ENABLED                   1
 #define BEACON_RX_ALWAYS_ON_MODE            0
 
 #define BEACON_TX_PERIOD_SEC_L1             10

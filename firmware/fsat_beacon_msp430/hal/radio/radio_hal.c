@@ -25,7 +25,7 @@
  * 
  * \author Gabriel Mariano Marcelino <gabriel.mm8@gmail.com>
  * 
- * \version 0.5.3
+ * \version 0.5.12
  * 
  * \date 09/06/2017
  * 
@@ -117,34 +117,38 @@ void radio_write(uint8_t *data, uint16_t len)
     debug_print_dec(len);
     debug_print_msg(" bytes to the buffer...\n\r");
 
-#if BEACON_RADIO == CC1175 || BEACON_RADIO == CC1125
-    #if BEACON_RF_SWITCH != HW_NONE
-        rf_switch_enable_beacon();
-    #endif // BEACON_RF_SWITCH
-        
-    #if BEACON_PA != HW_NONE
-        pa_enable();
-    #endif // BEACON_PA
-    
-    //cc11xx_write();
-    
-    #if BEACON_PA != HW_NONE
-        pa_disable();
-    #endif // BEACON_PA
-        
-    #if BEACON_RF_SWITCH != HW_NONE
-        rf_switch_disable_beacon();
-    #endif // BEACON_RF_SWITCH
-    
-#elif BEACON_RADIO == SI4063
-    
-#elif BEACON_RADIO == RF4463F30
-    rf4463_tx_long_packet(data, len);
-    rf4463_enter_standby_mode();
-    radio_mode = RADIO_MODE_STANDBY;
-#elif BEACON_RADIO == UART_SIM
-    uart_radio_sim_send_data(data, len);
-#endif // BEACON_RADIO
+#if BEACON_TX_ENABLED == 1
+    #if BEACON_RADIO == CC1175 || BEACON_RADIO == CC1125
+        #if BEACON_RF_SWITCH != HW_NONE
+            rf_switch_enable_beacon();
+        #endif // BEACON_RF_SWITCH
+
+        #if BEACON_PA != HW_NONE
+            pa_enable();
+        #endif // BEACON_PA
+
+        //cc11xx_write();
+
+        #if BEACON_PA != HW_NONE
+            pa_disable();
+        #endif // BEACON_PA
+
+        #if BEACON_RF_SWITCH != HW_NONE
+            rf_switch_disable_beacon();
+        #endif // BEACON_RF_SWITCH
+
+    #elif BEACON_RADIO == SI4063
+
+    #elif BEACON_RADIO == RF4463F30
+        rf4463_tx_long_packet(data, len);
+        rf4463_enter_standby_mode();
+        radio_mode = RADIO_MODE_STANDBY;
+    #elif BEACON_RADIO == UART_SIM
+        uart_radio_sim_send_data(data, len);
+    #endif // BEACON_RADIO
+#else
+    debug_print_event_from_module(DEBUG_WARNING, RADIO_HAL_MODULE_NAME, "TRANSMISSIONS DISABLED!\n\r");
+#endif // BEACON_TX_ENABLED
 }
 
 void radio_read(uint8_t *data, uint8_t len)
