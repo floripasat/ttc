@@ -25,7 +25,7 @@
  * 
  * \author Gabriel Mariano Marcelino <gabriel.mm8@gmail.com>
  * 
- * \version 0.5.11
+ * \version 0.5.15
  * 
  * \date 23/02/2019
  * 
@@ -45,6 +45,7 @@
 
 #define ANTENNA_ARMING_TIMEOUT_S                    5
 #define ANTENNA_ARMING_TIMEOUT_MS                   (ANTENNA_ARMING_TIMEOUT_S*1000)
+#define ANTENNA_ARMING_ATTEMPTS                     5
 
 #define ANTENNA_INDEPENDENT_DEPLOYMENT_BURN_TIME_S  6
 #define ANTENNA_INDEPENDENT_DEPLOYMENT_BURN_TIME_MS (ANTENNA_INDEPENDENT_DEPLOYMENT_BURN_TIME_S*1000)

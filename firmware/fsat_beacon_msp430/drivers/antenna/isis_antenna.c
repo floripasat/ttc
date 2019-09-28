@@ -25,7 +25,7 @@
  * 
  * \author Gabriel Mariano Marcelino <gabriel.mm8@gmail.com>
  * 
- * \version 0.5.10
+ * \version 0.5.15
  * 
  * \date 20/09/2017
  * 
@@ -101,7 +101,7 @@ void isis_antenna_init()
     }
 }
 
-void isis_antenna_arm()
+bool isis_antenna_arm()
 {
     debug_print_event_from_module(DEBUG_INFO, ISIS_ANTENNA_MODULE_NAME, "Arming...\n\r");
 
@@ -110,15 +110,41 @@ void isis_antenna_arm()
     debug_print_event_from_module(DEBUG_INFO, ISIS_ANTENNA_MODULE_NAME, "Arming command transmitted!\n\r");
 
     isis_antenna_delay_ms(100);
+
+    if (isis_antenna_get_arming_status())
+    {
+        debug_print_event_from_module(DEBUG_INFO, ISIS_ANTENNA_MODULE_NAME, "The antenna is ARMED!\n\r");
+
+        return true;
+    }
+    else
+    {
+        debug_print_event_from_module(DEBUG_ERROR, ISIS_ANTENNA_MODULE_NAME, "The antenna is NOT ARMED!\n\r");
+
+        return false;
+    }
 }
 
-void isis_antenna_disarm()
+bool isis_antenna_disarm()
 {
     debug_print_event_from_module(DEBUG_INFO, ISIS_ANTENNA_MODULE_NAME, "Disarming...\n\r");
 
     isis_antenna_i2c_write_byte(ISIS_ANTENNA_CMD_DISARM);
 
     isis_antenna_delay_ms(100);
+
+    if (!isis_antenna_get_arming_status())
+    {
+        debug_print_event_from_module(DEBUG_INFO, ISIS_ANTENNA_MODULE_NAME, "The antenna is DISARMED!\n\r");
+
+        return true;
+    }
+    else
+    {
+        debug_print_event_from_module(DEBUG_ERROR, ISIS_ANTENNA_MODULE_NAME, "The antenna is NOT DISARMED!\n\r");
+
+        return false;
+    }
 }
 
 void isis_antenna_start_sequential_deploy(uint8_t sec)
@@ -304,9 +330,9 @@ uint8_t isis_antenna_get_burning(uint8_t ant)
     }
 }
 
-uint8_t isis_antenna_get_arming_status()
+bool isis_antenna_get_arming_status()
 {
-    return isis_antenna_read_deployment_status().armed;
+    return (bool)isis_antenna_read_deployment_status().armed;
 }
 
 //! \} End of isis_antenna group

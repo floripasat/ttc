@@ -25,7 +25,7 @@
  * 
  * \author Gabriel Mariano Marcelino <gabriel.mm8@gmail.com>
  * 
- * \version 0.5.9
+ * \version 0.5.15
  * 
  * \date 08/07/2017
  * 
@@ -38,6 +38,7 @@
 #define ISIS_ANTENNA_H_
 
 #include <stdint.h>
+#include <stdbool.h>
 
 // Status mask
 #define ISIS_ANTENNA_STATUS_MASK    0x8888                  /**< Status mask (all antenna not deployed and disarmed). */
@@ -126,14 +127,14 @@ void isis_antenna_init();
  *
  * \return None.
  */
-void isis_antenna_arm();
+bool isis_antenna_arm();
 
 /**
  * \brief Disarm the antenna module.
  *
  * \return None.
  */
-void isis_antenna_disarm();
+bool isis_antenna_disarm();
 
 /**
  * \brief Executes a sequential deployment.
@@ -254,9 +255,9 @@ uint8_t isis_antenna_get_burning(uint8_t ant);
 /**
  * \brief Gets the arming status of the antennas.
  *
- * \return 1 if armed, 0 it not armed.
+ * \return TRUE/FALSE if the antenna is armed or not.
  */
-uint8_t isis_antenna_get_arming_status();
+bool isis_antenna_get_arming_status();
 
 /**
  * \brief I2C interface initialization.
