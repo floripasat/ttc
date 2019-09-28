@@ -25,7 +25,7 @@
  * 
  * \author Gabriel Mariano Marcelino <gabriel.mm8@gmail.com>
  * 
- * \version 0.4.0
+ * \version 0.5.14
  * 
  * \date 21/09/2017
  * 
@@ -195,21 +195,34 @@ void isis_antenna_i2c_read_data(uint8_t *data, uint8_t len)
     
     data[len-1] = USCI_A_I2C_masterReceiveMultiByteFinish(ISIS_ANTENNA_I2C_BASE_ADDRESS);
 #elif ISIS_ANTENNA_I2C_USCI == USCI_B
-    USCI_B_I2C_setMode(ISIS_ANTENNA_I2C_BASE_ADDRESS, USCI_B_I2C_RECEIVE_MODE);
-    
-    USCI_B_I2C_masterReceiveMultiByteStart(ISIS_ANTENNA_I2C_BASE_ADDRESS);
+    // Set mode
+    HWREG8(ISIS_ANTENNA_I2C_BASE_ADDRESS + OFS_UCBxCTL1) &= ~UCTR;
+    HWREG8(ISIS_ANTENNA_I2C_BASE_ADDRESS + OFS_UCBxCTL1) |= USCI_B_I2C_RECEIVE_MODE;
 
-    uint8_t buffer;
+    uint16_t timeout = 0;
+    uint8_t start_stop_flag = 1;
 
-    uint8_t i = 0;
-    for(i=0; i<len-1; i++)
+    if (!(start_stop_flag & 0x0002))  // 0x02 = No start
     {
-        data[i] = USCI_B_I2C_masterReceiveMultiByteNext(ISIS_ANTENNA_I2C_BASE_ADDRESS);
+        HWREG8(ISIS_ANTENNA_I2C_BASE_ADDRESS + OFS_UCBxCTL1) |= UCTXSTT;                                                    // starts the transmission
+        while((HWREG8(ISIS_ANTENNA_I2C_BASE_ADDRESS + OFS_UCBxCTL1) & UCTXSTT) && timeout++ < ISIS_ANTENNA_I2C_TIMEOUT);    // wait Slave Address ACK
     }
 
-    USCI_B_I2C_masterReceiveMultiByteFinishWithTimeout(ISIS_ANTENNA_I2C_BASE_ADDRESS, &buffer, ISIS_ANTENNA_I2C_TIMEOUT);
+    while(len-- > 1)
+    {
+        // wait to receive data and shift data on buffer
+        while((!(HWREG8(ISIS_ANTENNA_I2C_BASE_ADDRESS + OFS_UCBxIFG) & UCRXIFG)) && timeout++ < ISIS_ANTENNA_I2C_TIMEOUT);
+        *(data++) = HWREG8(ISIS_ANTENNA_I2C_BASE_ADDRESS + OFS_UCBxRXBUF);  // receive a byte and increment the pointer
+    }
 
-    data[len-1] = buffer;
+    if(!(start_stop_flag & 0x0004)) // 0x0004 = No stop
+    {
+        HWREG8(ISIS_ANTENNA_I2C_BASE_ADDRESS + OFS_UCBxCTL1) |= UCTXSTP;
+    }
+
+    // wait to receive data and shift data on buffer
+    while((!(HWREG8(ISIS_ANTENNA_I2C_BASE_ADDRESS + OFS_UCBxIFG) & UCRXIFG)) && timeout++ < ISIS_ANTENNA_I2C_TIMEOUT);
+    *(data++) = HWREG8(ISIS_ANTENNA_I2C_BASE_ADDRESS + OFS_UCBxRXBUF);      // receive a byte and increment the pointer
 #endif // ISIS_ANTENNA_I2C_USCI
 }
 
