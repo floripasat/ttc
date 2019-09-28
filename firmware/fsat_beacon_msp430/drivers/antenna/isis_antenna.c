@@ -25,7 +25,7 @@
  * 
  * \author Gabriel Mariano Marcelino <gabriel.mm8@gmail.com>
  * 
- * \version 0.5.10
+ * \version 0.5.16
  * 
  * \date 20/09/2017
  * 
@@ -47,6 +47,10 @@ void isis_antenna_init()
     isis_antenna_i2c_init();
 
     isis_antenna_status_t status = isis_antenna_read_deployment_status();
+
+    debug_print_event_from_module(DEBUG_INFO, ISIS_ANTENNA_MODULE_NAME, "Temperature raw data = ");
+    debug_print_dec(isis_antenna_get_temperature());
+    debug_print_msg("\n\r");
 
     debug_print_event_from_module(DEBUG_INFO, ISIS_ANTENNA_MODULE_NAME, "Deployment status (code=");
     debug_print_hex(status.code);
@@ -101,7 +105,7 @@ void isis_antenna_init()
     }
 }
 
-void isis_antenna_arm()
+bool isis_antenna_arm()
 {
     debug_print_event_from_module(DEBUG_INFO, ISIS_ANTENNA_MODULE_NAME, "Arming...\n\r");
 
@@ -110,15 +114,41 @@ void isis_antenna_arm()
     debug_print_event_from_module(DEBUG_INFO, ISIS_ANTENNA_MODULE_NAME, "Arming command transmitted!\n\r");
 
     isis_antenna_delay_ms(100);
+
+    if (isis_antenna_get_arming_status())
+    {
+        debug_print_event_from_module(DEBUG_INFO, ISIS_ANTENNA_MODULE_NAME, "The antenna is ARMED!\n\r");
+
+        return true;
+    }
+    else
+    {
+        debug_print_event_from_module(DEBUG_ERROR, ISIS_ANTENNA_MODULE_NAME, "The antenna is NOT ARMED!\n\r");
+
+        return false;
+    }
 }
 
-void isis_antenna_disarm()
+bool isis_antenna_disarm()
 {
     debug_print_event_from_module(DEBUG_INFO, ISIS_ANTENNA_MODULE_NAME, "Disarming...\n\r");
 
     isis_antenna_i2c_write_byte(ISIS_ANTENNA_CMD_DISARM);
 
     isis_antenna_delay_ms(100);
+
+    if (!isis_antenna_get_arming_status())
+    {
+        debug_print_event_from_module(DEBUG_INFO, ISIS_ANTENNA_MODULE_NAME, "The antenna is DISARMED!\n\r");
+
+        return true;
+    }
+    else
+    {
+        debug_print_event_from_module(DEBUG_ERROR, ISIS_ANTENNA_MODULE_NAME, "The antenna is NOT DISARMED!\n\r");
+
+        return false;
+    }
 }
 
 void isis_antenna_start_sequential_deploy(uint8_t sec)
@@ -304,9 +334,28 @@ uint8_t isis_antenna_get_burning(uint8_t ant)
     }
 }
 
-uint8_t isis_antenna_get_arming_status()
+bool isis_antenna_get_arming_status()
 {
-    return isis_antenna_read_deployment_status().armed;
+    return (bool)isis_antenna_read_deployment_status().armed;
+}
+
+uint16_t isis_antenna_get_temperature()
+{
+    isis_antenna_i2c_write_byte(ISIS_ANTENNA_CMD_MEASURE_TEMPERATURE);
+
+    isis_antenna_delay_ms(100);
+
+    uint8_t temp_bytes[2];
+
+    isis_antenna_i2c_read_data(temp_bytes, 2);
+
+    uint16_t raw_data = (uint16_t)(temp_bytes[1] << 8) | temp_bytes[0];
+
+//    uint16_t vout = ISIS_ANTENNA_REF_VOLTAGE/1023.0 * raw_data;
+
+//    int temp = (vout * (ISIS_ANTENNA_MAX_TEMP - ISIS_ANTENNA_MIN_TEMP))/(ISIS_ANTENNA_TEMP_MAX_VOUT - ISIS_ANTENNA_TEMP_MIN_VOUT);
+
+    return raw_data;
 }
 
 //! \} End of isis_antenna group

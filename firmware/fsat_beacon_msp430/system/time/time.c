@@ -25,7 +25,7 @@
  * 
  * \author Gabriel Mariano Marcelino <gabriel.mm8@gmail.com>
  * 
- * \version 0.2.9
+ * \version 0.5.12
  * 
  * \date 10/06/2017
  * 
@@ -115,7 +115,7 @@ static void time_save()
 
 static void time_load()
 {
-    debug_print_event_from_module(DEBUG_INFO, TIME_MODULE_NAME, "Loading the last system time  value from the flash memory...\n\r");
+    debug_print_event_from_module(DEBUG_INFO, TIME_MODULE_NAME, "Loading the last system time value from the flash memory...\n\r");
 
     uint32_t time_count = flash_read_long(TIME_VALUE_ADDRESS);
     uint8_t checksum = flash_read_single(TIME_CHECKSUM_ADDRESS);

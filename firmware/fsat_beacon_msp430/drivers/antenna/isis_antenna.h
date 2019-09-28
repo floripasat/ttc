@@ -25,7 +25,7 @@
  * 
  * \author Gabriel Mariano Marcelino <gabriel.mm8@gmail.com>
  * 
- * \version 0.5.9
+ * \version 0.5.16
  * 
  * \date 08/07/2017
  * 
@@ -38,9 +38,18 @@
 #define ISIS_ANTENNA_H_
 
 #include <stdint.h>
+#include <stdbool.h>
 
 // Status mask
 #define ISIS_ANTENNA_STATUS_MASK    0x8888                  /**< Status mask (all antenna not deployed and disarmed). */
+
+#define ISIS_ANTENNA_REF_VOLTAGE    3300                    /**< Reference voltage in millivolts. */
+
+#define ISIS_ANTENNA_MIN_TEMP        -50                    /**< Minimum read temperature. */
+#define ISIS_ANTENNA_MAX_TEMP       132                     /**< Maximum read temperature. */
+
+#define ISIS_ANTENNA_TEMP_MIN_VOUT  630                     /**< Minimum output voltage of the temperature sensor. */
+#define ISIS_ANTENNA_TEMP_MAX_VOUT  2616                    /**< Maximum output voltage of the temperature sensor. */
 
 /**
  * \brief Antennas number.
@@ -126,14 +135,14 @@ void isis_antenna_init();
  *
  * \return None.
  */
-void isis_antenna_arm();
+bool isis_antenna_arm();
 
 /**
  * \brief Disarm the antenna module.
  *
  * \return None.
  */
-void isis_antenna_disarm();
+bool isis_antenna_disarm();
 
 /**
  * \brief Executes a sequential deployment.
@@ -254,9 +263,16 @@ uint8_t isis_antenna_get_burning(uint8_t ant);
 /**
  * \brief Gets the arming status of the antennas.
  *
- * \return 1 if armed, 0 it not armed.
+ * \return TRUE/FALSE if the antenna is armed or not.
  */
-uint8_t isis_antenna_get_arming_status();
+bool isis_antenna_get_arming_status();
+
+/**
+ * \brief Gets the temperature of the antenna module.
+ *
+ * \return The raw temperature value of the antenna system.
+ */
+uint16_t isis_antenna_get_temperature();
 
 /**
  * \brief I2C interface initialization.

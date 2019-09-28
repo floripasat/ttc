@@ -25,7 +25,7 @@
  * 
  * \author Gabriel Mariano Marcelino <gabriel.mm8@gmail.com>
  * 
- * \version 0.5.11
+ * \version 0.5.15
  * 
  * \date 15/06/2017
  * 
@@ -60,10 +60,31 @@ void antenna_deploy()
 
 #if BEACON_ANTENNA == ISIS_ANTENNA
     // Arming the antenna module
-    debug_print_event_from_module(DEBUG_INFO, ANTENNA_MODULE_NAME, "Arming the antenna module...\n\r");
-    isis_antenna_arm();
+    uint8_t i;
+    for(i=0; i<ANTENNA_ARMING_ATTEMPTS; i++)
+    {
+        debug_print_event_from_module(DEBUG_INFO, ANTENNA_MODULE_NAME, "Trying to arm the antenna module (attempt ");
+        debug_print_dec(i+1);
+        debug_print_msg(" of ");
+        debug_print_dec(ANTENNA_ARMING_ATTEMPTS);
+        debug_print_msg(")...\n\r");
 
-    debug_print_event_from_module(DEBUG_INFO, ANTENNA_MODULE_NAME, "The antenna is armed!\n\r");
+        if (isis_antenna_arm())
+        {
+            debug_print_event_from_module(DEBUG_INFO, ANTENNA_MODULE_NAME, "The antenna module is armed!\n\r");
+        }
+        else
+        {
+            debug_print_event_from_module(DEBUG_ERROR, ANTENNA_MODULE_NAME, "Error arming the antenna module!\n\r");
+        }
+
+        antenna_delay_s(1);
+    }
+
+    if (i == ANTENNA_ARMING_ATTEMPTS)
+    {
+        debug_print_event_from_module(DEBUG_ERROR, ANTENNA_MODULE_NAME, "It was not possible to arm the antenna module! Trying to deploy without arm...\n\r");
+    }
 
 #if BEACON_ANTENNA_DEPLOY_MODE == ANTENNA_INDEPENDENT_DEPLOY_MODE
     // Executing independent deployment
@@ -87,7 +108,14 @@ void antenna_deploy()
 
     antenna_delay_s(5);     // Wait before disarming the antenna
 
-    isis_antenna_disarm();
+    if (isis_antenna_disarm())
+    {
+        debug_print_event_from_module(DEBUG_INFO, ANTENNA_MODULE_NAME, "The antenna module is disarmed!\n\r");
+    }
+    else
+    {
+        debug_print_event_from_module(DEBUG_ERROR, ANTENNA_MODULE_NAME, "Error disarming the antenna module!\n\r");
+    }
 #elif BEACON_ANTENNA == PASSIVE_ANTENNA
 #endif // BEACON_ANTENNA
 
