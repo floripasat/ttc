@@ -25,7 +25,7 @@
  * 
  * \author Gabriel Mariano Marcelino <gabriel.mm8@gmail.com>
  * 
- * \version 0.5.16
+ * \version 0.5.17
  * 
  * \date 20/09/2017
  * 
@@ -48,8 +48,9 @@ void isis_antenna_init()
 
     isis_antenna_status_t status = isis_antenna_read_deployment_status();
 
+    uint16_t temp_val = isis_antenna_get_temperature();
     debug_print_event_from_module(DEBUG_INFO, ISIS_ANTENNA_MODULE_NAME, "Temperature raw data = ");
-    debug_print_dec(isis_antenna_get_temperature());
+    debug_print_dec(temp_val);
     debug_print_msg("\n\r");
 
     debug_print_event_from_module(DEBUG_INFO, ISIS_ANTENNA_MODULE_NAME, "Deployment status (code=");
@@ -59,7 +60,7 @@ void isis_antenna_init()
     // Antenna 1
     debug_print_event_from_module(DEBUG_INFO, ISIS_ANTENNA_MODULE_NAME, "\t- Antenna 1: ");
 
-    if (status.antenna_1.status)
+    if (!status.antenna_1.status)
     {
         debug_print_msg("DEPLOYED\n\r");
     }
@@ -71,7 +72,7 @@ void isis_antenna_init()
     // Antenna 2
     debug_print_event_from_module(DEBUG_INFO, ISIS_ANTENNA_MODULE_NAME, "\t- Antenna 2: ");
 
-    if (status.antenna_2.status)
+    if (!status.antenna_2.status)
     {
         debug_print_msg("DEPLOYED\n\r");
     }
@@ -83,7 +84,7 @@ void isis_antenna_init()
     // Antenna 3
     debug_print_event_from_module(DEBUG_INFO, ISIS_ANTENNA_MODULE_NAME, "\t- Antenna 3: ");
 
-    if (status.antenna_3.status)
+    if (!status.antenna_3.status)
     {
         debug_print_msg("DEPLOYED\n\r");
     }
@@ -95,7 +96,7 @@ void isis_antenna_init()
     // Antenna 4
     debug_print_event_from_module(DEBUG_INFO, ISIS_ANTENNA_MODULE_NAME, "\t- Antenna 4: ");
 
-    if (status.antenna_4.status)
+    if (!status.antenna_4.status)
     {
         debug_print_msg("DEPLOYED\n\r");
     }
