@@ -25,7 +25,7 @@
  * 
  * \author Gabriel Mariano Marcelino <gabriel.mm8@gmail.com>
  * 
- * \version 0.5.15
+ * \version 0.5.19
  * 
  * \date 15/06/2017
  * 
@@ -72,6 +72,8 @@ void antenna_deploy()
         if (isis_antenna_arm())
         {
             debug_print_event_from_module(DEBUG_INFO, ANTENNA_MODULE_NAME, "The antenna module is armed!\n\r");
+
+            break;
         }
         else
         {
