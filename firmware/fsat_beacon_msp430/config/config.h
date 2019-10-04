@@ -25,7 +25,7 @@
  * 
  * \author Gabriel Mariano Marcelino <gabriel.mm8@gmail.com>
  * 
- * \version 0.5.13
+ * \version 1.0.1
  * 
  * \date 08/06/2017
  * 
@@ -67,6 +67,8 @@
 
 #define BEACON_TX_ENABLED                   1
 #define BEACON_RX_ALWAYS_ON_MODE            0
+
+#define BEACON_OBDH_INTERFACE_ENABLED       1
 
 #define BEACON_TX_PERIOD_SEC_L1             10
 #define BEACON_TX_PERIOD_SEC_L2             10

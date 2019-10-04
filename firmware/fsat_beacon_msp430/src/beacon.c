@@ -25,7 +25,7 @@
  * 
  * \author Gabriel Mariano Marcelino <gabriel.mm8@gmail.com>
  * 
- * \version 0.5.7
+ * \version 1.0.3
  * 
  * \date 08/06/2017
  * 
@@ -68,9 +68,11 @@ void beacon_init()
     task_init_with_timeout(&antenna_init, BEACON_ANTENNA_INIT_TIMEOUT_MS);
     
     task_init_with_timeout(&eps_init, EPS_INIT_TIMEOUT_MS);
-    
+
+#if BEACON_OBDH_INTERFACE_ENABLED == 1
     task_init_with_timeout(&obdh_init, OBDH_INIT_TIMEOUT_MS);
-    
+#endif // BEACON_OBDH_INTERFACE_ENABLED
+
     task_init_with_timeout(&radio_init, RADIO_INIT_TIMEOUT_MS);
     
 #if BEACON_RF_SWITCH != HW_NONE
@@ -130,11 +132,17 @@ void beacon_run()
         task_aperiodic(&radio_enable_rx, beacon.obdh.is_dead);
     #endif // BEACON_RX_ALWAYS_ON_MODE
 
+    #if BEACON_OBDH_INTERFACE_ENABLED == 1
         task_aperiodic(&beacon_process_obdh_pkt, obdh_available()? true : false);
+    #endif // BEACON_OBDH_INTERFACE_ENABLED
 
         task_aperiodic(&beacon_process_eps_pkt, eps_available()? true : false);
 
+    #if BEACON_RX_ALWAYS_ON_MODE == 1
+        task_aperiodic(&beacon_process_radio_pkt, radio_available());
+    #else
         task_aperiodic(&beacon_process_radio_pkt, radio_available() && beacon.obdh.is_dead);
+    #endif // BEACON_RX_ALWAYS_ON_MODE
 
         task_scheduled(&beacon_leave_hibernation, beacon.hibernation_mode_initial_time + beacon.hibernation_mode_duration, time_get_seconds(), 5, beacon.hibernation? true : false);
 
@@ -955,7 +963,12 @@ void beacon_load_default_params()
 
     beacon.obdh.time_last_valid_pkt         = time_get_seconds();
     beacon.obdh.errors                      = 0;
+
+#if BEACON_OBDH_INTERFACE_ENABLED == 1
     beacon.obdh.is_dead                     = false;
+#else
+    beacon.obdh.is_dead                     = true;
+#endif // BEACON_OBDH_INTERFACE_ENABLED
 }
 
 void beacon_save_params()
