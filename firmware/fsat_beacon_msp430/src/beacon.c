@@ -25,7 +25,7 @@
  * 
  * \author Gabriel Mariano Marcelino <gabriel.mm8@gmail.com>
  * 
- * \version 1.0.2
+ * \version 1.0.3
  * 
  * \date 08/06/2017
  * 
@@ -963,7 +963,12 @@ void beacon_load_default_params()
 
     beacon.obdh.time_last_valid_pkt         = time_get_seconds();
     beacon.obdh.errors                      = 0;
+
+#if BEACON_OBDH_INTERFACE_ENABLED == 1
     beacon.obdh.is_dead                     = false;
+#else
+    beacon.obdh.is_dead                     = true;
+#endif // BEACON_OBDH_INTERFACE_ENABLED
 }
 
 void beacon_save_params()
