@@ -25,7 +25,7 @@
  * 
  * \author Gabriel Mariano Marcelino <gabriel.mm8@gmail.com>
  * 
- * \version 1.0.1
+ * \version 1.0.2
  * 
  * \date 08/06/2017
  * 
@@ -138,7 +138,11 @@ void beacon_run()
 
         task_aperiodic(&beacon_process_eps_pkt, eps_available()? true : false);
 
+    #if BEACON_RX_ALWAYS_ON_MODE == 1
+        task_aperiodic(&beacon_process_radio_pkt, radio_available());
+    #else
         task_aperiodic(&beacon_process_radio_pkt, radio_available() && beacon.obdh.is_dead);
+    #endif // BEACON_RX_ALWAYS_ON_MODE
 
         task_scheduled(&beacon_leave_hibernation, beacon.hibernation_mode_initial_time + beacon.hibernation_mode_duration, time_get_seconds(), 5, beacon.hibernation? true : false);
 
