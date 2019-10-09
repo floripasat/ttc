@@ -66,9 +66,9 @@
 #define BEACON_EXECUTE_DEPLOYMENT_ROUTINE   1
 
 #define BEACON_TX_ENABLED                   1
-#define BEACON_RX_ALWAYS_ON_MODE            0
+#define BEACON_RX_ALWAYS_ON_MODE            1
 
-#define BEACON_OBDH_INTERFACE_ENABLED       1
+#define BEACON_OBDH_INTERFACE_ENABLED       0
 
 #define BEACON_TX_PERIOD_SEC_L1             10
 #define BEACON_TX_PERIOD_SEC_L2             10
