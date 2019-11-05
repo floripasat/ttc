@@ -1,0 +1,18 @@
+Designator,Footprint,Comment,PartNumber,Description,Quantity
+"C1, C4",603,12pF/50V,GQM1885C1H120GB01D,Multilayer Ceramic Capacitors MLCC - SMD/SMT 0603 12pF 50volts C0G 2%,2
+C2,603,0.47uF/50V,C1608X7R1H474K080AE,Multilayer Ceramic Capacitors MLCC - SMD/SMT SOFT 0603 50V 0.47uF X7R 10% T: 0.85mm,1
+"C3, C6, C9, C10, C11",603,0.1uF/50V,C0603C104K5RAL,Multilayer Ceramic Capacitors MLCC - SMD/SMT .1UF 50V 10% 0603,5
+"C5, C7, C12, C13, C14",805,10uF/10V,TPSR106K006R1000,Tantalum Capacitors - Solid SMD 6.3V 10uF 10% 0805 ESR= 1 Ohms,5
+C8,603,2.2nF/16V,C0603X222M4HACTU,Multilayer Ceramic Capacitors MLCC - SMD/SMT 16V 2200pF 0603 X8R 20%,1
+FB1,1210,"30R@100Mhz, 10A",BLE32PN300SN1L,Ferrite Beads 1210 30ohms10A +/-10ohms,1
+"P1, P5",,Header 6H_PicoBlade,53398-0671,Headers & Wire Housings VERTICAL HDR SMT 6P,2
+"R2, R3",603,10k,MCT0603MC1002FP500,Thin Film Resistors - SMD 1/16W 10Kohm 0.5% 25ppm,2
+R4,603,330R,CRCW0603330RFKEAHP,Thick Film Resistors - SMD 330OHM 1/10WATT 1%,1
+R6,603,47k,755-SFR03EZPF4702,Thick Film Resistors 0603 47Kohm 1% Anti-Sulfur AEC-Q200,1
+U3,,PC104,TSW-126-07-G-D,"CONN RCPT 52POS .100"" DUAL GOLD",2
+U4,,MSP430F6659IPZR,MSP430F6659IPZR,16-bit Microcontrollers - MCU Mixed Signal MCU,1
+"Y1, Y2",,MCX Coaxial Connectors (90º),1-1337583-0,RF Connectors / Coaxial Connectors R/A SMT Skt 50Ohm Gold Pltd,2
+Y3,,32.768kHz 12.5pF,ABS06-32.768KHZ-T,Crystals 32.768KHz 20ppm 12.5pF -40C +85C,1
+Y4,,4MHz,CSTCR4M00G15L99-R0,Resonators 4MHZ,1
+U1,,RF4463F30,RF4463F30 - 134-174 MHz,RF4463F30 High Power Wireless Transceiver Module,1
+U2,,RF4463F30,RF4463F30 - 433 MHz,RF4463F30 High Power Wireless Transceiver Module,1
