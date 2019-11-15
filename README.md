@@ -2,7 +2,7 @@
 
 ## Resources
 
-* FloripaSat project homepage: [http://floripasat.space/](http://floripasat.space/)
+* FloripaSat project homepage: [http://floripasat.ufsc.br/](http://floripasat.ufsc.br/)
 * FloripaSat project source code: [https://github.com/floripasat](https://github.com/floripasat)
 * TTC source code: [https://github.com/floripasat/ttc](https://github.com/floripasat/ttc)
 * TTC code documentation: [http://floripasat.space/docs/ttc](http://floripasat.space/docs/ttc/)
